@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.testcomposetetris.ui.Board
+import com.example.testcomposetetris.ui.GameScreen
 import com.example.testcomposetetris.ui.theme.TestComposeTetrisTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -37,7 +38,7 @@ class MainActivity : ComponentActivity() {
                     viewModel.collect()
                 }
                 viewModel.start()
-                Board()
+                GameScreen()
             }
         }
     }
@@ -46,44 +47,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Greeting(name: String) {
     Text(text = "Hello $name!")
-}
-
-
-
-fun DrawScope.tile(
-    topLeftPosition: Offset,
-    width: Float,
-    isNotEmpty: Boolean = false) {
-    val color = if(isNotEmpty) {
-        Color.Black
-    } else {
-        Color.Gray
-    }
-    val alpha = if(isNotEmpty) {
-        1F
-    } else {
-        0.3F
-    }
-    drawRect(
-        color,
-        topLeftPosition,
-        Size(width,width),
-        alpha,
-        Stroke(width = 2F)
-    )
-    val innerOffset = 8
-    val innerTopLeftPosition = Offset(
-        topLeftPosition.x + innerOffset,
-        topLeftPosition.y + innerOffset
-    )
-    val innerWidth = width - 2 * innerOffset
-    drawRect(
-        color,
-        innerTopLeftPosition,
-        Size(innerWidth,innerWidth),
-        alpha,
-        Fill
-    )
 }
 
 @Preview(showBackground = true)

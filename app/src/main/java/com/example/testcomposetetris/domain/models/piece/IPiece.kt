@@ -7,8 +7,8 @@ import kotlin.math.max
 import kotlin.math.min
 
 class IPiece(
-    private val posXLimit: Int,
-    private val posYLimit: Int
+    override val posXLimit: Int,
+    override val posYLimit: Int
 ): Piece() {
     private var currentRotation: Rotation = Rotation.VERTICAL
 
@@ -123,11 +123,7 @@ class IPiece(
         } else {
             copyCurrentLocToPreviousLoc()
 
-            location.forEachIndexed { index, position ->
-                if(position.y < posYLimit - 1) {
-                    location[index] = position.copy(y = position.y.inc())
-                }
-            }
+            moveDown(posYLimit)
         }
     }
 

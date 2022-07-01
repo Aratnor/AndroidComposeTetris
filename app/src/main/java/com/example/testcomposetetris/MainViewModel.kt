@@ -54,6 +54,8 @@ class MainViewModel: ViewModel() {
     }
 
     fun moveDown() {
-        game.moveDown()
+        viewModelScope.launch {
+            game.moveDown()
+        }
     }
 }

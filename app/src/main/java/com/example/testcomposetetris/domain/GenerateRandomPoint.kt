@@ -1,3 +1,6 @@
 package com.example.testcomposetetris.domain
 
-fun generateRandomNumber(): Int = (0..11).random()
+fun generateRandomNumber(
+    min: Int = 0,
+    max: Int = 11
+): Int = (min..max).random()

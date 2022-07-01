@@ -4,8 +4,8 @@ import com.example.testcomposetetris.domain.generateRandomNumber
 import com.example.testcomposetetris.domain.models.Position
 
 class SquarePiece(
-    private val posXLimit: Int,
-    private val posYLimit: Int
+    override val posXLimit: Int,
+    override val posYLimit: Int
 ): Piece() {
     override val location: Array<Position> = arrayOf(
         Position(0,-9),
@@ -40,6 +40,7 @@ class SquarePiece(
         val loc2 = location[2]
 
         val destinationX = loc0.x - 1
+        if(loc0.y < 0 || loc2.y < 0) return false
         if(tiles[loc0.y][destinationX] || tiles[loc2.y][destinationX]) return false
 
         return true
@@ -53,6 +54,7 @@ class SquarePiece(
         val loc3 = location[3]
 
         val destinationX = loc1.x + 1
+        if(loc1.y < 0 || loc3.y < 0) return false
         if(tiles[loc1.y][destinationX] || tiles[loc3.y][destinationX]) return false
 
         return true
@@ -63,11 +65,7 @@ class SquarePiece(
             initializeFirstMovement()
         } else {
             copyCurrentLocToPreviousLoc()
-            location.forEachIndexed { index, position ->
-                if(position.y < posYLimit - 1) {
-                    location[index] = position.copy(y = position.y.inc())
-                }
-            }
+            moveDown(posYLimit)
         }
     }
 

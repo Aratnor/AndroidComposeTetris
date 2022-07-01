@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">TestComposeTetris</string>
+
+    <string name="left_button_text">Left</string>
+    <string name="right_button_text">Right</string>
+    <string name="down_button_text">Down</string>
+    <string name="rotate_button_text">Rotate</string>
 </resources>
