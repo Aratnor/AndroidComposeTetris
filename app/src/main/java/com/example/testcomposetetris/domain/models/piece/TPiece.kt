@@ -3,47 +3,46 @@ package com.example.testcomposetetris.domain.models.piece
 import com.example.testcomposetetris.domain.generateRandomNumber
 import com.example.testcomposetetris.domain.models.Position
 
-class ReverseLPiece(
+class TPiece(
     override val posXLimit: Int,
     override val posYLimit: Int
-): Piece() {
-
-    private var currentRotation: Rotation = Rotation.RIGHT
+    ) : Piece() {
 
     override val location: Array<Position> = arrayOf(
         Position(0,-9),
-        Position(0, -9),
-        Position(0, -9),
-        Position(0, -9)
+        Position(0,-9),
+        Position(0,-9),
+        Position(0,-9)
+        )
+    override val previousLocation: Array<Position> = arrayOf(
+        Position(0,-9),
+        Position(0,-9),
+        Position(0,-9),
+        Position(0,-9)
     )
-    override val previousLocation: Array<Position> =
-        arrayOf(
-            Position(0,-9),
-            Position(0, -9),
-            Position(0, -9),
-            Position(0, -9)
-    )
+
+    var currentRotation: Rotation = Rotation.BOTTOM
 
     override fun move() {
         if(location[0].y == -9) {
-            initializeRotationRight()
+            initialize()
         } else {
             copyCurrentLocToPreviousLoc()
             moveDown(posYLimit)
         }
     }
 
-    private fun initializeRotationRight() {
-        var referenceXPos = generateRandomNumber()
-        referenceXPos = when(referenceXPos) {
+    private fun initialize() {
+        var referenceXPosition = generateRandomNumber()
+        referenceXPosition = when(referenceXPosition) {
             0 -> 1
             posXLimit - 1 -> posXLimit - 2
-            else -> referenceXPos
+            else -> referenceXPosition
         }
-        location[0] = Position(referenceXPos + 1,0)
-        location[1] = Position(referenceXPos + 1, -1)
-        location[2] = Position(referenceXPos,-1)
-        location[3] = Position(referenceXPos -1,-1)
+        location[0] = Position(referenceXPosition - 1, -1)
+        location[1] = Position(referenceXPosition, -1)
+        location[2] = Position(referenceXPosition + 1, -1)
+        location[3] = Position(referenceXPosition, 0)
     }
 
     override fun moveLeft(tiles: Array<Array<Boolean>>) {
@@ -52,8 +51,7 @@ class ReverseLPiece(
             location.forEachIndexed { index, position ->
                 location[index] = position.copy(x = position.x.dec())
             }
-        }
-    }
+        }    }
 
     private fun canMoveLeft(
         tiles: Array<Array<Boolean>>
@@ -74,8 +72,7 @@ class ReverseLPiece(
             location.forEachIndexed { index, position ->
                 location[index] = position.copy(x = position.x.inc())
             }
-        }
-    }
+        }    }
 
     private fun canMoveRight(tiles: Array<Array<Boolean>>): Boolean {
         location.forEach { position ->
@@ -89,10 +86,6 @@ class ReverseLPiece(
     override fun rotate() {
         copyCurrentLocToPreviousLoc()
         currentRotation = when(currentRotation) {
-            Rotation.RIGHT -> {
-                rotateBottom()
-                Rotation.BOTTOM
-            }
             Rotation.BOTTOM -> {
                 rotateLeft()
                 Rotation.LEFT
@@ -105,42 +98,43 @@ class ReverseLPiece(
                 rotateRight()
                 Rotation.RIGHT
             }
+            Rotation.RIGHT -> {
+                rotateBottom()
+                Rotation.BOTTOM
+            }
         }
     }
 
-    private fun rotateRight() {
-        val referencePoint = location[2]
-        location[0] = Position(referencePoint.x + 1,referencePoint.y + 1)
-        location[1] = Position(referencePoint.x + 1,referencePoint.y )
-        location[3] = Position(referencePoint.x - 1,referencePoint.y)
+    private fun rotateLeft() {
+        val referencePosition = location[1]
+        location[0] = Position(referencePosition.x,referencePosition.y - 1)
+        location[2] = Position(referencePosition.x,referencePosition.y + 1)
+        location[3] = Position(referencePosition.x -1,referencePosition.y)
     }
 
     private fun rotateTop() {
-        val referenceLocation = location[2]
-        location[0] = Position(referenceLocation.x + 1,referenceLocation.y - 1)
-        location[1] = Position(referenceLocation.x, referenceLocation.y - 1)
-        location[3] = Position(referenceLocation.x , referenceLocation.y + 1)
-    }
-
-    private fun rotateBottom() {
-        val referencePosition = location[2]
-        location[0] = Position(referencePosition.x - 1,referencePosition.y + 1)
-        location[1] = Position(referencePosition.x, referencePosition.y + 1)
+        val referencePosition = location[1]
+        location[0] = Position(referencePosition.x - 1,referencePosition.y)
+        location[2] = Position(referencePosition.x + 1,referencePosition.y)
         location[3] = Position(referencePosition.x,referencePosition.y - 1)
     }
 
-    private fun rotateLeft() {
-        val referencePoint = location[2]
-        location[0] = Position(referencePoint.x - 1,referencePoint.y - 1)
-        location[1] = Position(referencePoint.x - 1, referencePoint.y)
-        location[3] = Position(referencePoint.x + 1, referencePoint.y)
+    private fun rotateRight() {
+        val referencePosition = location[1]
+        location[0] = Position(referencePosition.x,referencePosition.y - 1)
+        location[2] = Position(referencePosition.x, referencePosition.y + 1)
+        location[3] = Position(referencePosition.x + 1,referencePosition.y)
+    }
+
+    private fun rotateBottom() {
+        val referencePosition = location[1]
+        location[0] = Position(referencePosition.x - 1,referencePosition.y)
+        location[2] = Position(referencePosition.x + 1,referencePosition.y)
+        location[3] = Position(referencePosition.x,referencePosition.y + 1)
     }
 
     override fun canRotate(tiles: Array<Array<Boolean>>): Boolean {
         return when(currentRotation) {
-            Rotation.RIGHT -> {
-                canRotateBottom(tiles)
-            }
             Rotation.BOTTOM -> {
                 canRotateLeft(tiles)
             }
@@ -150,43 +144,46 @@ class ReverseLPiece(
             Rotation.TOP -> {
                 canRotateRight(tiles)
             }
+            Rotation.RIGHT -> {
+                canRotateBottom(tiles)
+            }
         }
+    }
+
+    private fun canRotateLeft(
+        tiles: Array<Array<Boolean>>
+    ): Boolean {
+        val referencePos = location[1]
+        return canMoveToNextTiles(referencePos,tiles)
+    }
+
+    private fun canRotateTop(
+        tiles: Array<Array<Boolean>>
+    ): Boolean {
+        val referencePos = location[1]
+        val maxX = referencePos.x + 1
+        if(maxX >= posXLimit) return false
+        return canMoveToNextTiles(referencePos,tiles)
     }
 
     private fun canRotateRight(
         tiles: Array<Array<Boolean>>
     ): Boolean {
-        val referencePosition = location[2]
-        val minX = referencePosition.x - 1
-        if(minX < 0) return false
-        return canMoveToNextTiles(referencePosition,tiles)
-    }
-
-    private fun  canRotateTop(
-        tiles: Array<Array<Boolean>>
-    ): Boolean {
-        val referencePoint = location[2]
-        val maxY = referencePoint.y + 1
+        val referencePos = location[1]
+        val maxY = referencePos.y + 1
         if(maxY >= posYLimit) return false
-        return canMoveToNextTiles(referencePoint,tiles)
+        return canMoveToNextTiles(referencePos,tiles)
     }
 
     private fun canRotateBottom(
         tiles: Array<Array<Boolean>>
     ): Boolean {
-        val referencePoint = location[2]
-        return canMoveToNextTiles(referencePoint,tiles)
+        val referencePos = location[1]
+        val minX = referencePos.x - 1
+        if(minX < 0) return false
+        return canMoveToNextTiles(referencePos,tiles)
     }
 
-    private fun canRotateLeft(
-        tiles: Array<Array<Boolean>>
-
-    ): Boolean {
-        val referencePosition = location[2]
-        val maxX = referencePosition.x + 1
-        if(maxX >= posXLimit) return false
-        return canMoveToNextTiles(referencePosition,tiles)
-    }
     enum class Rotation {
         BOTTOM,
         LEFT,

@@ -1,9 +1,6 @@
 package com.example.testcomposetetris.domain
 
-import com.example.testcomposetetris.domain.models.piece.IPiece
-import com.example.testcomposetetris.domain.models.piece.LPiece
-import com.example.testcomposetetris.domain.models.piece.Piece
-import com.example.testcomposetetris.domain.models.piece.SquarePiece
+import com.example.testcomposetetris.domain.models.piece.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -22,7 +19,7 @@ class Game {
 
     private val gameScoreHelper = GameScoreHelper(tiles)
 
-    var currentPiece: Piece = LPiece(tiles[0].size,tiles.size)
+    var currentPiece: Piece = generatePiece()
 
     val updateUi: MutableStateFlow<List<List<Boolean>>> = MutableStateFlow(getTilesAsList())
 
@@ -45,11 +42,15 @@ class Game {
     private fun generatePiece(): Piece {
         val pieceType = generateRandomNumber(
             min = 0,
-            max = 3
+            max = 6
         )
         return when(pieceType) {
             0 -> LPiece(tiles[0].size,tiles.size)
-            1 -> IPiece(tiles[0].size,tiles.size)
+            1 -> ReverseLPiece(tiles[0].size,tiles.size)
+            2 -> IPiece(tiles[0].size,tiles.size)
+            3 -> ZPiece(tiles[0].size,tiles.size)
+            4 -> ReverseZPiece(tiles[0].size,tiles.size)
+            5 -> TPiece(tiles[0].size,tiles.size)
             else -> SquarePiece(tiles[0].size,tiles.size)
         }
     }
