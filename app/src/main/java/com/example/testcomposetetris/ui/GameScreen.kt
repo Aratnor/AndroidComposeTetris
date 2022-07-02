@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.testcomposetetris.MainViewModel
@@ -24,8 +25,9 @@ fun GameScreen() {
         Row(
             modifier = Modifier
                 .weight(1F)
-                .fillMaxWidth()
-
+                .fillMaxWidth(),
+            horizontalArrangement  =  Arrangement.Start,
+            verticalAlignment = Alignment.Top
         ) {
             Box(
                 modifier = Modifier
@@ -36,6 +38,7 @@ fun GameScreen() {
             ) {
                 Board(viewModel = viewModel)
             }
+            NextPieceLayout(viewModel = viewModel)
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -72,6 +75,5 @@ fun GameScreen() {
             Text(stringResource(R.string.rotate_button_text))
         }
     }
-        
-        
+
 }

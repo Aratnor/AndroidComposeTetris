@@ -14,7 +14,6 @@ fun Board(viewModel: MainViewModel) {
 
     Canvas(
         modifier = Modifier
-            .fillMaxWidth()
             .padding(start = 8.dp)
 
     ) {

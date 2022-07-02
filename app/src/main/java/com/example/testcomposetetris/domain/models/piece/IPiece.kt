@@ -26,6 +26,13 @@ class IPiece(
         Position(0,-9)
     )
 
+    override val previewLocation: Array<Position> = arrayOf(
+        Position(1,0),
+        Position(1,1),
+        Position(1,2),
+        Position(1,3)
+    )
+
     override fun moveLeft(
         tiles: Array<Array<Boolean>>
     ) {
@@ -108,6 +115,7 @@ class IPiece(
                 val maxY = referenceLocation.y + 1
                 for (positionY in minY..maxY){
                     for(positionX in minX..maxX) {
+                        if(location.firstOrNull { it.x == positionX && it.y == positionY } != null) continue
                         if(tiles[positionY][positionX]) return false
                     }
                 }

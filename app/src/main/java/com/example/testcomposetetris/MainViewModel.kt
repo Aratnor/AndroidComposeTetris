@@ -6,15 +6,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.testcomposetetris.domain.Game
+import com.example.testcomposetetris.domain.GameState
 import com.example.testcomposetetris.domain.models.piece.IPiece
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MainViewModel: ViewModel() {
 
-    private val _viewState: MutableState<ViewState> = mutableStateOf(ViewState(emptyList()))
+    private val _viewState: MutableState<ViewState> = mutableStateOf(
+        ViewState(
+            emptyList(),
+            emptyList()
+        ))
     val viewState : State<ViewState> = _viewState
 
     private val game = Game()
@@ -30,7 +36,10 @@ class MainViewModel: ViewModel() {
 
     suspend fun collect() {
         game.updateUi.collectLatest {
-            _viewState.value = _viewState.value.copy(tiles = it)
+            _viewState.value = _viewState.value.copy(
+                tiles = it.tiles,
+                nextPiecePreview = it.previewLocation
+            )
         }
     }
 

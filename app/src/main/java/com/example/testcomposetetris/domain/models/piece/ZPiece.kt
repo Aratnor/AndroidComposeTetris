@@ -21,6 +21,13 @@ class ZPiece(
         Position(0,-9)
     )
 
+    override val previewLocation: Array<Position> = arrayOf(
+        Position(0,0),
+        Position(1,0),
+        Position(1,1),
+        Position(2,1)
+    )
+
     var currentRotation: Rotation = Rotation.LEFT
 
     override fun move() {
@@ -103,7 +110,7 @@ class ZPiece(
         val referencePos = location[2]
         location[0] = Position(referencePos.x - 1,referencePos.y - 1)
         location[1] = Position(referencePos.x,referencePos.y - 1)
-        location[2] = Position(referencePos.x + 1,referencePos.y)
+        location[3] = Position(referencePos.x + 1,referencePos.y)
     }
 
     private fun rotateTop() {

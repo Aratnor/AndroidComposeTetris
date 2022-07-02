@@ -21,6 +21,16 @@ fun DrawScope.tile(
     } else {
         0.3F
     }
+
+    tile(topLeftPosition,width,color,alpha)
+}
+
+fun DrawScope.tile(
+    topLeftPosition: Offset,
+    width: Float,
+    color: Color = Color.Black,
+    alpha: Float = 1F
+) {
     drawRect(
         color,
         topLeftPosition,

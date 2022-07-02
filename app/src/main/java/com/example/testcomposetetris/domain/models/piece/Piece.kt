@@ -6,6 +6,7 @@ import com.example.testcomposetetris.domain.models.Position
 abstract class Piece {
     abstract val location: Array<Position>
     abstract val previousLocation: Array<Position>
+    abstract val previewLocation: Array<Position>
     abstract val posXLimit: Int
     abstract val posYLimit: Int
     abstract fun move()

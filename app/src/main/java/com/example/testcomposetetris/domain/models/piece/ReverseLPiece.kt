@@ -23,6 +23,13 @@ class ReverseLPiece(
             Position(0, -9),
             Position(0, -9)
     )
+    override val previewLocation: Array<Position> =
+        arrayOf(
+            Position(0,0),
+            Position(0, 1),
+            Position(1, 1),
+            Position(2, 1)
+        )
 
     override fun move() {
         if(location[0].y == -9) {

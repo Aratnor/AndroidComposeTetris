@@ -1,5 +1,6 @@
 package com.example.testcomposetetris.domain
 
+import com.example.testcomposetetris.domain.models.Position
 import com.example.testcomposetetris.domain.models.piece.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -9,6 +10,7 @@ class Game {
     private var isRunning = false
     var resetTimer = false
     var isWaiting = false
+
     private val tiles by lazy {
         Array(24) {
             Array(12) {
@@ -21,16 +23,20 @@ class Game {
 
     var currentPiece: Piece = generatePiece()
 
-    val updateUi: MutableStateFlow<List<List<Boolean>>> = MutableStateFlow(getTilesAsList())
+    private var nextPiece: Piece = generatePiece()
 
+    val updateUi: MutableStateFlow<GameState> = MutableStateFlow(GameState(
+        getTilesAsList(),
+        emptyList()))
 
     suspend fun startGame() {
         isRunning = true
+        updateUi.value = updateUi.value.copy(previewLocation = getNextPiecePreviewLocation())
         while(isRunning) {
             if(!isWaiting) {
                 move()
             }
-            updateUi.value = getTilesAsList()
+            updateUi.value = updateUi.value.copy(tiles = getTilesAsList())
             if(resetTimer) {
                 resetTimer = false
             } else {
@@ -59,30 +65,36 @@ class Game {
     ) {
         repeat(4) {
             gameScoreHelper.removeCompletedLines(completedLines)
-            updateUi.value = getTilesAsList()
+            updateUi.value = updateUi.value.copy(tiles = getTilesAsList())
             delay(100)
             gameScoreHelper.fillCompletedLines(completedLines)
-            updateUi.value = getTilesAsList()
+            updateUi.value = updateUi.value.copy(tiles = getTilesAsList())
             delay(100)
         }
         delay(100)
         gameScoreHelper.removeCompletedLines(completedLines)
-        updateUi.value = getTilesAsList()
+        updateUi.value = updateUi.value.copy(tiles = getTilesAsList())
+    }
+
+    private fun generateNewPiece() {
+        currentPiece = PieceFactory.generatePiece(nextPiece)
+        nextPiece = generatePiece()
+        updateUi.value = updateUi.value.copy(previewLocation = getNextPiecePreviewLocation())
     }
 
     private suspend fun move() {
         if(currentPiece.hitAnotherPiece(tiles)) {
             val completedLines = gameScoreHelper.getCompletedLines(currentPiece.location)
             if(completedLines.isEmpty()) {
-                currentPiece = generatePiece()
+                generateNewPiece()
             } else {
                 isWaiting = true
                 removeCompletedLinesWithEffect(completedLines)
                 gameScoreHelper.moveLinesOneDown(completedLines)
-                updateUi.value = getTilesAsList()
+                updateUi.value = updateUi.value.copy(tiles = getTilesAsList())
 
                 isWaiting = false
-                currentPiece = generatePiece()
+                generateNewPiece()
             }
         }
         currentPiece.move()
@@ -125,14 +137,14 @@ class Game {
             currentPiece.rotate()
             removePreviousPieceLocation()
             updateTilesWithCurrentPieceLocation()
-            updateUi.value = getTilesAsList()
+            updateUi.value = updateUi.value.copy(tiles = getTilesAsList())
         }
     }
 
     suspend fun moveDown() {
         if(isWaiting) return
         move()
-        updateUi.value = getTilesAsList()
+        updateUi.value = updateUi.value.copy(tiles = getTilesAsList())
         resetTimer = true
     }
 
@@ -140,6 +152,10 @@ class Game {
         val mutableList = mutableListOf<List<Boolean>>()
         tiles.forEach { mutableList.add(it.toList()) }
         return mutableList
+    }
+
+    fun getNextPiecePreviewLocation(): List<Position> {
+        return  nextPiece.previewLocation.toList()
     }
 
 }
