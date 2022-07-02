@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.unit.dp
 import com.example.testcomposetetris.MainViewModel
 
 @Composable
@@ -14,13 +15,14 @@ fun Board(viewModel: MainViewModel) {
     Canvas(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(start = 8.dp)
 
     ) {
         val totalWidth = size.width
         val numberOfRectInRow = 12
         val padding = 12
         val totalWidthWithoutMargin = totalWidth - (numberOfRectInRow - 1) * padding
-        val widthOfRectangle = totalWidthWithoutMargin / numberOfRectInRow
+        val widthOfRectangle = 40F
 
         viewState.tiles.forEachIndexed { positionY, row ->
             row.forEachIndexed { positionX, isOccupied ->

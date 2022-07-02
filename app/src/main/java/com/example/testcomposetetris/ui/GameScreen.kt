@@ -21,17 +21,21 @@ fun GameScreen() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        Box(
+        Row(
             modifier = Modifier
                 .weight(1F)
-                .padding(
-                    start = 100.dp,
-                    end = 100.dp,
-                    top = 40.dp
-                ),
-            contentAlignment = Alignment.TopCenter
+                .fillMaxWidth()
+
         ) {
-            Board(viewModel = viewModel)
+            Box(
+                modifier = Modifier
+                    .padding(
+                        top = 40.dp
+                    ),
+                contentAlignment = Alignment.TopStart
+            ) {
+                Board(viewModel = viewModel)
+            }
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
