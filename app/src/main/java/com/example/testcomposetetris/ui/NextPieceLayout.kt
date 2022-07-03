@@ -1,11 +1,14 @@
 package com.example.testcomposetetris.ui
 
 
+import android.graphics.Color
+import android.graphics.Paint
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.unit.dp
 import com.example.testcomposetetris.MainViewModel
 
@@ -29,6 +32,45 @@ fun NextPieceLayout(
                     .firstOrNull { it.x == posX && it.y == posY } != null
                 tile(Offset(startPositionX,startPositionY),widthOfRectangle,isNotEmpty)
             }
+        }
+
+        drawContext.canvas.nativeCanvas.apply {
+            drawText(
+                viewState.currentTime,
+                48F,
+                4 * (padding + widthOfRectangle) + 70,
+                Paint().apply {
+                    textSize = 48F
+                    color = Color.BLACK
+                    textAlign = Paint.Align.CENTER
+                }
+            )
+        }
+
+        drawContext.canvas.nativeCanvas.apply {
+            drawText(
+                viewState.score,
+                48F,
+                4 * (padding + widthOfRectangle) + 140,
+                Paint().apply {
+                    textSize = 48F
+                    color = Color.BLACK
+                    textAlign = Paint.Align.CENTER
+                }
+            )
+        }
+
+        drawContext.canvas.nativeCanvas.apply {
+            drawText(
+                viewState.level,
+                48F,
+                4 * (padding + widthOfRectangle) + 220,
+                Paint().apply {
+                    textSize = 48F
+                    color = Color.BLACK
+                    textAlign = Paint.Align.CENTER
+                }
+            )
         }
     }
 }

@@ -71,6 +71,7 @@ class IPiece(
             Rotation.HORIZONTAL -> {
                 val referenceLocation = location[0]
                 val referenceX = referenceLocation.x - 1
+                if(referenceLocation.y < 0) return false
                 if(referenceX >= 0 && tiles[referenceLocation.y][referenceX]) return false
             }
         }
@@ -111,10 +112,11 @@ class IPiece(
                 val minX = max((referenceLocation.x - 2),0)
                 val maxX = min((referenceLocation.x + 1),tiles[0].size - 1)
 
-                val minY =referenceLocation.y - 2
-                val maxY = referenceLocation.y + 1
+                val minY = max(referenceLocation.y - 2,0)
+                val maxY = min(referenceLocation.y + 1,posYLimit)
                 for (positionY in minY..maxY){
                     for(positionX in minX..maxX) {
+                        if(positionX < 0 || positionY < 0) continue
                         if(location.firstOrNull { it.x == positionX && it.y == positionY } != null) continue
                         if(tiles[positionY][positionX]) return false
                     }

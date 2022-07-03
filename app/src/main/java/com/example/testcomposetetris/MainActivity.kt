@@ -38,6 +38,7 @@ class MainActivity : ComponentActivity() {
                     viewModel.collect()
                 }
                 viewModel.start()
+                viewModel.startTimer()
                 GameScreen()
             }
         }

@@ -52,7 +52,11 @@ class GameScoreHelper(
     ): List<Int> {
         val completedLinesPosY = mutableListOf<Int>()
         locations.forEach { position ->
-            if(completedLinesPosY.contains(position.y)) return@forEach
+            if(
+                completedLinesPosY.contains(position.y) ||
+                position.y < 0
+            ) return@forEach
+
             var isLineCompleted = true
             run {
                 for (posX in 0 until tiles[position.y].size) {

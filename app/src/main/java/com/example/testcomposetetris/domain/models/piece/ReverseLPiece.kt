@@ -87,6 +87,7 @@ class ReverseLPiece(
     private fun canMoveRight(tiles: Array<Array<Boolean>>): Boolean {
         location.forEach { position ->
             if(position.x + 1 >= posXLimit) return false
+            if(position.y < 0) return@forEach
             if(location.firstOrNull { it.x == position.x + 1 && it.y == position.y } != null) return@forEach
             if(tiles[position.y][position.x + 1]) return false
         }
