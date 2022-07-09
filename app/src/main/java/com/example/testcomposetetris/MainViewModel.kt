@@ -6,15 +6,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.testcomposetetris.domain.Game
-import com.example.testcomposetetris.domain.GameState
-import com.example.testcomposetetris.domain.models.piece.IPiece
-import kotlinx.coroutines.Dispatchers
+import com.example.testcomposetetris.ext.convertToMinute
+import com.example.testcomposetetris.ext.convertToRemainingSecond
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.time.Duration
-import kotlin.math.pow
 
 class MainViewModel: ViewModel() {
 
@@ -25,13 +22,16 @@ class MainViewModel: ViewModel() {
             "00:00",
             "",
             "Level 1",
-            false
+            false,
+            "",
+            ""
         ))
 
     val viewState : State<ViewState> = _viewState
 
     private val game = Game()
 
+    lateinit var timerJob: Job
 
 
     fun start() {
@@ -42,28 +42,33 @@ class MainViewModel: ViewModel() {
     }
 
     fun startTimer() {
-        viewModelScope.launch {
-            (0..Int.MAX_VALUE)
+        timerJob = viewModelScope.launch {
+            val flow = (0..Int.MAX_VALUE)
                 .asSequence()
                 .asFlow()
                 .onEach { delay(1_000) }
-                .collectLatest {
-                    val minute = it / 60
-                    val minuteAsString = if(minute < 10) {
-                        "0$minute"
-                    } else {
-                        minute.toString()
-                    }
-                    val second = it % 60
-                    val secondAsString = if(second < 10) {
-                        "0$second"
-                    } else {
-                        second.toString()
-                    }
 
-                    _viewState.value = _viewState.value.copy(currentTime = "$minuteAsString:$secondAsString")
-
+            flow.collectLatest { second ->
+                val minuteAsString = second.convertToMinute()
+                val secondAsString = second.convertToRemainingSecond()
+                if(game.isGameOver()) {
+                    timerJob.cancel()
+                    _viewState.value = _viewState.value.copy(
+                        currentTime = "",
+                        score = "",
+                        level = "",
+                        gameOverScore = "SCORE : ${game.getScore()}",
+                        gameOverLevel = "LEVEL : ${game.getLevel()}"
+                    )
+                    return@collectLatest
                 }
+
+                _viewState.value = _viewState
+                    .value
+                    .copy(
+                        currentTime = "$minuteAsString:$secondAsString"
+                    )
+            }
         }
     }
 
@@ -101,6 +106,12 @@ class MainViewModel: ViewModel() {
     fun moveDown() {
         viewModelScope.launch {
             game.moveDown()
+        }
+    }
+
+    fun moveUp() {
+        viewModelScope.launch {
+            game.moveUp()
         }
     }
 }

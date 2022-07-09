@@ -5,14 +5,20 @@ import com.example.testcomposetetris.domain.models.Position
 import com.example.testcomposetetris.domain.models.piece.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import java.lang.Long.max
+import java.lang.Long.min
 import kotlin.math.pow
 
-const val ITERATION_DELAY = 120L
+const val ITERATION_DELAY = 1000L
+const val MOVE_UP_ITERATION_DELAY = 5L
+
 const val ITERATION_LEVEL_MULTIPLY =100L
+const val SCORE_MULTIPLIER = 100
 class Game {
     private var isRunning = false
     var resetTimer = false
     var isWaiting = false
+    private var moveUpPressed = false
 
     private val tiles by lazy {
         Array(24) {
@@ -38,11 +44,17 @@ class Game {
         false
     ))
 
-    var score: Int = 0
+    private var score: Int = 0
 
     private val scoreForEachCompletedLine = 100
 
     private val scoreStrikeMultiplier = 0.2
+
+    fun isGameOver(): Boolean = !isRunning
+
+    fun getScore(): Int = score
+
+    fun getLevel(): Int = level
 
     suspend fun startGame() {
         isRunning = true
@@ -52,13 +64,20 @@ class Game {
                 move()
             }
             updateUi.value = updateUi.value.copy(tiles = getTilesAsList())
-            if(resetTimer) {
-                resetTimer = false
-            } else {
-                delay(ITERATION_DELAY - ITERATION_LEVEL_MULTIPLY  * 1.5.pow(level).toLong())
+            when {
+                resetTimer -> resetTimer = false
+                moveUpPressed -> delay(MOVE_UP_ITERATION_DELAY)
+                else -> delay(calculateDelayMillis())
             }
         }
     }
+
+    private fun calculateDelayMillis()
+    : Long = max(
+            ITERATION_DELAY - ITERATION_LEVEL_MULTIPLY  * 1.25.pow(level).toLong(),
+            50L
+        )
+
 
     private fun generatePiece(): Piece {
         val pieceType = generateRandomNumber(
@@ -96,13 +115,15 @@ class Game {
         nextPiece = generatePiece()
         Log.i("Game","New Piece Generated")
         Log.i("Game","Is Game Over : ${!isRunning}")
+        if(moveUpPressed) { moveUpPressed = false }
+
         updateUi.value = updateUi.value.copy(
             previewLocation = getNextPiecePreviewLocation(),
             isGameOver = !isRunning
         )
     }
 
-    private fun isGameOver(): Boolean {
+    private fun checkGameOver(): Boolean {
         currentPiece.location.forEach {
             if(it.y < 0) return true
         }
@@ -111,7 +132,7 @@ class Game {
 
     private suspend fun move() {
         if(currentPiece.hitAnotherPiece(tiles)) {
-            isRunning = !isGameOver()
+            isRunning = !checkGameOver()
             val completedLines = gameScoreHelper.getCompletedLines(currentPiece.location)
             calculateScore(completedLines.size)
             if(completedLines.isEmpty()) {
@@ -175,7 +196,7 @@ class Game {
         if(completedLineNumber == 0) return
         val totalEarnedScore = scoreForEachCompletedLine * (completedLineNumber * scoreStrikeMultiplier.pow(completedLineNumber))
         score += totalEarnedScore.toInt()
-        level = score / 20 + 1
+        level = score / SCORE_MULTIPLIER + 1
 
         updateUi.value = updateUi.value.copy(
             score = "Score: $score",
@@ -188,6 +209,11 @@ class Game {
         move()
         updateUi.value = updateUi.value.copy(tiles = getTilesAsList())
         resetTimer = true
+    }
+
+    suspend fun moveUp() {
+        moveUpPressed = true
+        move()
     }
 
     fun getTilesAsList(): List<List<Boolean>> {

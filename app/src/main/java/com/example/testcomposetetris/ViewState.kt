@@ -9,6 +9,8 @@ data class ViewState(
     val currentTime: String,
     val score: String,
     val level: String,
-    val gameOver: Boolean
+    val gameOver: Boolean,
+    val gameOverScore: String,
+    val gameOverLevel: String
 ) {
 }

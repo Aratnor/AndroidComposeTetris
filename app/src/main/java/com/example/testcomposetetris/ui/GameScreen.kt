@@ -40,6 +40,13 @@ fun GameScreen() {
             }
             NextPieceLayout(viewModel = viewModel)
         }
+
+        RotateButton(
+            modifier = Modifier.padding(),
+            text = stringResource(R.string.up_button_text)) {
+            viewModel.moveUp()
+        }
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
