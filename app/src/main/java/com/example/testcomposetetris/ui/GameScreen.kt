@@ -2,6 +2,7 @@ package com.example.testcomposetetris.ui
 
 import android.util.Log
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Text
@@ -50,6 +51,13 @@ fun GameScreen() {
                         }
                         Log.i("Drag Amount","X : ${dragAmount.x} Y: ${dragAmount.y}")
                     }
+                }
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onDoubleTap = {
+                            viewModel.rotate()
+                        }
+                    )
                 },
             horizontalArrangement  =  Arrangement.Start,
             verticalAlignment = Alignment.Top
@@ -64,47 +72,6 @@ fun GameScreen() {
                 Board(viewModel = viewModel)
             }
             NextPieceLayout(viewModel = viewModel)
-        }
-
-        RotateButton(
-            modifier = Modifier.padding(),
-            text = stringResource(R.string.up_button_text)) {
-            viewModel.moveUp()
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            RotateButton(
-                modifier = Modifier.padding(end = 40.dp),
-                text = stringResource(R.string.left_button_text)
-            ) {
-                viewModel.moveLeft()
-            }
-
-            RotateButton(
-                modifier = Modifier.padding(start = 40.dp),
-                text = stringResource(R.string.right_button_text)
-            ) {
-                viewModel.moveRight()
-            }
-        }
-
-        RotateButton(
-            modifier = Modifier.padding(bottom = 20.dp),
-            text = stringResource(R.string.down_button_text)
-        ) {
-            viewModel.moveDown()
-        }
-
-
-        Button(
-            onClick = {
-                viewModel.rotate()
-            }
-        ) {
-            Text(stringResource(R.string.rotate_button_text))
         }
     }
 
