@@ -34,7 +34,7 @@ class MainViewModel: ViewModel() {
     lateinit var timerJob: Job
 
 
-    fun start() {
+    private fun start() {
         viewModelScope.launch {
             game.startGame()
 
@@ -87,6 +87,11 @@ class MainViewModel: ViewModel() {
     private fun updateUi() {
         val list = game.getTilesAsList()
         _viewState.value = _viewState.value.copy(tiles = list)
+    }
+
+    fun startGame() {
+        start()
+        startTimer()
     }
 
     fun rotate() {

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -16,6 +17,14 @@ import com.example.testcomposetetris.R
 @Composable
 fun GameScreen() {
     val viewModel: MainViewModel = viewModel()
+
+    LaunchedEffect(key1 = 2) {
+        viewModel.collect()
+    }
+
+    LaunchedEffect(key1 = 1) {
+        viewModel.startGame()
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),

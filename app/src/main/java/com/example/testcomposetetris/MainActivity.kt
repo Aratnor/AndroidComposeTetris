@@ -21,8 +21,13 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.testcomposetetris.ui.Board
 import com.example.testcomposetetris.ui.GameScreen
+import com.example.testcomposetetris.ui.HomeScreen
 import com.example.testcomposetetris.ui.theme.TestComposeTetrisTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -34,26 +39,26 @@ class MainActivity : ComponentActivity() {
             TestComposeTetrisTheme {
                 // A surface container using the 'background' color from the theme
                 val viewModel: MainViewModel = viewModel()
-                LaunchedEffect(key1 = Unit) {
-                    viewModel.collect()
-                }
-                viewModel.start()
-                viewModel.startTimer()
-                GameScreen()
+                SetNavHost(navController = rememberNavController(),viewModel)
             }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    TestComposeTetrisTheme {
-        Greeting("Android")
+fun SetNavHost(
+    navController: NavHostController,
+    viewModel: MainViewModel
+) {
+    NavHost(
+        navController = navController,
+        startDestination = "home"
+    ) {
+        composable("home") {
+            HomeScreen(navController)
+        }
+        composable("game") {
+            GameScreen()
+        }
     }
 }
