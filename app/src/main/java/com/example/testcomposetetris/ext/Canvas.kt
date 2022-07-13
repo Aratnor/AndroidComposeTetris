@@ -1,6 +1,5 @@
 package com.example.testcomposetetris.ext
 
-import android.graphics.Color
 import android.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.nativeCanvas
