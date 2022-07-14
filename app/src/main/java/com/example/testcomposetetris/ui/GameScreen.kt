@@ -46,8 +46,8 @@ fun GameScreen() {
                         when {
                             dragAmount.y > 20 -> viewModel.moveDown()
                             dragAmount.y < -20 -> viewModel.moveUp()
-                            dragAmount.x > 20 -> viewModel.moveRight()
-                            dragAmount.x < -20 -> viewModel.moveLeft()
+                            dragAmount.x > 12 -> viewModel.moveRight()
+                            dragAmount.x < -12 -> viewModel.moveLeft()
                         }
                         Log.i("Drag Amount","X : ${dragAmount.x} Y: ${dragAmount.y}")
                     }
@@ -66,12 +66,12 @@ fun GameScreen() {
                 modifier = Modifier
                     .padding(
                         top = 40.dp
-                    ),
+                    )
+                    .fillMaxSize(),
                 contentAlignment = Alignment.TopStart
             ) {
                 Board(viewModel = viewModel)
             }
-            NextPieceLayout(viewModel = viewModel)
         }
     }
 

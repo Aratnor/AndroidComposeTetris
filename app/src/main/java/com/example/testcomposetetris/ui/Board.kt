@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.example.testcomposetetris.MainViewModel
 import com.example.testcomposetetris.ViewState
 import com.example.testcomposetetris.ext.drawText
+import com.example.testcomposetetris.orZero
 
 @Composable
 fun Board(viewModel: MainViewModel) {
@@ -26,14 +27,34 @@ fun Board(viewModel: MainViewModel) {
     Canvas(
         modifier = Modifier
             .padding(start = 8.dp)
+            .fillMaxSize()
 
     ) {
+        if(viewState.tiles.isEmpty()) return@Canvas
 
+
+        Log.i("Board :","Width ${size.width} Height $size")
+
+        val padding = 12F
+
+        val nextPieceLayoutMaxX = 250
+        val nextPieceLayoutMaxY = 250
+
+        val paddingForTotalWidth = (viewState.tiles[0].size - 1) * padding
+        val rectWidthByLayoutWidth = (size.width - paddingForTotalWidth - nextPieceLayoutMaxX) / viewState.tiles[0].size
+        val totalTilesHeight = (rectWidthByLayoutWidth + padding) * viewState.tiles.size
+        val widthOfRectangle = if(totalTilesHeight > size.height - nextPieceLayoutMaxY) {
+            val paddingForTotalHeight = (viewState.tiles.size - 1) * padding
+            val rectWidthByLayoutHeight = (size.height - paddingForTotalHeight - nextPieceLayoutMaxY) / viewState.tiles.size
+            rectWidthByLayoutHeight
+        } else {
+            rectWidthByLayoutWidth
+        }
 
         if(viewState.gameOver) {
             drawGameOverLayout(viewState)
         } else {
-            drawBoard(viewState)
+            drawBoard(viewState,widthOfRectangle,padding)
         }
     }
 }
@@ -49,7 +70,7 @@ private fun DrawScope.drawGameOverLayout(
         Paint().apply {
             textSize = 72F
             color = Color.BLACK
-            textAlign = Paint.Align.CENTER
+            textAlign = Paint.Align.LEFT
         }
     )
 
@@ -60,7 +81,7 @@ private fun DrawScope.drawGameOverLayout(
         Paint().apply {
             textSize =52F
             color = Color.BLACK
-            textAlign = Paint.Align.CENTER
+            textAlign = Paint.Align.LEFT
         }
     )
 
@@ -71,27 +92,16 @@ private fun DrawScope.drawGameOverLayout(
         Paint().apply {
             textSize =52F
             color = Color.BLACK
-            textAlign = Paint.Align.CENTER
+            textAlign = Paint.Align.LEFT
         }
     )
 }
 
-private fun DrawScope.drawBorder(
-) {
-    drawRect(
-        androidx.compose.ui.graphics.Color.Black,
-        Offset(0F,0F),
-        Size(size.width,size.height),
-        1F,
-        Stroke(2F),
-    )
-}
-
 private fun DrawScope.drawBoard(
-    viewState: ViewState
+    viewState: ViewState,
+    widthOfRectangle: Float,
+    padding: Float
 ) {
-    val padding = 12
-    val widthOfRectangle = 45F
 
     viewState.tiles.forEachIndexed { positionY, row ->
         row.forEachIndexed { positionX, isOccupied ->
@@ -100,4 +110,7 @@ private fun DrawScope.drawBoard(
             tile(Offset(startPositionX,startPositionY),widthOfRectangle,isOccupied)
         }
     }
+
+    val posXOffSet = viewState.tiles.firstOrNull()?.size.orZero() * (padding + widthOfRectangle) + 40
+    nextPieceLayout(viewState,widthOfRectangle,posXOffSet)
 }
