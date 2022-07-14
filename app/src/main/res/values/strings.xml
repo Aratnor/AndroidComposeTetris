@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">TestComposeTetris</string>
+    <string name="game_over_btn_text">Start New Game</string>
 </resources>

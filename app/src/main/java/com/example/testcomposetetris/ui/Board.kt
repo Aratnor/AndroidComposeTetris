@@ -1,27 +1,24 @@
 package com.example.testcomposetetris.ui
 
-import android.graphics.Color
-import android.graphics.Paint
 import android.util.Log
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.input.pointer.consumeAllChanges
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.example.testcomposetetris.MainViewModel
+import com.example.testcomposetetris.NavDestination
 import com.example.testcomposetetris.ViewState
-import com.example.testcomposetetris.ext.drawText
 import com.example.testcomposetetris.orZero
 
 @Composable
-fun Board(viewModel: MainViewModel) {
+fun Board(
+    navController: NavHostController,
+    viewModel: MainViewModel
+) {
     val viewState = viewModel.viewState.value
 
     Canvas(
@@ -31,7 +28,6 @@ fun Board(viewModel: MainViewModel) {
 
     ) {
         if(viewState.tiles.isEmpty()) return@Canvas
-
 
         Log.i("Board :","Width ${size.width} Height $size")
 
@@ -51,50 +47,12 @@ fun Board(viewModel: MainViewModel) {
             rectWidthByLayoutWidth
         }
 
-        if(viewState.gameOver) {
-            drawGameOverLayout(viewState)
+        if(viewState.gameOver && navController.currentBackStackEntry?.destination?.route != NavDestination.GAME_OVER) {
+            navController.navigate(NavDestination.GAME_OVER)
         } else {
             drawBoard(viewState,widthOfRectangle,padding)
         }
     }
-}
-
-private fun DrawScope.drawGameOverLayout(
-    viewState: ViewState
-) {
-
-    drawText(
-        "GAME OVER",
-        viewState.tiles[0].size.div(2) * (12 + 40F),
-        viewState.tiles.size.div(2) * (12 + 40F),
-        Paint().apply {
-            textSize = 72F
-            color = Color.BLACK
-            textAlign = Paint.Align.LEFT
-        }
-    )
-
-    drawText(
-        viewState.gameOverScore,
-        viewState.tiles[0].size.div(2) * (12 + 40F),
-        viewState.tiles.size.div(2) * (12 + 40F) + 80,
-        Paint().apply {
-            textSize =52F
-            color = Color.BLACK
-            textAlign = Paint.Align.LEFT
-        }
-    )
-
-    drawText(
-        viewState.gameOverLevel,
-        viewState.tiles[0].size.div(2) * (12 + 40F),
-        viewState.tiles.size.div(2) * (12 + 40F) + 160,
-        Paint().apply {
-            textSize =52F
-            color = Color.BLACK
-            textAlign = Paint.Align.LEFT
-        }
-    )
 }
 
 private fun DrawScope.drawBoard(

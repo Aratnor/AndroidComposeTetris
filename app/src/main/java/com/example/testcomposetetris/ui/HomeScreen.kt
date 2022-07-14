@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import com.example.testcomposetetris.NavDestination
 
 @Composable
 fun HomeScreen(
@@ -21,7 +22,7 @@ fun HomeScreen(
     ) {
         Button(
             onClick = {
-                navController.navigate("game")
+                navController.navigate(NavDestination.GAME)
             }
         ) {
             Text("Start Game")

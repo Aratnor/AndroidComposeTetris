@@ -53,13 +53,6 @@ class MainViewModel: ViewModel() {
                 val secondAsString = second.convertToRemainingSecond()
                 if(game.isGameOver()) {
                     timerJob.cancel()
-                    _viewState.value = _viewState.value.copy(
-                        currentTime = "",
-                        score = "",
-                        level = "",
-                        gameOverScore = "SCORE : ${game.getScore()}",
-                        gameOverLevel = "LEVEL : ${game.getLevel()}"
-                    )
                     return@collectLatest
                 }
 
@@ -78,6 +71,8 @@ class MainViewModel: ViewModel() {
                 tiles = it.tiles,
                 nextPiecePreview = it.previewLocation,
                 score = it.score,
+                gameOverScore = "SCORE : ${game.getScore()}",
+                gameOverLevel = "LEVEL : ${game.getLevel()}",
                 level = it.difficultyLevel,
                 gameOver = it.isGameOver
             )

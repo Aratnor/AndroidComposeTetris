@@ -4,10 +4,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.testcomposetetris.ui.GameOverScreen
 import com.example.testcomposetetris.ui.GameScreen
 import com.example.testcomposetetris.ui.HomeScreen
 import com.example.testcomposetetris.ui.theme.TestComposeTetrisTheme
@@ -18,7 +20,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             TestComposeTetrisTheme {
                 // A surface container using the 'background' color from the theme
-                SetNavHost(navController = rememberNavController())
+                SetNavHost(navController = rememberNavController(), viewModel())
             }
         }
     }
@@ -26,17 +28,21 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun SetNavHost(
-    navController: NavHostController
+    navController: NavHostController,
+    viewModel: MainViewModel
 ) {
     NavHost(
         navController = navController,
-        startDestination = "home"
+        startDestination = NavDestination.HOME
     ) {
-        composable("home") {
+        composable(NavDestination.HOME) {
             HomeScreen(navController)
         }
-        composable("game") {
-            GameScreen()
+        composable(NavDestination.GAME) {
+            GameScreen(navController)
+        }
+        composable(NavDestination.GAME_OVER) {
+            GameOverScreen(viewModel,navController)
         }
     }
 }
