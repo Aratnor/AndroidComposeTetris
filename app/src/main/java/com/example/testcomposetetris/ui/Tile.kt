@@ -1,5 +1,6 @@
 package com.example.testcomposetetris.ui
 
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -22,33 +23,32 @@ fun DrawScope.tile(
         0.3F
     }
 
-    tile(topLeftPosition,width,color,alpha)
+    tile(topLeftPosition,width,color,alpha,isNotEmpty)
 }
+
 
 fun DrawScope.tile(
     topLeftPosition: Offset,
     width: Float,
     color: Color = Color.Black,
-    alpha: Float = 1F
+    alpha: Float = 1F,
+    isRounded: Boolean
 ) {
-    drawRect(
-        color,
-        topLeftPosition,
-        Size(width,width),
-        alpha,
-        Stroke(width = 2F)
-    )
-    val innerOffset = 8
-    val innerTopLeftPosition = Offset(
-        topLeftPosition.x + innerOffset,
-        topLeftPosition.y + innerOffset
-    )
-    val innerWidth = width - 2 * innerOffset
-    drawRect(
-        color,
-        innerTopLeftPosition,
-        Size(innerWidth,innerWidth),
-        alpha,
-        Fill
-    )
+    if(isRounded) {
+        drawRoundRect(
+            color,
+            topLeftPosition,Size(width,width),
+            CornerRadius(12F,12F),
+            Fill,
+            alpha
+        )
+    } else {
+        drawRect(
+            color,
+            topLeftPosition,
+            Size(width,width),
+            alpha,
+            Fill
+        )
+    }
 }

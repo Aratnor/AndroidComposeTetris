@@ -6,9 +6,11 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.testcomposetetris.ui.GameOverScreen
 import com.example.testcomposetetris.ui.GameScreen
 import com.example.testcomposetetris.ui.HomeScreen
@@ -20,7 +22,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             TestComposeTetrisTheme {
                 // A surface container using the 'background' color from the theme
-                SetNavHost(navController = rememberNavController(), viewModel())
+                SetNavHost(navController = rememberNavController())
             }
         }
     }
@@ -28,9 +30,9 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun SetNavHost(
-    navController: NavHostController,
-    viewModel: MainViewModel
+    navController: NavHostController
 ) {
+    val viewModel: MainViewModel = viewModel()
     NavHost(
         navController = navController,
         startDestination = NavDestination.HOME
@@ -41,8 +43,14 @@ fun SetNavHost(
         composable(NavDestination.GAME) {
             GameScreen(navController)
         }
-        composable(NavDestination.GAME_OVER) {
-            GameOverScreen(viewModel,navController)
+        composable(
+            NavDestination.GAME_OVER
+        ) {
+            GameOverScreen(
+                navController,
+                it.arguments?.getString("score").orEmpty(),
+                it.arguments?.getString("level").orEmpty()
+            )
         }
     }
 }

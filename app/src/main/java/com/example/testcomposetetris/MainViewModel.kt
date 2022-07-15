@@ -17,7 +17,11 @@ class MainViewModel: ViewModel() {
 
     private val _viewState: MutableState<ViewState> = mutableStateOf(
         ViewState(
-            emptyList(),
+            List(24) {
+                   List(12) {
+                       false
+                   }
+            },
             emptyList(),
             "00:00",
             "",
@@ -33,6 +37,11 @@ class MainViewModel: ViewModel() {
 
     lateinit var timerJob: Job
 
+    var rectangleWidth = -1F
+
+    var gameOverScore = "-1"
+
+    var gameOverLevel = "-1"
 
     private fun start() {
         viewModelScope.launch {
@@ -41,7 +50,7 @@ class MainViewModel: ViewModel() {
         }
     }
 
-    fun startTimer() {
+    private fun startTimer() {
         timerJob = viewModelScope.launch {
             val flow = (0..Int.MAX_VALUE)
                 .asSequence()

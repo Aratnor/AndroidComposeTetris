@@ -19,12 +19,10 @@ import com.example.testcomposetetris.R
 
 @Composable
 fun GameOverScreen(
-    viewModel: MainViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    score: String,
+    level: String
 ) {
-    LaunchedEffect(key1 = Unit) {
-        viewModel.collect()
-    }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -34,10 +32,10 @@ fun GameOverScreen(
         Text("GAME OVER")
         Text(
             modifier = Modifier.padding(top = 8.dp),
-            text = viewModel.viewState.value.gameOverScore)
+            text = score)
         Text(
             modifier = Modifier.padding(top = 8.dp),
-            text = viewModel.viewState.value.gameOverLevel)
+            text = level)
         Button(onClick = {
             navController.navigate(NavDestination.GAME) {
                 popUpTo(NavDestination.HOME)

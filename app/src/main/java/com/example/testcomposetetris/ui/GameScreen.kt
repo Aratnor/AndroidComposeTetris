@@ -40,10 +40,10 @@ fun GameScreen(navController: NavHostController) {
                     detectDragGestures { change, dragAmount ->
                         change.consumeAllChanges()
                         when {
-                            dragAmount.y > 12 -> viewModel.moveDown()
-                            dragAmount.y < -35 -> viewModel.moveUp()
-                            dragAmount.x > 6 -> viewModel.moveRight()
-                            dragAmount.x < -6 -> viewModel.moveLeft()
+                            dragAmount.y > 12-> viewModel.moveDown()
+                            dragAmount.y < -35  -> viewModel.moveUp()
+                            dragAmount.x > 24  -> viewModel.moveRight()
+                            dragAmount.x < -24 -> viewModel.moveLeft()
                         }
                         Log.i("Drag Amount","X : ${dragAmount.x} Y: ${dragAmount.y}")
                     }
