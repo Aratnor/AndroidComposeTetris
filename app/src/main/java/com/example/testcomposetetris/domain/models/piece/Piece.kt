@@ -7,6 +7,8 @@ abstract class Piece {
     abstract val location: Array<Position>
     abstract val previousLocation: Array<Position>
     abstract val previewLocation: Array<Position>
+    abstract val destinationLocation: Array<Position>
+    var isDestinationLocationChanged = true
     abstract val posXLimit: Int
     abstract val posYLimit: Int
     abstract fun move()
@@ -43,6 +45,35 @@ abstract class Piece {
             previousLocation[index] = Position(x = position.x,y = position.y)
         }
         Log.i("Piece",previousLocation.toString())
+    }
+
+    fun calculateDestinationLoc(
+        tiles: Array<Array<Boolean>>
+    ) {
+        if(isDestinationLocationChanged) {
+            isDestinationLocationChanged = false
+            location.forEachIndexed { index, position ->
+                destinationLocation[index] = position
+            }
+            var canMove = true
+            while(canMove) {
+                destinationLocation.forEach { piece ->
+                    if(destinationLocation.firstOrNull { it.y == piece.y + 1 && it.x == piece.x } != null ) return@forEach
+                    if(location.firstOrNull { it.y == piece.y + 1 && it.x == piece.x } != null) return@forEach
+                    if(piece.y + 1 >= tiles.size) {
+                        canMove = false
+                        return
+                    }
+                    if(tiles[piece.y + 1][piece.x]) {
+                        canMove = false
+                        return
+                    }
+                }
+                destinationLocation.forEachIndexed { index, position ->
+                    destinationLocation[index] = position.copy(y = position.y.inc())
+                }
+            }
+        }
     }
 
     protected fun canMoveToNextTiles(

@@ -26,6 +26,13 @@ class SquarePiece(
         Position(1, 1)
     )
 
+    override val destinationLocation: Array<Position> = arrayOf(
+        Position(0,-9),
+        Position(0,-9),
+        Position(0,-9),
+        Position(0,-9)
+    )
+
     private fun initializeFirstMovement() {
         var randomXPosition = generateRandomNumber()
         randomXPosition = when {

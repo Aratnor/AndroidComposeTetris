@@ -33,6 +33,13 @@ class IPiece(
         Position(1,3)
     )
 
+    override val destinationLocation: Array<Position> = arrayOf(
+        Position(0,-9),
+        Position(0,-9),
+        Position(0,-9),
+        Position(0,-9)
+    )
+
     override fun moveLeft(
         tiles: Array<Array<Boolean>>
     ) {

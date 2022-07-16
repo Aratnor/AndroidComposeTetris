@@ -29,6 +29,13 @@ class ReverseZPiece(
             Position(2, 0)
         )
 
+    override val destinationLocation: Array<Position> = arrayOf(
+        Position(0,-9),
+        Position(0,-9),
+        Position(0,-9),
+        Position(0,-9)
+    )
+
     var currentRotation: Rotation = Rotation.LEFT
 
     override fun move() {

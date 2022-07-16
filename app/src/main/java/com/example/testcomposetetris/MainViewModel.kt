@@ -23,6 +23,7 @@ class MainViewModel: ViewModel() {
                    }
             },
             emptyList(),
+            emptyList(),
             "00:00",
             "",
             "Level 1",
@@ -38,10 +39,6 @@ class MainViewModel: ViewModel() {
     lateinit var timerJob: Job
 
     var rectangleWidth = -1F
-
-    var gameOverScore = "-1"
-
-    var gameOverLevel = "-1"
 
     private fun start() {
         viewModelScope.launch {
@@ -79,6 +76,7 @@ class MainViewModel: ViewModel() {
             _viewState.value = _viewState.value.copy(
                 tiles = it.tiles,
                 nextPiecePreview = it.previewLocation,
+                pieceFinalLocation = it.pieceDestinationLocation,
                 score = it.score,
                 gameOverScore = "SCORE : ${game.getScore()}",
                 gameOverLevel = "LEVEL : ${game.getLevel()}",
@@ -90,7 +88,10 @@ class MainViewModel: ViewModel() {
 
     private fun updateUi() {
         val list = game.getTilesAsList()
-        _viewState.value = _viewState.value.copy(tiles = list)
+        _viewState.value = _viewState.value.copy(
+            tiles = list,
+            pieceFinalLocation = game.getPieceDestinationLocation()
+        )
     }
 
     fun startGame() {

@@ -31,6 +31,13 @@ class ReverseLPiece(
             Position(2, 1)
         )
 
+    override val destinationLocation: Array<Position> = arrayOf(
+        Position(0,-9),
+        Position(0,-9),
+        Position(0,-9),
+        Position(0,-9)
+    )
+
     override fun move() {
         if(location[0].y == -9) {
             initializeRotationRight()

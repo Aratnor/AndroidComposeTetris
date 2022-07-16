@@ -28,6 +28,13 @@ class ZPiece(
         Position(2,1)
     )
 
+    override val destinationLocation: Array<Position> = arrayOf(
+        Position(0,-9),
+        Position(0,-9),
+        Position(0,-9),
+        Position(0,-9)
+    )
+
     var currentRotation: Rotation = Rotation.LEFT
 
     override fun move() {

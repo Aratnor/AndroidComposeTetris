@@ -12,19 +12,20 @@ import androidx.compose.ui.graphics.toArgb
 fun DrawScope.tile(
     topLeftPosition: Offset,
     width: Float,
-    isNotEmpty: Boolean = false) {
-    val color = if(isNotEmpty) {
-        Color.Black
-    } else {
-        Color.Gray
+    isNotEmpty: Boolean = false,
+    isShadowed: Boolean = false) {
+    val color = when {
+        isNotEmpty -> Color.Black
+        isShadowed -> Color.DarkGray
+        else -> Color.Gray
     }
-    val alpha = if(isNotEmpty) {
-        1F
-    } else {
-        0.3F
+    val alpha = when {
+        isNotEmpty -> 1F
+        isShadowed -> 0.5F
+        else -> 0.3F
     }
 
-    tile(topLeftPosition,width,color,alpha,isNotEmpty)
+    tile(topLeftPosition,width,color,alpha,isNotEmpty,isShadowed)
 }
 
 
@@ -33,13 +34,16 @@ fun DrawScope.tile(
     width: Float,
     color: Color = Color.Black,
     alpha: Float = 1F,
-    isNotEmpty: Boolean
+    isNotEmpty: Boolean,
+    isShadowed: Boolean
 ) {
     if(isNotEmpty) {
-        drawShadowBehindTile(
-            topLeftPosition = topLeftPosition,
-            width = width
-        )
+        if(!isShadowed){
+            drawShadowBehindTile(
+                topLeftPosition = topLeftPosition,
+                width = width
+            )
+        }
         drawRoundRect(
             color,
             topLeftPosition,Size(width,width),

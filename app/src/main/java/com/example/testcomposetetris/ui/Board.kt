@@ -57,9 +57,12 @@ private fun DrawScope.drawBoard(
 
     viewState.tiles.forEachIndexed { positionY, row ->
         row.forEachIndexed { positionX, isOccupied ->
+            val isShadowed = viewState
+                .pieceFinalLocation
+                .firstOrNull { it.x == positionX && it.y == positionY} != null
             val startPositionX = (positionX) * (padding + widthOfRectangle) + 5
             val startPositionY = (positionY) * (padding + widthOfRectangle) + 2
-            tile(Offset(startPositionX,startPositionY),widthOfRectangle,isOccupied)
+            tile(Offset(startPositionX,startPositionY),widthOfRectangle,isOccupied,isShadowed)
         }
     }
 

@@ -1,7 +1,6 @@
 package com.example.testcomposetetris.domain
 
 import android.util.Log
-import android.util.TimeUtils
 import com.example.testcomposetetris.domain.models.Position
 import com.example.testcomposetetris.domain.models.piece.*
 import com.example.testcomposetetris.util.SoundType
@@ -9,7 +8,6 @@ import com.example.testcomposetetris.util.SoundUtil
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.lang.Long.max
-import java.lang.Long.min
 import kotlin.math.pow
 
 const val ITERATION_DELAY = 1000L
@@ -42,6 +40,7 @@ class Game {
     val updateUi: MutableStateFlow<GameState> = MutableStateFlow(GameState(
         getTilesAsList(),
         emptyList(),
+        emptyList(),
         "Score 0",
         "Level 1",
         false
@@ -63,12 +62,18 @@ class Game {
 
     suspend fun startGame() {
         isRunning = true
-        updateUi.value = updateUi.value.copy(previewLocation = getNextPiecePreviewLocation())
+        updateUi.value = updateUi.value.copy(
+            previewLocation = getNextPiecePreviewLocation(),
+            pieceDestinationLocation = getPieceDestinationLocation()
+        )
         while(isRunning) {
             if(!isWaiting) {
                 move()
             }
-            updateUi.value = updateUi.value.copy(tiles = getTilesAsList())
+            updateUi.value = updateUi.value.copy(
+                tiles = getTilesAsList(),
+                pieceDestinationLocation = getPieceDestinationLocation()
+            )
             when {
                 resetTimer -> resetTimer = false
                 moveUpPressed -> delay(MOVE_UP_ITERATION_DELAY)
@@ -154,6 +159,8 @@ class Game {
             }
         }
         currentPiece.move()
+        currentPiece.calculateDestinationLoc(tiles)
+
 
         removePreviousPieceLocation()
         updateTilesWithCurrentPieceLocation()
@@ -177,15 +184,20 @@ class Game {
     fun moveLeft() {
         if(isWaiting) return
         currentPiece.moveLeft(tiles)
+        currentPiece.isDestinationLocationChanged = true
         removePreviousPieceLocation()
         updateTilesWithCurrentPieceLocation()
+        currentPiece.calculateDestinationLoc(tiles)
     }
 
     fun moveRight() {
         if(isWaiting) return
         currentPiece.moveRight(tiles)
+        currentPiece.isDestinationLocationChanged = true
+
         removePreviousPieceLocation()
         updateTilesWithCurrentPieceLocation()
+        currentPiece.calculateDestinationLoc(tiles)
     }
 
     fun rotate() {
@@ -194,7 +206,13 @@ class Game {
             currentPiece.rotate()
             removePreviousPieceLocation()
             updateTilesWithCurrentPieceLocation()
-            updateUi.value = updateUi.value.copy(tiles = getTilesAsList())
+            currentPiece.isDestinationLocationChanged = true
+
+            currentPiece.calculateDestinationLoc(tiles)
+            updateUi.value = updateUi.value.copy(
+                tiles = getTilesAsList(),
+                pieceDestinationLocation = getPieceDestinationLocation()
+            )
         }
     }
 
@@ -239,8 +257,11 @@ class Game {
         return mutableList
     }
 
-    fun getNextPiecePreviewLocation(): List<Position> {
+    private fun getNextPiecePreviewLocation(): List<Position> {
         return  nextPiece.previewLocation.toList()
     }
 
+    fun getPieceDestinationLocation(): List<Position> {
+        return currentPiece.destinationLocation.toList()
+    }
 }
