@@ -8,8 +8,10 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import com.example.testcomposetetris.NavDestination
+import com.example.testcomposetetris.ext.coloredShadow
 
 @Composable
 fun HomeScreen(
@@ -21,6 +23,7 @@ fun HomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(
+            modifier = Modifier.coloredShadow(Color.Black),
             onClick = {
                 navController.navigate(NavDestination.GAME)
             }

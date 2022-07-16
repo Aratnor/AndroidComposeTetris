@@ -38,14 +38,14 @@ fun GameScreen(navController: NavHostController) {
                 .fillMaxWidth()
                 .pointerInput(Unit) {
                     detectDragGestures { change, dragAmount ->
+                        Log.i("Drag Gesture","$dragAmount")
                         change.consumeAllChanges()
                         when {
                             dragAmount.y > 12-> viewModel.moveDown()
                             dragAmount.y < -35  -> viewModel.moveUp()
-                            dragAmount.x > 24  -> viewModel.moveRight()
-                            dragAmount.x < -24 -> viewModel.moveLeft()
+                            dragAmount.x > 8  -> viewModel.moveRight()
+                            dragAmount.x < -8 -> viewModel.moveLeft()
                         }
-                        Log.i("Drag Amount","X : ${dragAmount.x} Y: ${dragAmount.y}")
                     }
                 }
                 .pointerInput(Unit) {
