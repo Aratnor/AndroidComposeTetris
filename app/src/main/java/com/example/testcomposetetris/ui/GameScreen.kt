@@ -14,6 +14,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.testcomposetetris.MainViewModel
+import com.example.testcomposetetris.util.SoundType
+import com.example.testcomposetetris.util.SoundUtil
 
 @Composable
 fun GameScreen(navController: NavHostController) {
@@ -41,10 +43,22 @@ fun GameScreen(navController: NavHostController) {
                         Log.i("Drag Gesture","$dragAmount")
                         change.consumeAllChanges()
                         when {
-                            dragAmount.y > 12-> viewModel.moveDown()
-                            dragAmount.y < -35  -> viewModel.moveUp()
-                            dragAmount.x > 8  -> viewModel.moveRight()
-                            dragAmount.x < -8 -> viewModel.moveLeft()
+                            dragAmount.y > 12-> {
+                                SoundUtil.play(false, SoundType.Move)
+                                viewModel.moveDown()
+                            }
+                            dragAmount.y < -18  -> {
+                                viewModel.moveUp()
+                                SoundUtil.play(false, SoundType.Drop)
+                            }
+                            dragAmount.x > 8  -> {
+                                SoundUtil.play(false, SoundType.Move)
+                                viewModel.moveRight()
+                            }
+                            dragAmount.x < -8 -> {
+                                SoundUtil.play(false, SoundType.Move)
+                                viewModel.moveLeft()
+                            }
                         }
                     }
                 }

@@ -1,8 +1,11 @@
 package com.example.testcomposetetris.domain
 
 import android.util.Log
+import android.util.TimeUtils
 import com.example.testcomposetetris.domain.models.Position
 import com.example.testcomposetetris.domain.models.piece.*
+import com.example.testcomposetetris.util.SoundType
+import com.example.testcomposetetris.util.SoundUtil
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.lang.Long.max
@@ -49,6 +52,8 @@ class Game {
     private val scoreForEachCompletedLine = 100
 
     private val scoreStrikeMultiplier = 0.2
+
+    private var lastMovedUpTime = -1L
 
     fun isGameOver(): Boolean = !isRunning
 
@@ -97,6 +102,7 @@ class Game {
     private suspend fun removeCompletedLinesWithEffect(
     completedLines: List<Int>
     ) {
+        SoundUtil.play(false,SoundType.Clean)
         repeat(4) {
             gameScoreHelper.removeCompletedLines(completedLines)
             updateUi.value = updateUi.value.copy(tiles = getTilesAsList())
@@ -194,7 +200,7 @@ class Game {
 
     private fun calculateScore(completedLineNumber: Int) {
         if(completedLineNumber == 0) return
-        val totalEarnedScore = scoreForEachCompletedLine * (completedLineNumber * scoreStrikeMultiplier.pow(completedLineNumber))
+        val totalEarnedScore = scoreForEachCompletedLine * (completedLineNumber * (1 + scoreStrikeMultiplier).pow(completedLineNumber))
         score += totalEarnedScore.toInt()
         level = score / SCORE_MULTIPLIER + 1
 
@@ -212,8 +218,19 @@ class Game {
     }
 
     suspend fun moveUp() {
-        moveUpPressed = true
-        move()
+        if(canMoveUp()) {
+            moveUpPressed = true
+            move()
+            lastMovedUpTime = System.currentTimeMillis()
+        }
+    }
+
+    private fun canMoveUp(): Boolean {
+        if(lastMovedUpTime == -1L) return true
+
+        val currentTime = System.currentTimeMillis()
+        val timeDiff = currentTime - lastMovedUpTime
+        return timeDiff > 1000
     }
 
     fun getTilesAsList(): List<List<Boolean>> {

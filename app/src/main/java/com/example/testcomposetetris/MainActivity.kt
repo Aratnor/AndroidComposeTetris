@@ -15,6 +15,7 @@ import com.example.testcomposetetris.ui.GameOverScreen
 import com.example.testcomposetetris.ui.GameScreen
 import com.example.testcomposetetris.ui.HomeScreen
 import com.example.testcomposetetris.ui.theme.TestComposeTetrisTheme
+import com.example.testcomposetetris.util.SoundUtil
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,6 +23,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             TestComposeTetrisTheme {
                 // A surface container using the 'background' color from the theme
+                SoundUtil.init(this)
                 SetNavHost(navController = rememberNavController())
             }
         }
@@ -32,7 +34,6 @@ class MainActivity : ComponentActivity() {
 fun SetNavHost(
     navController: NavHostController
 ) {
-    val viewModel: MainViewModel = viewModel()
     NavHost(
         navController = navController,
         startDestination = NavDestination.HOME
