@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import java.lang.Long.max
 import kotlin.math.pow
 
-const val ITERATION_DELAY = 1000L
+const val ITERATION_DELAY = 800L
 const val MOVE_UP_ITERATION_DELAY = 5L
 
 const val ITERATION_LEVEL_MULTIPLY =100L
@@ -37,6 +37,8 @@ class Game {
 
     private var level: Int = 1
 
+    private var completedLines: Int = 0
+
     val updateUi: MutableStateFlow<GameState> = MutableStateFlow(GameState(
         getTilesAsList(),
         emptyList(),
@@ -47,10 +49,6 @@ class Game {
     ))
 
     private var score: Int = 0
-
-    private val scoreForEachCompletedLine = 100
-
-    private val scoreStrikeMultiplier = 0.2
 
     private var lastMovedUpTime = -1L
 
@@ -83,10 +81,7 @@ class Game {
     }
 
     private fun calculateDelayMillis()
-    : Long = max(
-            ITERATION_DELAY - ITERATION_LEVEL_MULTIPLY  * 1.25.pow(level).toLong(),
-            50L
-        )
+    : Long = ITERATION_DELAY - (level * 0.007).pow(level).toLong()
 
 
     private fun generatePiece(): Piece {
@@ -217,10 +212,19 @@ class Game {
     }
 
     private fun calculateScore(completedLineNumber: Int) {
+        completedLines += completedLineNumber
         if(completedLineNumber == 0) return
-        val totalEarnedScore = scoreForEachCompletedLine * (completedLineNumber * (1 + scoreStrikeMultiplier).pow(completedLineNumber))
-        score += totalEarnedScore.toInt()
-        level = score / SCORE_MULTIPLIER + 1
+        val earnedScore = when(completedLineNumber) {
+            1 -> 40 * level
+            2 -> 100 * level
+            3 -> 300 * level
+            else -> 1200 * level
+        }
+        if(completedLines >= 10) {
+            level++
+            completedLines -= 10
+        }
+        score += earnedScore
 
         updateUi.value = updateUi.value.copy(
             score = "Score: $score",

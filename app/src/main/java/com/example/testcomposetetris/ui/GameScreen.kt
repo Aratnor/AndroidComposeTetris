@@ -37,6 +37,7 @@ fun GameScreen(navController: NavHostController) {
     var initialDragPosY by remember { mutableStateOf(0F) }
     var currentDragPosX by remember { mutableStateOf(0F) }
     var currentDragPosY by remember { mutableStateOf(0F) }
+    var isHorizontalDragStarted by remember { mutableStateOf(false) }
     var clickTime by remember { mutableStateOf(0L) }
     var clickCount by remember { mutableStateOf(0) }
     lateinit var mVelocityTracker: VelocityTracker
@@ -77,19 +78,21 @@ fun GameScreen(navController: NavHostController) {
                             if(xDifference > viewModel.rectangleWidth || velocityX.compareTo(-1200) < 0 && velocityY.compareTo(500) < 0) {
                                 SoundUtil.play(false, SoundType.Move)
                                 viewModel.moveLeft()
+                                isHorizontalDragStarted = true
                                 currentDragPosX = it.x
                                 currentDragPosY = it.y
                                 clickCount = 0
                             } else if(xDifference < - viewModel.rectangleWidth || velocityX.compareTo(1200) > 0 && velocityY.compareTo(500) < 0) {
                                 SoundUtil.play(false, SoundType.Move)
                                 viewModel.moveRight()
+                                isHorizontalDragStarted = true
                                 currentDragPosX = it.x
                                 currentDragPosY = it.y
                                 clickCount = 0
                             } else if(
                                 yDifference > viewModel.rectangleWidth * 3 ||
-                                velocityY.compareTo(2000) > 0 &&
-                                velocityX.absoluteValue.compareTo(300) < 0
+                                velocityY.compareTo(1500) > 0 &&
+                                !isHorizontalDragStarted
                             ) {
                                 SoundUtil.play(false, SoundType.Drop)
                                 viewModel.moveUp()
@@ -97,7 +100,9 @@ fun GameScreen(navController: NavHostController) {
                                 currentDragPosY = it.y
                                 clickCount = 0
 
-                            } else if(yDifference < -viewModel.rectangleWidth * 1.4) {
+                            } else if(
+                                yDifference < -viewModel.rectangleWidth * 1.4
+                            ) {
                                 viewModel.moveDown()
                                 SoundUtil.play(false, SoundType.Move)
                                 currentDragPosX = it.x
@@ -111,7 +116,7 @@ fun GameScreen(navController: NavHostController) {
                         }
                         MotionEvent.ACTION_UP -> {
                             mVelocityTracker.recycle()
-
+                            isHorizontalDragStarted = false
                             val diff = System.currentTimeMillis() - clickTime
                             if(diff < 250){
                                 clickCount++
