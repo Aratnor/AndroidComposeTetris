@@ -35,6 +35,8 @@ fun GameScreen(navController: NavHostController) {
     }
     var initialDragPosX by remember { mutableStateOf(0F) }
     var initialDragPosY by remember { mutableStateOf(0F) }
+    var currentDragPosX by remember { mutableStateOf(0F) }
+    var currentDragPosY by remember { mutableStateOf(0F) }
     var clickTime by remember { mutableStateOf(0L) }
     var clickCount by remember { mutableStateOf(0) }
     lateinit var mVelocityTracker: VelocityTracker
@@ -54,6 +56,8 @@ fun GameScreen(navController: NavHostController) {
                         MotionEvent.ACTION_DOWN -> {
                             initialDragPosX = it.x
                             initialDragPosY = it.y
+                            currentDragPosX = it.x
+                            currentDragPosY = it.y
                             clickTime = System.currentTimeMillis()
                             mVelocityTracker = VelocityTracker.obtain()
 
@@ -62,39 +66,47 @@ fun GameScreen(navController: NavHostController) {
                             return@pointerInteropFilter true
                         }
                         MotionEvent.ACTION_MOVE -> {
-                            mVelocityTracker.addMovement(it)
-                            mVelocityTracker.computeCurrentVelocity(1000)
-                            val xDifference =initialDragPosX - it.x
-                            val yDifference = initialDragPosY - it.y
+                            val xBaseDifference = it.x - initialDragPosX
+                            val yBaseDifference = it.y - initialDragPosY
+                            val xDifference = currentDragPosX - it.x
+                            val yDifference = currentDragPosY - it.y
                             val velocityY = mVelocityTracker.getYVelocity(it.getPointerId(it.actionIndex))
                             val velocityX = mVelocityTracker.getXVelocity(it.getPointerId(it.actionIndex))
-                            Log.i("Velocity","$velocityY")
-                            if(xDifference > viewModel.rectangleWidth || velocityX.compareTo(-1800) < 0 && velocityY.compareTo(500) < 0) {
+                            Log.i("Velocity X","x $velocityX")
+                            Log.i("Velocity Y","y $velocityY")
+                            if(xDifference > viewModel.rectangleWidth || velocityX.compareTo(-1200) < 0 && velocityY.compareTo(500) < 0) {
                                 SoundUtil.play(false, SoundType.Move)
                                 viewModel.moveLeft()
-                                initialDragPosX = it.x
-                                initialDragPosY = it.y
+                                currentDragPosX = it.x
+                                currentDragPosY = it.y
                                 clickCount = 0
-                            } else if(xDifference < - viewModel.rectangleWidth || velocityX.compareTo(1800) > 0 && velocityY.compareTo(500) < 0) {
+                            } else if(xDifference < - viewModel.rectangleWidth || velocityX.compareTo(1200) > 0 && velocityY.compareTo(500) < 0) {
                                 SoundUtil.play(false, SoundType.Move)
                                 viewModel.moveRight()
-                                initialDragPosX = it.x
-                                initialDragPosY = it.y
+                                currentDragPosX = it.x
+                                currentDragPosY = it.y
                                 clickCount = 0
-                            } else if(yDifference > viewModel.rectangleWidth * 3 || velocityY.compareTo(3000) > 0) {
+                            } else if(
+                                yDifference > viewModel.rectangleWidth * 3 ||
+                                velocityY.compareTo(2000) > 0 &&
+                                velocityX.absoluteValue.compareTo(300) < 0
+                            ) {
                                 SoundUtil.play(false, SoundType.Drop)
                                 viewModel.moveUp()
-                                initialDragPosX = it.x
-                                initialDragPosY = it.y
+                                currentDragPosX = it.x
+                                currentDragPosY = it.y
                                 clickCount = 0
 
                             } else if(yDifference < -viewModel.rectangleWidth * 1.4) {
                                 viewModel.moveDown()
                                 SoundUtil.play(false, SoundType.Move)
-                                initialDragPosX = it.x
-                                initialDragPosY = it.y
+                                currentDragPosX = it.x
+                                currentDragPosY = it.y
                                 clickCount = 0
                             }
+                            it.offsetLocation(xBaseDifference,yBaseDifference)
+                            mVelocityTracker.addMovement(it)
+                            mVelocityTracker.computeCurrentVelocity(1000)
                             return@pointerInteropFilter true
                         }
                         MotionEvent.ACTION_UP -> {
