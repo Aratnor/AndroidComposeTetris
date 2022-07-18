@@ -3,6 +3,7 @@ package com.example.testcomposetetris.ui
 import android.util.Log
 import android.view.MotionEvent
 import android.view.VelocityTracker
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -12,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.*
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -49,8 +51,7 @@ fun GameScreen(navController: NavHostController) {
 
         Row(
             modifier = Modifier
-                .weight(1F)
-                .fillMaxWidth()
+                .fillMaxSize()
                 .pointerInteropFilter {
 
                     when(it.action) {
@@ -139,9 +140,6 @@ fun GameScreen(navController: NavHostController) {
         ) {
             Box(
                 modifier = Modifier
-                    .padding(
-                        top = 40.dp
-                    )
                     .fillMaxSize(),
                 contentAlignment = Alignment.TopStart
             ) {

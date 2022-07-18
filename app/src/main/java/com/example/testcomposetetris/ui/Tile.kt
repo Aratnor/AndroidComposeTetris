@@ -51,7 +51,7 @@ fun DrawScope.tile(
             Fill,
             alpha
         )
-    } else {
+    } else if(isShadowed) {
         drawRect(
             color,
             topLeftPosition,

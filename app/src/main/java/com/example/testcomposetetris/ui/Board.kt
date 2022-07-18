@@ -2,11 +2,18 @@ package com.example.testcomposetetris.ui
 
 import android.util.Log
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Fill
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.testcomposetetris.MainViewModel
@@ -24,7 +31,7 @@ fun Board(
 
     Canvas(
         modifier = Modifier
-            .padding(start = 8.dp)
+            .padding(8.dp)
             .fillMaxSize()
 
     ) {
@@ -54,14 +61,28 @@ private fun DrawScope.drawBoard(
     widthOfRectangle: Float,
     padding: Float
 ) {
+    val marginTop = 20F
+    val marginStart = 20F
+
+    val maxWidth = (padding + widthOfRectangle) * viewState.tiles[0].size + 30F
+    val maxHeight = (padding + widthOfRectangle) * viewState.tiles.size + 18
+
+    drawRoundRect(
+        Color.Black,
+        Offset(1F,5F),
+        Size(maxWidth,maxHeight),
+        CornerRadius(25F,25F),
+        Stroke(6F),
+        1F
+    )
 
     viewState.tiles.forEachIndexed { positionY, row ->
         row.forEachIndexed { positionX, isOccupied ->
             val isShadowed = viewState
                 .pieceFinalLocation
                 .firstOrNull { it.x == positionX && it.y == positionY} != null
-            val startPositionX = (positionX) * (padding + widthOfRectangle) + 5
-            val startPositionY = (positionY) * (padding + widthOfRectangle) + 2
+            val startPositionX = (positionX) * (padding + widthOfRectangle) + marginStart
+            val startPositionY = (positionY) * (padding + widthOfRectangle) + marginTop
             tile(Offset(startPositionX,startPositionY),widthOfRectangle,isOccupied,isShadowed)
         }
     }
