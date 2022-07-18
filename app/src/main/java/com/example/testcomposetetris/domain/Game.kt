@@ -12,9 +12,6 @@ import kotlin.math.pow
 
 const val ITERATION_DELAY = 800L
 const val MOVE_UP_ITERATION_DELAY = 5L
-
-const val ITERATION_LEVEL_MULTIPLY =100L
-const val SCORE_MULTIPLIER = 100
 class Game {
     private var isRunning = false
     var resetTimer = false
@@ -105,15 +102,24 @@ class Game {
         SoundUtil.play(false,SoundType.Clean)
         repeat(4) {
             gameScoreHelper.removeCompletedLines(completedLines)
-            updateUi.value = updateUi.value.copy(tiles = getTilesAsList())
+            updateUi.value = updateUi.value.copy(
+                tiles = getTilesAsList(),
+                pieceDestinationLocation = emptyList()
+            )
             delay(100)
             gameScoreHelper.fillCompletedLines(completedLines)
-            updateUi.value = updateUi.value.copy(tiles = getTilesAsList())
+            updateUi.value = updateUi.value.copy(
+                tiles = getTilesAsList(),
+                pieceDestinationLocation = emptyList()
+            )
             delay(100)
         }
         delay(100)
         gameScoreHelper.removeCompletedLines(completedLines)
-        updateUi.value = updateUi.value.copy(tiles = getTilesAsList())
+        updateUi.value = updateUi.value.copy(
+            tiles = getTilesAsList(),
+            pieceDestinationLocation = emptyList()
+        )
     }
 
     private fun generateNewPiece() {

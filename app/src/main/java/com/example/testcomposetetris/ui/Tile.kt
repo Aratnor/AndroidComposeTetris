@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Fill
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.toArgb
 
 fun DrawScope.tile(
@@ -16,12 +17,12 @@ fun DrawScope.tile(
     isShadowed: Boolean = false) {
     val color = when {
         isNotEmpty -> Color.Black
-        isShadowed -> Color.DarkGray
-        else -> Color.Gray
+        isShadowed -> Color.White
+        else -> Color.White
     }
     val alpha = when {
         isNotEmpty -> 1F
-        isShadowed -> 0.5F
+        isShadowed -> 1F
         else -> 0.3F
     }
 
@@ -46,7 +47,8 @@ fun DrawScope.tile(
         }
         drawRoundRect(
             color,
-            topLeftPosition,Size(width,width),
+            topLeftPosition,
+            Size(width,width),
             CornerRadius(12F,12F),
             Fill,
             alpha
@@ -55,10 +57,10 @@ fun DrawScope.tile(
         drawRect(
             color,
             topLeftPosition,
-            Size(width,width),
+            Size(width - 12,width - 12),
             alpha,
-            Fill
-        )
+            Stroke(12F),
+            )
     }
 }
 

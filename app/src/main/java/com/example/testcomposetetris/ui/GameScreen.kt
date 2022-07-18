@@ -15,10 +15,12 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.*
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.testcomposetetris.MainViewModel
+import com.example.testcomposetetris.R
 import com.example.testcomposetetris.util.SoundType
 import com.example.testcomposetetris.util.SoundUtil
 import kotlin.math.absoluteValue
@@ -44,7 +46,9 @@ fun GameScreen(navController: NavHostController) {
     var clickCount by remember { mutableStateOf(0) }
     lateinit var mVelocityTracker: VelocityTracker
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(colorResource(id = R.color.dark_blue)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -54,7 +58,7 @@ fun GameScreen(navController: NavHostController) {
                 .fillMaxSize()
                 .pointerInteropFilter {
 
-                    when(it.action) {
+                    when (it.action) {
                         MotionEvent.ACTION_DOWN -> {
                             initialDragPosX = it.x
                             initialDragPosY = it.y
@@ -72,25 +76,33 @@ fun GameScreen(navController: NavHostController) {
                             val yBaseDifference = it.y - initialDragPosY
                             val xDifference = currentDragPosX - it.x
                             val yDifference = currentDragPosY - it.y
-                            val velocityY = mVelocityTracker.getYVelocity(it.getPointerId(it.actionIndex))
-                            val velocityX = mVelocityTracker.getXVelocity(it.getPointerId(it.actionIndex))
-                            Log.i("Velocity X","x $velocityX")
-                            Log.i("Velocity Y","y $velocityY")
-                            if(xDifference > viewModel.rectangleWidth || velocityX.compareTo(-1200) < 0 && velocityY.compareTo(500) < 0) {
+                            val velocityY =
+                                mVelocityTracker.getYVelocity(it.getPointerId(it.actionIndex))
+                            val velocityX =
+                                mVelocityTracker.getXVelocity(it.getPointerId(it.actionIndex))
+                            Log.i("Velocity X", "x $velocityX")
+                            Log.i("Velocity Y", "y $velocityY")
+                            if (xDifference > viewModel.rectangleWidth || velocityX.compareTo(-1200) < 0 && velocityY.compareTo(
+                                    500
+                                ) < 0
+                            ) {
                                 SoundUtil.play(false, SoundType.Move)
                                 viewModel.moveLeft()
                                 isHorizontalDragStarted = true
                                 currentDragPosX = it.x
                                 currentDragPosY = it.y
                                 clickCount = 0
-                            } else if(xDifference < - viewModel.rectangleWidth || velocityX.compareTo(1200) > 0 && velocityY.compareTo(500) < 0) {
+                            } else if (xDifference < -viewModel.rectangleWidth || velocityX.compareTo(
+                                    1200
+                                ) > 0 && velocityY.compareTo(500) < 0
+                            ) {
                                 SoundUtil.play(false, SoundType.Move)
                                 viewModel.moveRight()
                                 isHorizontalDragStarted = true
                                 currentDragPosX = it.x
                                 currentDragPosY = it.y
                                 clickCount = 0
-                            } else if(
+                            } else if (
                                 yDifference > viewModel.rectangleWidth * 3 ||
                                 velocityY.compareTo(1500) > 0 &&
                                 !isHorizontalDragStarted
@@ -101,7 +113,7 @@ fun GameScreen(navController: NavHostController) {
                                 currentDragPosY = it.y
                                 clickCount = 0
 
-                            } else if(
+                            } else if (
                                 yDifference < -viewModel.rectangleWidth * 1.4
                             ) {
                                 viewModel.moveDown()
@@ -110,7 +122,7 @@ fun GameScreen(navController: NavHostController) {
                                 currentDragPosY = it.y
                                 clickCount = 0
                             }
-                            it.offsetLocation(xBaseDifference,yBaseDifference)
+                            it.offsetLocation(xBaseDifference, yBaseDifference)
                             mVelocityTracker.addMovement(it)
                             mVelocityTracker.computeCurrentVelocity(1000)
                             return@pointerInteropFilter true
@@ -119,13 +131,13 @@ fun GameScreen(navController: NavHostController) {
                             mVelocityTracker.recycle()
                             isHorizontalDragStarted = false
                             val diff = System.currentTimeMillis() - clickTime
-                            if(diff < 250){
+                            if (diff < 250) {
                                 clickCount++
                             } else {
                                 clickCount = 0
                             }
-                            if(clickCount == 2) {
-                                SoundUtil.play(false,SoundType.Rotate)
+                            if (clickCount == 2) {
+                                SoundUtil.play(false, SoundType.Rotate)
                                 viewModel.rotate()
                                 clickCount = 0
                             }

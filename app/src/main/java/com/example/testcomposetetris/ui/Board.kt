@@ -88,5 +88,5 @@ private fun DrawScope.drawBoard(
     }
 
     val posXOffSet = viewState.tiles.firstOrNull()?.size.orZero() * (padding + widthOfRectangle) + 40
-    nextPieceLayout(viewState,widthOfRectangle,posXOffSet)
+    nextPieceLayout(viewState,widthOfRectangle,posXOffSet,maxWidth,maxHeight)
 }

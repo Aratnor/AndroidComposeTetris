@@ -11,31 +11,29 @@ import com.example.testcomposetetris.ext.drawText
 fun DrawScope.nextPieceLayout(
     viewState: ViewState,
     widthOfRectangle: Float,
-    posXOffset: Float
+    posXOffset: Float,
+    boardWidth: Float,
+    boardHeight: Float
 ) {
-        val padding = 12F
+        val padding = 24F
+        val centerX = (size.width - boardWidth) / 2
 
         if(!viewState.gameOver) {
-            drawNextPiecePreview(viewState,widthOfRectangle,posXOffset,padding)
+            drawNextPiecePreview(
+                viewState,
+                widthOfRectangle,
+                posXOffset + 40,
+                padding,
+                boardHeight
+            )
         }
 
         drawText(
-            viewState.currentTime,
-            posXOffset + widthOfRectangle + padding,
-            4 * (padding + widthOfRectangle) + 70,
-            Paint().apply {
-                textSize = 48F
-                color = Color.BLACK
-                textAlign = Paint.Align.CENTER
-            }
-        )
-
-        drawText(
             viewState.score,
-            posXOffset + widthOfRectangle + padding + 16,
-            4 * (padding + widthOfRectangle) + 140,
+            boardWidth + centerX,
+            boardHeight / 2,
             Paint().apply {
-                textSize = 48F
+                textSize = 64F
                 color = Color.BLACK
                 textAlign = Paint.Align.CENTER
             }
@@ -43,31 +41,55 @@ fun DrawScope.nextPieceLayout(
 
         drawText(
             viewState.level,
-            posXOffset + widthOfRectangle + padding + 12,
-            4 * (padding + widthOfRectangle) + 220,
+            boardWidth + centerX,
+            boardHeight / 2 + 100,
             Paint().apply {
-                textSize = 48F
+                textSize = 84F
                 color = Color.BLACK
                 textAlign = Paint.Align.CENTER
             }
         )
+
+    drawText(
+        "Timer :",
+        boardWidth + centerX,
+        boardHeight - 120,
+        Paint().apply {
+            textSize = 68F
+            color = Color.WHITE
+            textAlign = Paint.Align.CENTER
+        }
+    )
+
+    drawText(
+        viewState.currentTime,
+        boardWidth + centerX,
+        boardHeight,
+        Paint().apply {
+            textSize = 102F
+            color = Color.WHITE
+            textAlign = Paint.Align.CENTER
+        }
+    )
 }
 
 private fun DrawScope.drawNextPiecePreview(
     viewState: ViewState,
     widthOfRectangle: Float,
     posXOffset: Float,
-    padding: Float
+    padding: Float,
+    boardHeight: Float
 ) {
+    val widthRect = widthOfRectangle * 0.8F
 
     repeat(4) { posY ->
         repeat(4) { posX ->
-            val startPositionX = posXOffset + (posX) * (padding + widthOfRectangle)
-            val startPositionY = (posY) * (padding + widthOfRectangle)
+            val startPositionX = posXOffset + (posX) * (padding + widthRect)
+            val startPositionY = (posY) * (padding + widthRect) + boardHeight / 20
             val isNotEmpty =viewState
                 .nextPiecePreview
                 .firstOrNull { it.x == posX && it.y == posY } != null
-            tile(Offset(startPositionX,startPositionY),widthOfRectangle,isNotEmpty)
+            tile(Offset(startPositionX,startPositionY),widthRect,isNotEmpty)
         }
     }
 }
