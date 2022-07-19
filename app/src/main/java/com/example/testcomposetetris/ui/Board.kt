@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -14,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.testcomposetetris.MainViewModel
@@ -21,6 +21,8 @@ import com.example.testcomposetetris.NavDestination
 import com.example.testcomposetetris.NavDestination.navigateGameOver
 import com.example.testcomposetetris.ViewState
 import com.example.testcomposetetris.orZero
+import com.example.testcomposetetris.ui.theme.DARK_BLUE
+import com.example.testcomposetetris.ui.theme.OUT_RECT
 
 @Composable
 fun Board(
@@ -75,12 +77,20 @@ private fun DrawScope.drawBoard(
     val marginStart = 20F
 
     drawRoundRect(
-        Color.Black,
+        OUT_RECT,
+        Offset(marginStart - 12,marginTop - 12),
+        Size(maxWidth + 24,maxHeight + 24),
+        CornerRadius(25F,25F),
+        Stroke(24F),
+        1F
+    )
+
+    drawRect(
+        DARK_BLUE,
         Offset(marginStart,marginTop),
         Size(maxWidth,maxHeight),
-        CornerRadius(25F,25F),
-        Stroke(6F),
-        1F
+        1F,
+        Fill
     )
 
     viewState.tiles.forEachIndexed { positionY, row ->

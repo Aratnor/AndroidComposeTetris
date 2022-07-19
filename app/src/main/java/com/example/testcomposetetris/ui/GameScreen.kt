@@ -21,6 +21,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.testcomposetetris.MainViewModel
 import com.example.testcomposetetris.R
+import com.example.testcomposetetris.ui.theme.BACKGROUND
 import com.example.testcomposetetris.util.SoundType
 import com.example.testcomposetetris.util.SoundUtil
 import kotlin.math.absoluteValue
@@ -48,7 +49,8 @@ fun GameScreen(navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorResource(id = R.color.dark_blue)),
+            .background(BACKGROUND)
+            ,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
