@@ -17,13 +17,13 @@ fun DrawScope.tile(
     isShadowed: Boolean = false,
     cornerRadius: Float = 12F) {
     val color = when {
-        isNotEmpty -> Color.Black
-        isShadowed -> Color.White
+        isNotEmpty -> Color.White
+        isShadowed -> Color.Gray
         else -> Color.White
     }
     val alpha = when {
         isNotEmpty -> 1F
-        isShadowed -> 1F
+        isShadowed -> 0.3F
         else -> 0.3F
     }
 

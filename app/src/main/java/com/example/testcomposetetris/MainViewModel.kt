@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.testcomposetetris.domain.Game
 import com.example.testcomposetetris.ext.convertToMinute
 import com.example.testcomposetetris.ext.convertToRemainingSecond
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -103,14 +104,24 @@ class MainViewModel: ViewModel() {
         game.rotate()
     }
 
-    fun moveLeft() {
-        game.moveLeft()
-        updateUi()
+    fun moveLeft(repeatTime: Int) {
+        viewModelScope.launch(Dispatchers.Default) {
+            repeat(repeatTime) {
+                game.moveLeft()
+                updateUi()
+                delay(50)
+            }
+        }
     }
 
-    fun moveRight() {
-        game.moveRight()
-        updateUi()
+    fun moveRight(repeatTime: Int) {
+        viewModelScope.launch(Dispatchers.Default) {
+            repeat(repeatTime) {
+                game.moveRight()
+                updateUi()
+                delay(50)
+            }
+        }
     }
 
     fun moveDown() {

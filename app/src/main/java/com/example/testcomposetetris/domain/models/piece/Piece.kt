@@ -58,6 +58,7 @@ abstract class Piece {
             var canMove = true
             while(canMove) {
                 destinationLocation.forEach { piece ->
+                    if(piece.x < 0 || piece.y < 0) return@forEach
                     if(destinationLocation.firstOrNull { it.y == piece.y + 1 && it.x == piece.x } != null ) return@forEach
                     if(location.firstOrNull { it.y == piece.y + 1 && it.x == piece.x } != null) return@forEach
                     if(piece.y + 1 >= tiles.size) {

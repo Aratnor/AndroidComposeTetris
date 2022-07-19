@@ -93,14 +93,14 @@ fun GameScreen(navController: NavHostController) {
                             Log.i("Velocity Y", "y $velocityY")
                             if (xDifference > viewModel.rectangleWidth) {
                                 SoundUtil.play(false, SoundType.Move)
-                                viewModel.moveLeft()
+                                viewModel.moveLeft((xDifference/viewModel.rectangleWidth).toInt())
                                 isHorizontalDragStarted = true
                                 currentDragPosX = it.x
                                 currentDragPosY = it.y
                                 clickCount = 0
                             } else if (xDifference < -viewModel.rectangleWidth) {
                                 SoundUtil.play(false, SoundType.Move)
-                                viewModel.moveRight()
+                                viewModel.moveRight((xDifference/viewModel.rectangleWidth).absoluteValue.toInt())
                                 isHorizontalDragStarted = true
                                 currentDragPosX = it.x
                                 currentDragPosY = it.y
@@ -131,12 +131,17 @@ fun GameScreen(navController: NavHostController) {
                             mVelocityTracker?.addMovement(it)
                             isHorizontalDragStarted = false
                             val diff = System.currentTimeMillis() - clickTime
-                            if (diff < 250) {
+
+                            if (
+                                diff < 250 &&
+                                (currentDragPosX - initialDragPosX).absoluteValue == 0F &&
+                                (currentDragPosY - initialDragPosY).absoluteValue  == 0F
+                            )  {
                                 clickCount++
                             } else {
                                 clickCount = 0
                             }
-                            if (clickCount == 2) {
+                            if (clickCount == 1) {
                                 SoundUtil.play(false, SoundType.Rotate)
                                 viewModel.rotate()
                                 clickCount = 0
