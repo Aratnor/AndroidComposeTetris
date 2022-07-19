@@ -1,5 +1,6 @@
 package com.example.testcomposetetris.ui
 
+import android.annotation.SuppressLint
 import android.util.Log
 import android.view.MotionEvent
 import android.view.VelocityTracker
@@ -21,11 +22,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.testcomposetetris.MainViewModel
 import com.example.testcomposetetris.R
+import com.example.testcomposetetris.orZero
 import com.example.testcomposetetris.ui.theme.BACKGROUND
 import com.example.testcomposetetris.util.SoundType
 import com.example.testcomposetetris.util.SoundUtil
 import kotlin.math.absoluteValue
 
+@SuppressLint("Recycle")
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun GameScreen(navController: NavHostController) {
@@ -45,7 +48,8 @@ fun GameScreen(navController: NavHostController) {
     var isHorizontalDragStarted by remember { mutableStateOf(false) }
     var clickTime by remember { mutableStateOf(0L) }
     var clickCount by remember { mutableStateOf(0) }
-    lateinit var mVelocityTracker: VelocityTracker
+    var mVelocityTracker: VelocityTracker? = null
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -67,37 +71,34 @@ fun GameScreen(navController: NavHostController) {
                             currentDragPosX = it.x
                             currentDragPosY = it.y
                             clickTime = System.currentTimeMillis()
-                            mVelocityTracker = VelocityTracker.obtain()
+                            mVelocityTracker?.clear()
+                            mVelocityTracker = mVelocityTracker ?: VelocityTracker.obtain()
 
-                            mVelocityTracker.addMovement(it)
+                            mVelocityTracker?.addMovement(it)
 
                             return@pointerInteropFilter true
                         }
                         MotionEvent.ACTION_MOVE -> {
-                            val xBaseDifference = it.x - initialDragPosX
-                            val yBaseDifference = it.y - initialDragPosY
+                            val xBaseDifference = initialDragPosX - it.x
+                            val yBaseDifference = initialDragPosY - it.y
                             val xDifference = currentDragPosX - it.x
                             val yDifference = currentDragPosY - it.y
+                            mVelocityTracker?.addMovement(it)
+                            mVelocityTracker?.computeCurrentVelocity(1000)
                             val velocityY =
-                                mVelocityTracker.getYVelocity(it.getPointerId(it.actionIndex))
+                                mVelocityTracker?.getYVelocity(it.getPointerId(it.actionIndex))
                             val velocityX =
-                                mVelocityTracker.getXVelocity(it.getPointerId(it.actionIndex))
+                                mVelocityTracker?.getXVelocity(it.getPointerId(it.actionIndex))
                             Log.i("Velocity X", "x $velocityX")
                             Log.i("Velocity Y", "y $velocityY")
-                            if (xDifference > viewModel.rectangleWidth || velocityX.compareTo(-1200) < 0 && velocityY.compareTo(
-                                    500
-                                ) < 0
-                            ) {
+                            if (xDifference > viewModel.rectangleWidth) {
                                 SoundUtil.play(false, SoundType.Move)
                                 viewModel.moveLeft()
                                 isHorizontalDragStarted = true
                                 currentDragPosX = it.x
                                 currentDragPosY = it.y
                                 clickCount = 0
-                            } else if (xDifference < -viewModel.rectangleWidth || velocityX.compareTo(
-                                    1200
-                                ) > 0 && velocityY.compareTo(500) < 0
-                            ) {
+                            } else if (xDifference < -viewModel.rectangleWidth) {
                                 SoundUtil.play(false, SoundType.Move)
                                 viewModel.moveRight()
                                 isHorizontalDragStarted = true
@@ -105,8 +106,8 @@ fun GameScreen(navController: NavHostController) {
                                 currentDragPosY = it.y
                                 clickCount = 0
                             } else if (
-                                yDifference > viewModel.rectangleWidth * 3 ||
-                                velocityY.compareTo(1500) > 0 &&
+                                yDifference < viewModel.rectangleWidth &&
+                                velocityY?.compareTo(2000).orZero() > 0 &&
                                 !isHorizontalDragStarted
                             ) {
                                 SoundUtil.play(false, SoundType.Drop)
@@ -124,13 +125,10 @@ fun GameScreen(navController: NavHostController) {
                                 currentDragPosY = it.y
                                 clickCount = 0
                             }
-                            it.offsetLocation(xBaseDifference, yBaseDifference)
-                            mVelocityTracker.addMovement(it)
-                            mVelocityTracker.computeCurrentVelocity(1000)
                             return@pointerInteropFilter true
                         }
                         MotionEvent.ACTION_UP -> {
-                            mVelocityTracker.addMovement(it)
+                            mVelocityTracker?.addMovement(it)
                             isHorizontalDragStarted = false
                             val diff = System.currentTimeMillis() - clickTime
                             if (diff < 250) {
@@ -143,7 +141,8 @@ fun GameScreen(navController: NavHostController) {
                                 viewModel.rotate()
                                 clickCount = 0
                             }
-                            mVelocityTracker.recycle()
+                            mVelocityTracker?.recycle()
+                            mVelocityTracker = null
                             return@pointerInteropFilter true
 
                         }

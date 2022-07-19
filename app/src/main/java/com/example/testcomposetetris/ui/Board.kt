@@ -1,5 +1,6 @@
 package com.example.testcomposetetris.ui
 
+import android.graphics.Typeface
 import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -13,12 +14,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.res.ResourcesCompat
 import androidx.navigation.NavHostController
 import com.example.testcomposetetris.MainViewModel
 import com.example.testcomposetetris.NavDestination
 import com.example.testcomposetetris.NavDestination.navigateGameOver
+import com.example.testcomposetetris.R
 import com.example.testcomposetetris.ViewState
 import com.example.testcomposetetris.orZero
 import com.example.testcomposetetris.ui.theme.DARK_BLUE
@@ -30,6 +33,12 @@ fun Board(
     viewModel: MainViewModel
 ) {
     val viewState = viewModel.viewState.value
+
+    val timerFont =  ResourcesCompat.getFont(LocalContext.current, R.font.ds_digit)
+
+    val gameFont = ResourcesCompat.getFont(LocalContext.current, R.font.game_font_2)
+
+    val numberFont = ResourcesCompat.getFont(LocalContext.current, R.font.number_font)
 
     Canvas(
         modifier = Modifier
@@ -43,13 +52,10 @@ fun Board(
 
         val padding = 12F
 
-        val nextPieceLayoutMaxX = 400F
-
         if(viewModel.rectangleWidth == -1F) {
             viewModel.rectangleWidth = calculateWidthOfRect(
                 padding,
                 5F,
-                nextPieceLayoutMaxX,
                 viewState
             )
         }
@@ -57,7 +63,7 @@ fun Board(
         if(viewState.gameOver && navController.currentBackStackEntry?.destination?.route != NavDestination.GAME_OVER) {
             navController.navigate(navigateGameOver(viewState.gameOverScore,viewState.gameOverLevel))
         } else {
-            drawBoard(viewState,viewModel.rectangleWidth,padding)
+            drawBoard(viewState,viewModel.rectangleWidth,padding,gameFont,timerFont,numberFont)
         }
     }
 }
@@ -65,7 +71,10 @@ fun Board(
 private fun DrawScope.drawBoard(
     viewState: ViewState,
     widthOfRectangle: Float,
-    padding: Float
+    padding: Float,
+    gameFont: Typeface?,
+    typeface: Typeface?,
+    numberFont: Typeface?
 ) {
 
     val maxWidth = (padding + widthOfRectangle) * viewState.tiles[0].size + 30F
@@ -73,7 +82,7 @@ private fun DrawScope.drawBoard(
 
     val totalMarginHeight = size.height - maxHeight
 
-    val marginTop = totalMarginHeight / 2
+    val marginTop = totalMarginHeight
     val marginStart = 20F
 
     drawRoundRect(
@@ -104,6 +113,5 @@ private fun DrawScope.drawBoard(
         }
     }
 
-    val posXOffSet = viewState.tiles.firstOrNull()?.size.orZero() * (padding + widthOfRectangle) + 80
-    nextPieceLayout(viewState,widthOfRectangle,posXOffSet,maxWidth,maxHeight,marginTop + 20)
+    nextPieceLayout(viewState,maxWidth + 24,maxHeight  + 24,gameFont,typeface,numberFont)
 }

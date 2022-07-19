@@ -14,7 +14,8 @@ fun DrawScope.tile(
     topLeftPosition: Offset,
     width: Float,
     isNotEmpty: Boolean = false,
-    isShadowed: Boolean = false) {
+    isShadowed: Boolean = false,
+    cornerRadius: Float = 12F) {
     val color = when {
         isNotEmpty -> Color.Black
         isShadowed -> Color.White
@@ -26,7 +27,7 @@ fun DrawScope.tile(
         else -> 0.3F
     }
 
-    tile(topLeftPosition,width,color,alpha,isNotEmpty,isShadowed)
+    tile(topLeftPosition,width,color,alpha,isNotEmpty,isShadowed,cornerRadius)
 }
 
 
@@ -36,7 +37,8 @@ fun DrawScope.tile(
     color: Color = Color.Black,
     alpha: Float = 1F,
     isNotEmpty: Boolean,
-    isShadowed: Boolean
+    isShadowed: Boolean,
+    cornerRadius: Float = 12F
 ) {
     if(isNotEmpty) {
         if(!isShadowed){
@@ -49,7 +51,7 @@ fun DrawScope.tile(
             color,
             topLeftPosition,
             Size(width,width),
-            CornerRadius(12F,12F),
+            CornerRadius(cornerRadius,cornerRadius),
             Fill,
             alpha
         )

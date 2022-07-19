@@ -7,7 +7,6 @@ import com.example.testcomposetetris.util.SoundType
 import com.example.testcomposetetris.util.SoundUtil
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import java.lang.Long.max
 import kotlin.math.pow
 
 const val ITERATION_DELAY = 800L
@@ -40,8 +39,8 @@ class Game {
         getTilesAsList(),
         emptyList(),
         emptyList(),
-        "Score 0",
-        "Level 1",
+        "0",
+        "1",
         false
     ))
 
@@ -233,8 +232,8 @@ class Game {
         score += earnedScore
 
         updateUi.value = updateUi.value.copy(
-            score = "Score: $score",
-            difficultyLevel = "Level $level"
+            score = score.toString(),
+            difficultyLevel = level.toString()
         )
     }
 
