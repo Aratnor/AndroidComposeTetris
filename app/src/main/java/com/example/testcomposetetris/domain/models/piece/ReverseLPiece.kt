@@ -26,8 +26,8 @@ class ReverseLPiece(
     override val previewLocation: Array<Position> =
         arrayOf(
             Position(0,0),
-            Position(0, 1),
-            Position(1, 1),
+            Position(1, 0),
+            Position(2, 0),
             Position(2, 1)
         )
 
