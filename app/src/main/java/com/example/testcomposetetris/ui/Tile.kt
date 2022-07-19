@@ -59,9 +59,9 @@ fun DrawScope.tile(
         drawRect(
             color,
             topLeftPosition,
-            Size(width - 12,width - 12),
+            Size(width,width),
             alpha,
-            Stroke(12F),
+            Stroke(6F),
             )
     }
 }

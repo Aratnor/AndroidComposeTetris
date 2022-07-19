@@ -31,7 +31,7 @@ class Game {
 
     private var nextPiece: Piece = generatePiece()
 
-    private var level: Int = 1
+    private var level: Int = 5
 
     private var completedLines: Int = 0
 
@@ -77,7 +77,7 @@ class Game {
     }
 
     private fun calculateDelayMillis()
-    : Long = ITERATION_DELAY - (level * 0.007).pow(level).toLong()
+    : Long = ITERATION_DELAY - ((level * 0.7).pow((level - 1) * 0.884.pow(level)) + (level - 1) * 30).toLong()
 
 
     private fun generatePiece(): Piece {
@@ -146,6 +146,13 @@ class Game {
             isRunning = !checkGameOver()
             val completedLines = gameScoreHelper.getCompletedLines(currentPiece.location)
             calculateScore(completedLines.size)
+            if(!isRunning) {
+                updateUi.value = updateUi.value.copy(
+                    isGameOver = !isRunning,
+                    score = score.toString(),
+                    difficultyLevel = level.toString()
+                )
+            }
             if(completedLines.isEmpty()) {
                 generateNewPiece()
             } else {
@@ -154,8 +161,8 @@ class Game {
                 gameScoreHelper.moveLinesOneDown(completedLines)
                 updateUi.value = updateUi.value.copy(tiles = getTilesAsList())
 
-                isWaiting = false
                 generateNewPiece()
+                isWaiting = false
             }
         }
         currentPiece.move()

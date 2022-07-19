@@ -65,8 +65,8 @@ fun DrawScope.nextPieceLayout(
 
         drawText(
             viewState.score,
-            startX + 48,
-            centerY + scoreTextBound.height(),
+            startX + scoreTextBound.width() / 2,
+            centerY + scoreTextBound.height() + 8,
             Paint().apply {
                 textSize = 64F
                 color = Color.BLACK

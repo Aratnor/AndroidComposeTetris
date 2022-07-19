@@ -147,9 +147,9 @@ class LPiece(
 
     private fun rotateLeft() {
         val referencePosition = location[2]
-        location[0] = Position(referencePosition.x - 1,referencePosition.y - 1)
-        location[1] = Position(referencePosition.x,referencePosition.y - 1)
-        location[3] = Position(referencePosition.x,referencePosition.y + 1)
+        location[0] = Position(referencePosition.x - 1,referencePosition.y + 1)
+        location[1] = Position(referencePosition.x - 1,referencePosition.y)
+        location[3] = Position(referencePosition.x + 1,referencePosition.y)
     }
 
     override fun canRotate(tiles: Array<Array<Boolean>>): Boolean {
