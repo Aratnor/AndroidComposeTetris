@@ -128,7 +128,7 @@ fun GameScreen(navController: NavHostController) {
                             return@pointerInteropFilter true
                         }
                         MotionEvent.ACTION_UP -> {
-                            mVelocityTracker.recycle()
+                            mVelocityTracker.addMovement(it)
                             isHorizontalDragStarted = false
                             val diff = System.currentTimeMillis() - clickTime
                             if (diff < 250) {
@@ -141,6 +141,7 @@ fun GameScreen(navController: NavHostController) {
                                 viewModel.rotate()
                                 clickCount = 0
                             }
+                            mVelocityTracker.recycle()
                             return@pointerInteropFilter true
 
                         }

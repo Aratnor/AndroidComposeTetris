@@ -41,11 +41,15 @@ fun Board(
 
         val padding = 12F
 
-        val nextPieceLayoutMaxX = 250F
-        val nextPieceLayoutMaxY = 250F
+        val nextPieceLayoutMaxX = 400F
 
         if(viewModel.rectangleWidth == -1F) {
-            viewModel.rectangleWidth = calculateWidthOfRect(padding,5F,nextPieceLayoutMaxX,nextPieceLayoutMaxY,viewState)
+            viewModel.rectangleWidth = calculateWidthOfRect(
+                padding,
+                5F,
+                nextPieceLayoutMaxX,
+                viewState
+            )
         }
 
         if(viewState.gameOver && navController.currentBackStackEntry?.destination?.route != NavDestination.GAME_OVER) {
@@ -61,15 +65,18 @@ private fun DrawScope.drawBoard(
     widthOfRectangle: Float,
     padding: Float
 ) {
-    val marginTop = 20F
-    val marginStart = 20F
 
     val maxWidth = (padding + widthOfRectangle) * viewState.tiles[0].size + 30F
     val maxHeight = (padding + widthOfRectangle) * viewState.tiles.size + 18
 
+    val totalMarginHeight = size.height - maxHeight
+
+    val marginTop = totalMarginHeight / 2
+    val marginStart = 20F
+
     drawRoundRect(
         Color.Black,
-        Offset(1F,5F),
+        Offset(marginStart,marginTop),
         Size(maxWidth,maxHeight),
         CornerRadius(25F,25F),
         Stroke(6F),
@@ -87,6 +94,6 @@ private fun DrawScope.drawBoard(
         }
     }
 
-    val posXOffSet = viewState.tiles.firstOrNull()?.size.orZero() * (padding + widthOfRectangle) + 40
-    nextPieceLayout(viewState,widthOfRectangle,posXOffSet,maxWidth,maxHeight)
+    val posXOffSet = viewState.tiles.firstOrNull()?.size.orZero() * (padding + widthOfRectangle) + 80
+    nextPieceLayout(viewState,widthOfRectangle,posXOffSet,maxWidth,maxHeight,marginTop + 20)
 }

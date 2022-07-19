@@ -13,7 +13,8 @@ fun DrawScope.nextPieceLayout(
     widthOfRectangle: Float,
     posXOffset: Float,
     boardWidth: Float,
-    boardHeight: Float
+    boardHeight: Float,
+    marginTop: Float
 ) {
         val padding = 24F
         val centerX = (size.width - boardWidth) / 2
@@ -24,7 +25,7 @@ fun DrawScope.nextPieceLayout(
                 widthOfRectangle,
                 posXOffset + 40,
                 padding,
-                boardHeight
+                marginTop
             )
         }
 
@@ -78,18 +79,17 @@ private fun DrawScope.drawNextPiecePreview(
     widthOfRectangle: Float,
     posXOffset: Float,
     padding: Float,
-    boardHeight: Float
+    marginTop: Float
 ) {
-    val widthRect = widthOfRectangle * 0.8F
 
     repeat(4) { posY ->
         repeat(4) { posX ->
-            val startPositionX = posXOffset + (posX) * (padding + widthRect)
-            val startPositionY = (posY) * (padding + widthRect) + boardHeight / 20
+            val startPositionX = posXOffset + (posX) * (padding + widthOfRectangle)
+            val startPositionY = (posY) * (padding + widthOfRectangle) + marginTop
             val isNotEmpty =viewState
                 .nextPiecePreview
                 .firstOrNull { it.x == posX && it.y == posY } != null
-            tile(Offset(startPositionX,startPositionY),widthRect,isNotEmpty)
+            tile(Offset(startPositionX,startPositionY),widthOfRectangle,isNotEmpty)
         }
     }
 }

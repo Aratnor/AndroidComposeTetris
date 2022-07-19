@@ -7,7 +7,6 @@ fun DrawScope.calculateWidthOfRect(
     padding: Float,
     startEndPadding: Float,
     nextPieceSizeX: Float,
-    nextPieceSizeY: Float,
     viewState: ViewState
 ): Float {
     val paddingForTotalWidth = (viewState.tiles[0].size - 1) * padding + startEndPadding * 2
@@ -15,7 +14,7 @@ fun DrawScope.calculateWidthOfRect(
     val totalTilesHeight = (rectWidthByLayoutWidth + padding) * viewState.tiles.size
     return if(totalTilesHeight > size.height - 100) {
         val paddingForTotalHeight = (viewState.tiles.size - 1) * padding
-        val rectWidthByLayoutHeight = (size.height - paddingForTotalHeight - nextPieceSizeY) / viewState.tiles.size
+        val rectWidthByLayoutHeight = (size.height - paddingForTotalHeight) / viewState.tiles.size
         rectWidthByLayoutHeight
     } else {
         rectWidthByLayoutWidth
