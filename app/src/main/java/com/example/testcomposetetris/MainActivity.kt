@@ -23,15 +23,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             TestComposeTetrisTheme {
                 // A surface container using the 'background' color from the theme
-                SoundUtil.init(this)
                 SetNavHost(navController = rememberNavController())
             }
         }
-    }
-
-    override fun onBackPressed() {
-        SoundUtil.stopGameTheme()
-        super.onBackPressed()
     }
 }
 

@@ -3,6 +3,8 @@ package com.example.testcomposetetris
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.testcomposetetris.domain.Game
@@ -40,6 +42,11 @@ class MainViewModel: ViewModel() {
     lateinit var timerJob: Job
 
     var rectangleWidth = -1F
+
+    var muteButtonOffset = Offset(0F,0F)
+    var muteButtonSize = Size(0F,0F)
+
+    var isMuted = false
 
     private fun start() {
         viewModelScope.launch {

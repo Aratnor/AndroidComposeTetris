@@ -19,6 +19,8 @@ import com.example.testcomposetetris.util.SoundUtil
 fun HomeScreen(
     navController: NavHostController
 ) {
+    SoundUtil.stopGameTheme()
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,

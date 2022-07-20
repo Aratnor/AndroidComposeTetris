@@ -5,16 +5,13 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.VelocityTracker
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.testcomposetetris.MainViewModel
@@ -29,6 +26,9 @@ import kotlin.math.absoluteValue
 @Composable
 fun GameScreen(navController: NavHostController) {
     val viewModel: MainViewModel = viewModel()
+
+    SoundUtil.init(LocalContext.current,viewModel)
+
 
     SoundUtil.playGameTheme()
 
@@ -77,8 +77,6 @@ fun GameScreen(navController: NavHostController) {
                             return@pointerInteropFilter true
                         }
                         MotionEvent.ACTION_MOVE -> {
-                            val xBaseDifference = initialDragPosX - it.x
-                            val yBaseDifference = initialDragPosY - it.y
                             val xDifference = currentDragPosX - it.x
                             val yDifference = currentDragPosY - it.y
                             mVelocityTracker?.addMovement(it)
@@ -90,25 +88,25 @@ fun GameScreen(navController: NavHostController) {
                             Log.i("Velocity X", "x $velocityX")
                             Log.i("Velocity Y", "y $velocityY")
                             if (xDifference > viewModel.rectangleWidth) {
-                                SoundUtil.play(false, SoundType.Move)
+                                SoundUtil.play(SoundType.Move)
                                 viewModel.moveLeft((xDifference/viewModel.rectangleWidth).toInt())
                                 isHorizontalDragStarted = true
                                 currentDragPosX = it.x
                                 currentDragPosY = it.y
                                 clickCount = 0
                             } else if (xDifference < -viewModel.rectangleWidth) {
-                                SoundUtil.play(false, SoundType.Move)
+                                SoundUtil.play(SoundType.Move)
                                 viewModel.moveRight((xDifference/viewModel.rectangleWidth).absoluteValue.toInt())
                                 isHorizontalDragStarted = true
                                 currentDragPosX = it.x
                                 currentDragPosY = it.y
                                 clickCount = 0
                             } else if (
-                                yDifference < viewModel.rectangleWidth &&
-                                velocityY?.compareTo(2000).orZero() > 0 &&
+                                yDifference.absoluteValue < viewModel.rectangleWidth &&
+                                velocityY?.absoluteValue?.compareTo(2000).orZero() > 0 &&
                                 !isHorizontalDragStarted
                             ) {
-                                SoundUtil.play(false, SoundType.Drop)
+                                SoundUtil.play(SoundType.Drop)
                                 viewModel.moveUp()
                                 currentDragPosX = it.x
                                 currentDragPosY = it.y
@@ -118,7 +116,7 @@ fun GameScreen(navController: NavHostController) {
                                 yDifference < -viewModel.rectangleWidth * 1.4
                             ) {
                                 viewModel.moveDown()
-                                SoundUtil.play(false, SoundType.Move)
+                                SoundUtil.play(SoundType.Move)
                                 currentDragPosX = it.x
                                 currentDragPosY = it.y
                                 clickCount = 0
@@ -130,20 +128,33 @@ fun GameScreen(navController: NavHostController) {
                             isHorizontalDragStarted = false
                             val diff = System.currentTimeMillis() - clickTime
 
-                            if (
-                                diff < 250 &&
-                                (currentDragPosX - initialDragPosX).absoluteValue == 0F &&
-                                (currentDragPosY - initialDragPosY).absoluteValue  == 0F
-                            )  {
-                                clickCount++
-                            } else {
-                                clickCount = 0
+                            if(diff < 250) {
+                                when {
+                                    it.rawX  >= viewModel.muteButtonOffset.x &&
+                                            it.rawX <= viewModel.muteButtonOffset.x + viewModel.muteButtonSize.width + 20 &&
+                                            it.rawY >= viewModel.muteButtonOffset.y&&
+                                            it.rawY >= viewModel.muteButtonOffset.y + viewModel.muteButtonSize.height + 20 -> {
+                                        viewModel.isMuted = !viewModel.isMuted
+                                        if(viewModel.isMuted) {
+                                            SoundUtil.stopGameTheme()
+                                        } else {
+                                            SoundUtil.playGameTheme()
+                                        }
+                                            }
+                                    (currentDragPosX - initialDragPosX).absoluteValue == 0F &&
+                                            (currentDragPosY - initialDragPosY).absoluteValue  == 0F -> {
+                                        clickCount++
+                                            }
+
+                                }
+
+                                if (clickCount == 1) {
+                                    SoundUtil.play( SoundType.Rotate)
+                                    viewModel.rotate()
+                                    clickCount = 0
+                                }
                             }
-                            if (clickCount == 1) {
-                                SoundUtil.play(false, SoundType.Rotate)
-                                viewModel.rotate()
-                                clickCount = 0
-                            }
+
                             mVelocityTracker?.recycle()
                             mVelocityTracker = null
                             return@pointerInteropFilter true

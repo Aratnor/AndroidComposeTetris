@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.math.pow
 
 const val ITERATION_DELAY = 800L
-const val MOVE_UP_ITERATION_DELAY = 5L
+const val MOVE_UP_ITERATION_DELAY = 3L
 class Game {
     private var isRunning = false
     var resetTimer = false
@@ -98,7 +98,7 @@ class Game {
     private suspend fun removeCompletedLinesWithEffect(
     completedLines: List<Int>
     ) {
-        SoundUtil.play(false,SoundType.Clean)
+        SoundUtil.play(SoundType.Clean)
         repeat(4) {
             gameScoreHelper.removeCompletedLines(completedLines)
             updateUi.value = updateUi.value.copy(
@@ -154,7 +154,9 @@ class Game {
                 )
             }
             if(completedLines.isEmpty()) {
+                isWaiting = true
                 generateNewPiece()
+                isWaiting = false
             } else {
                 isWaiting = true
                 removeCompletedLinesWithEffect(completedLines)
@@ -264,7 +266,7 @@ class Game {
 
         val currentTime = System.currentTimeMillis()
         val timeDiff = currentTime - lastMovedUpTime
-        return timeDiff > 1000
+        return timeDiff > 500
     }
 
     fun getTilesAsList(): List<List<Boolean>> {
