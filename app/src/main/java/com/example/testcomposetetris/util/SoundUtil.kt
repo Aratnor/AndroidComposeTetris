@@ -3,6 +3,7 @@ package com.example.testcomposetetris.util
 import android.annotation.SuppressLint
 import android.content.Context
 import android.media.AudioManager
+import android.media.MediaPlayer
 import android.media.SoundPool
 import com.example.testcomposetetris.R
 
@@ -13,10 +14,13 @@ object SoundUtil {
     private val sp: SoundPool by lazy {
         SoundPool.Builder().setMaxStreams(4).setMaxStreams(AudioManager.STREAM_MUSIC).build()
     }
+    private lateinit var mediaPlayer: MediaPlayer
     private val _map = mutableMapOf<SoundType, Int>()
 
     fun init(context: Context) {
         _context = context
+        mediaPlayer = MediaPlayer.create(context,R.raw.tetris_main_theme)
+        mediaPlayer.isLooping = true
         Sounds.forEach {
             _map[it] = sp.load(_context, it.res, 1)
         }
@@ -27,10 +31,32 @@ object SoundUtil {
         sp.release()
     }
 
+    fun playGameTheme() {
+        if(!mediaPlayer.isPlaying) {
+            mediaPlayer.start()
+        }
+    }
 
-    fun play(isMute: Boolean, sound: SoundType) {
+    fun stopGameTheme() {
+        mediaPlayer.stop()
+    }
+
+
+    fun play(
+        isMute: Boolean,
+        sound: SoundType,
+        loop: Boolean = false) {
         if (!isMute) {
-            sp.play(requireNotNull(_map[sound]), 1f, 1f, 0, 0, 1f)
+            val streamId =
+                sp.play(
+                    requireNotNull(_map[sound]),
+                    1f,
+                    1f,
+                    0,
+                    0,
+                    1f)
+            val loopNumber = if(loop) { -1 } else { 0 }
+            sp.setLoop(streamId,loopNumber)
         }
     }
 

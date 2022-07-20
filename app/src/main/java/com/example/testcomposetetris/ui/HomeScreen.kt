@@ -27,7 +27,6 @@ fun HomeScreen(
         Button(
             modifier = Modifier.coloredShadow(Color.Black),
             onClick = {
-                SoundUtil.play(false, SoundType.Move)
                 navController.navigate(NavDestination.GAME)
             }
         ) {

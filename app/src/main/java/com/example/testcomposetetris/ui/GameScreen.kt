@@ -14,14 +14,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.*
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.testcomposetetris.MainViewModel
-import com.example.testcomposetetris.R
 import com.example.testcomposetetris.orZero
 import com.example.testcomposetetris.ui.theme.BACKGROUND
 import com.example.testcomposetetris.util.SoundType
@@ -33,6 +29,8 @@ import kotlin.math.absoluteValue
 @Composable
 fun GameScreen(navController: NavHostController) {
     val viewModel: MainViewModel = viewModel()
+
+    SoundUtil.playGameTheme()
 
     LaunchedEffect(key1 = 2) {
         viewModel.collect()

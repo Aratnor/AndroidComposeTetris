@@ -26,6 +26,7 @@ import com.example.testcomposetetris.ViewState
 import com.example.testcomposetetris.orZero
 import com.example.testcomposetetris.ui.theme.DARK_BLUE
 import com.example.testcomposetetris.ui.theme.OUT_RECT
+import com.example.testcomposetetris.util.SoundUtil
 
 @Composable
 fun Board(
@@ -61,6 +62,7 @@ fun Board(
         }
 
         if(viewState.gameOver && navController.currentBackStackEntry?.destination?.route != NavDestination.GAME_OVER) {
+            SoundUtil.stopGameTheme()
             navController.navigate(navigateGameOver(viewState.gameOverScore,viewState.gameOverLevel))
         } else {
             drawBoard(viewState,viewModel.rectangleWidth,padding,gameFont,timerFont,numberFont)

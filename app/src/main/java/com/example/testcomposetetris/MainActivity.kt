@@ -28,7 +28,13 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    override fun onBackPressed() {
+        SoundUtil.stopGameTheme()
+        super.onBackPressed()
+    }
 }
+
 
 @Composable
 fun SetNavHost(

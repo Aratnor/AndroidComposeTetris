@@ -16,6 +16,7 @@ import androidx.navigation.NavHostController
 import com.example.testcomposetetris.MainViewModel
 import com.example.testcomposetetris.NavDestination
 import com.example.testcomposetetris.R
+import com.example.testcomposetetris.util.SoundUtil
 
 @Composable
 fun GameOverScreen(
@@ -37,6 +38,7 @@ fun GameOverScreen(
             modifier = Modifier.padding(top = 8.dp),
             text = level)
         Button(onClick = {
+            SoundUtil.playGameTheme()
             navController.navigate(NavDestination.GAME) {
                 popUpTo(NavDestination.HOME)
             }
