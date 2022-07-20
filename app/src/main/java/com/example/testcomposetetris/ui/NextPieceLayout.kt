@@ -55,7 +55,7 @@ fun DrawScope.nextPieceLayout(
 
         drawText(
             scoreText,
-            startX + 72,
+            startX + 94,
             centerY - 12,
             paint
             )
@@ -65,7 +65,7 @@ fun DrawScope.nextPieceLayout(
 
         drawText(
             viewState.score,
-            startX + scoreTextBound.width() / 2,
+            startX + scoreTextBound.width() / 2 + 38,
             centerY + scoreTextBound.height() + 8,
             Paint().apply {
                 textSize = 64F
@@ -123,7 +123,8 @@ fun DrawScope.nextPieceLayout(
             startX + 48  + eachTextWidth *  2,
             centerY + timerTextBound.height() + 12,
             Paint().apply {
-                textSize = 64F
+                textSize = 72F
+                style = Paint.Style.FILL
                 color = Color.BLACK
                 typeface = font
                 textAlign = Paint.Align.CENTER

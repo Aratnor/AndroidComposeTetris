@@ -81,9 +81,22 @@ private fun DrawScope.drawBoard(
     val maxHeight = (padding + widthOfRectangle) * viewState.tiles.size + 18
 
     val totalMarginHeight = size.height - maxHeight
+    val totaMarginWidth = size.width - maxWidth
 
-    val marginTop = totalMarginHeight
-    val marginStart = 20F
+    val marginTop = totalMarginHeight - 8
+    val marginStart = totaMarginWidth / 2
+
+    drawShadowBehindTile(
+        topLeftPosition = Offset(marginStart - 12,marginTop - 12),
+        width = maxWidth,
+        height = maxHeight,
+        topShadowMultiplier = 0.015F,
+        leftShadowMultiplier = 0.04F,
+        rightShadowMultiplier = 0.04F,
+        bottomShadowMultiplier = 0.04F,
+        shadowRadius = 10F,
+        alpha = 0.1F
+    )
 
     drawRoundRect(
         OUT_RECT,

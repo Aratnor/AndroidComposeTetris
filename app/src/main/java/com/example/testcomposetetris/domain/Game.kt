@@ -31,7 +31,7 @@ class Game {
 
     private var nextPiece: Piece = generatePiece()
 
-    private var level: Int = 5
+    private var level: Int = 1
 
     private var completedLines: Int = 0
 

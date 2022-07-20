@@ -44,7 +44,8 @@ fun DrawScope.tile(
         if(!isShadowed){
             drawShadowBehindTile(
                 topLeftPosition = topLeftPosition,
-                width = width
+                width = width,
+                height = width
             )
         }
         drawRoundRect(
@@ -70,6 +71,13 @@ fun DrawScope.drawShadowBehindTile(
     alpha: Float = 0.2f,
     topLeftPosition: Offset,
     width: Float,
+    height: Float,
+    radius: Float = 20F,
+    shadowRadius: Float = 30F,
+    topShadowMultiplier: Float = 0.1F,
+    leftShadowMultiplier: Float = 0.1F,
+    rightShadowMultiplier: Float = 0.4F,
+    bottomShadowMultiplier: Float = 0.4F,
     color: Color = Color.Black
 ) {
     val shadowColor = color.copy(alpha = alpha).toArgb()
@@ -87,12 +95,12 @@ fun DrawScope.drawShadowBehindTile(
     )
 
     drawContext.canvas.drawRoundRect(
-        topLeftPosition.x - width * (0.1F),
-        topLeftPosition.y - width * (0.1F),
-        topLeftPosition.x + width * (1.4F),
-        topLeftPosition.y + width * (1.4F),
-        20F,
-        20F,
+        topLeftPosition.x - width * (leftShadowMultiplier),
+        topLeftPosition.y - height * (topShadowMultiplier),
+        topLeftPosition.x + width * (1F + rightShadowMultiplier),
+        topLeftPosition.y + height * (1F +  + bottomShadowMultiplier),
+        radius,
+        radius,
         paint
     )
 }
