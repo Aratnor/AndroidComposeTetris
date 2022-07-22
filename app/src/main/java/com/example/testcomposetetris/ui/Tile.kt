@@ -43,6 +43,16 @@ fun DrawScope.tile(
     cornerRadius: Float = 12F
 ) {
     if(tile.isOccupied) {
+        if(!isShadowed) {
+            drawShadowBehindTile(
+                0.18F,
+                topLeftPosition,
+                width,
+                width,
+                shadowRadius = 18F,
+                color = tile.color.startColor
+            )
+        }
         val gradient = Brush.radialGradient(
             listOf(tile.color.endColor, tile.color.startColor),
             Offset(
