@@ -35,9 +35,9 @@ fun Board(
 ) {
     val viewState = viewModel.viewState.value
 
-    val timerFont =  ResourcesCompat.getFont(LocalContext.current, R.font.ds_digit)
+    val scoreTitleFont =  ResourcesCompat.getFont(LocalContext.current, R.font.roboto_regular)
 
-    val gameFont = ResourcesCompat.getFont(LocalContext.current, R.font.game_font_2)
+    val scoreValueFont = ResourcesCompat.getFont(LocalContext.current, R.font.roboto_bold)
 
     val numberFont = ResourcesCompat.getFont(LocalContext.current, R.font.number_font)
 
@@ -82,9 +82,8 @@ fun Board(
                 viewState,
                 viewModel.rectangleWidth,
                 padding,
-                gameFont,
-                timerFont,
-                numberFont,
+                scoreTitleFont,
+                scoreValueFont,
                 muteSoundIcon,
                 openSoundIcon
             )
@@ -97,50 +96,20 @@ private fun DrawScope.drawBoard(
     viewState: ViewState,
     widthOfRectangle: Float,
     padding: Float,
-    gameFont: Typeface?,
-    typeface: Typeface?,
-    numberFont: Typeface?,
+    scoreTitleFont: Typeface?,
+    scoreValueFont: Typeface?,
     muteSoundPainter: Bitmap?,
     openSoundPainter: Bitmap?,
     ) {
 
-    val maxWidth = (padding + widthOfRectangle) * viewState.tiles[0].size + 30F
+    val maxWidth = (padding + widthOfRectangle) * viewState.tiles[0].size
     val maxHeight = (padding + widthOfRectangle) * viewState.tiles.size + 18
 
     val totalMarginHeight = size.height - maxHeight
-    val totaMarginWidth = size.width - maxWidth
+    val totalMarginWidth = size.width - maxWidth
 
     val marginTop = totalMarginHeight - 8
-    val marginStart = totaMarginWidth / 2
-
-    drawShadowBehindTile(
-        topLeftPosition = Offset(marginStart - 12,marginTop - 12),
-        width = maxWidth,
-        height = maxHeight,
-        topShadowMultiplier = 0.015F,
-        leftShadowMultiplier = 0.04F,
-        rightShadowMultiplier = 0.04F,
-        bottomShadowMultiplier = 0.04F,
-        shadowRadius = 10F,
-        alpha = 0.1F
-    )
-
-    drawRoundRect(
-        OUT_RECT,
-        Offset(marginStart - 12,marginTop - 12),
-        Size(maxWidth + 24,maxHeight + 24),
-        CornerRadius(25F,25F),
-        Stroke(24F),
-        1F
-    )
-
-    drawRect(
-        DARK_BLUE,
-        Offset(marginStart,marginTop),
-        Size(maxWidth,maxHeight),
-        1F,
-        Fill
-    )
+    val marginStart = totalMarginWidth / 2
 
     viewState.tiles.forEachIndexed { positionY, row ->
         row.forEachIndexed { positionX, isOccupied ->
@@ -177,5 +146,12 @@ private fun DrawScope.drawBoard(
         }
 
     }
-    nextPieceLayout(viewState,maxWidth + 24,maxHeight  + 24,gameFont,typeface,numberFont)
+    nextPieceLayout(
+        viewState,
+        maxWidth + 24,
+        maxHeight  + 24,
+        marginStart,
+        scoreTitleFont,
+        scoreValueFont
+    )
 }

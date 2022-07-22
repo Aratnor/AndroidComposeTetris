@@ -3,12 +3,14 @@ package com.example.testcomposetetris.ui
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.toArgb
+import com.example.testcomposetetris.ui.theme.EMPTY_TILE_COLOR
+import com.example.testcomposetetris.ui.theme.TEST_RED_END
+import com.example.testcomposetetris.ui.theme.TEST_RED_START
+import com.example.testcomposetetris.ui.theme.TEST_RED_STROKE_COLOR
 
 fun DrawScope.tile(
     topLeftPosition: Offset,
@@ -19,12 +21,12 @@ fun DrawScope.tile(
     val color = when {
         isNotEmpty -> Color.White
         isShadowed -> Color.Gray
-        else -> Color.White
+        else -> EMPTY_TILE_COLOR
     }
     val alpha = when {
-        isNotEmpty -> 1F
+        isNotEmpty -> 1.0F
         isShadowed -> 0.3F
-        else -> 0.3F
+        else -> 1F
     }
 
     tile(topLeftPosition,width,color,alpha,isNotEmpty,isShadowed,cornerRadius)
@@ -41,19 +43,28 @@ fun DrawScope.tile(
     cornerRadius: Float = 12F
 ) {
     if(isNotEmpty) {
-        if(!isShadowed){
-            drawShadowBehindTile(
-                topLeftPosition = topLeftPosition,
-                width = width,
-                height = width
-            )
-        }
+        val gradient = Brush.radialGradient(
+            listOf(TEST_RED_END, TEST_RED_START),
+            Offset(
+                topLeftPosition.x + width / 2,
+                topLeftPosition.y + width / 2
+            ),
+            radius = width - width * 17 / 36
+        )
         drawRoundRect(
-            color,
+            gradient,
             topLeftPosition,
             Size(width,width),
             CornerRadius(cornerRadius,cornerRadius),
-            Fill,
+            alpha,
+            Fill
+        )
+        drawRoundRect(
+            TEST_RED_STROKE_COLOR,
+            topLeftPosition,
+            Size(width,width),
+            CornerRadius(cornerRadius,cornerRadius),
+            Stroke(4F),
             alpha
         )
     } else if(isShadowed) {
@@ -64,6 +75,15 @@ fun DrawScope.tile(
             alpha,
             Stroke(6F),
             )
+    } else {
+        drawRoundRect(
+            color,
+            topLeftPosition,
+            Size(width,width),
+            CornerRadius(4F,4F),
+            Fill,
+            alpha,
+        )
     }
 }
 
