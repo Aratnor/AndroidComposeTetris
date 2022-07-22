@@ -2,6 +2,9 @@ package com.example.testcomposetetris.domain.models.piece
 
 import android.util.Log
 import com.example.testcomposetetris.domain.models.Position
+import com.example.testcomposetetris.domain.models.Tile
+import com.example.testcomposetetris.domain.models.TileColor
+import com.example.testcomposetetris.util.ColorUtil
 
 abstract class Piece {
     abstract val location: Array<Position>
@@ -12,10 +15,12 @@ abstract class Piece {
     abstract val posXLimit: Int
     abstract val posYLimit: Int
     abstract fun move()
-    abstract fun moveLeft(tiles: Array<Array<Boolean>>)
-    abstract fun moveRight(tiles: Array<Array<Boolean>>)
+    abstract fun moveLeft(tiles: Array<Array<Tile>>)
+    abstract fun moveRight(tiles: Array<Array<Tile>>)
     abstract fun rotate()
-    abstract fun canRotate(tiles: Array<Array<Boolean>>): Boolean
+    abstract fun canRotate(tiles: Array<Array<Tile>>): Boolean
+
+     var pieceColor: TileColor = ColorUtil.generateRandomColor()
 
     fun moveDown(posYLimit: Int) {
         location.forEachIndexed { index, position ->
@@ -26,7 +31,7 @@ abstract class Piece {
     }
 
     fun hitAnotherPiece(
-        tiles: Array<Array<Boolean>>
+        tiles: Array<Array<Tile>>
     ): Boolean {
         location.forEachIndexed { _, position ->
             if(position.x < 0 || position.y < 0) return@forEachIndexed
@@ -34,7 +39,7 @@ abstract class Piece {
             if(position.y == tiles.size - 1) return true
 
             val isNextLocationIsInPiece = location.firstOrNull { it.y == position.y + 1 && it.x == position.x } != null
-            if(!isNextLocationIsInPiece && tiles[position.y + 1][position.x]) return true
+            if(!isNextLocationIsInPiece && tiles[position.y + 1][position.x].isOccupied) return true
         }
 
         return false
@@ -48,7 +53,7 @@ abstract class Piece {
     }
 
     fun calculateDestinationLoc(
-        tiles: Array<Array<Boolean>>
+        tiles: Array<Array<Tile>>
     ) {
         if(isDestinationLocationChanged) {
             isDestinationLocationChanged = false
@@ -65,7 +70,7 @@ abstract class Piece {
                         canMove = false
                         return
                     }
-                    if(tiles[piece.y + 1][piece.x]) {
+                    if(tiles[piece.y + 1][piece.x].isOccupied) {
                         canMove = false
                         return
                     }
@@ -79,7 +84,7 @@ abstract class Piece {
 
     protected fun canMoveToNextTiles(
         referencePosition: Position,
-        tiles: Array<Array<Boolean>>
+        tiles: Array<Array<Tile>>
     ): Boolean {
         for(posX in (referencePosition.x - 1)..(referencePosition.x + 1)){
             for(posY in (referencePosition.y - 1)..(referencePosition.y + 1)) {
@@ -87,7 +92,7 @@ abstract class Piece {
                 if(posX < 0 || posX >= posXLimit) continue
                 if(location.firstOrNull { it.x == posX && it.y == posY } != null) continue
 
-                if(tiles[posY][posX]) return false
+                if(tiles[posY][posX].isOccupied) return false
             }
         }
         return true

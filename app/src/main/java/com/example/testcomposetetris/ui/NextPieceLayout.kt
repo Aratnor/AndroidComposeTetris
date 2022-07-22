@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.toArgb
 import com.example.testcomposetetris.ViewState
+import com.example.testcomposetetris.domain.models.Tile
 import com.example.testcomposetetris.ext.drawText
 import com.example.testcomposetetris.ui.theme.*
 
@@ -225,12 +226,15 @@ private fun DrawScope.drawNextPiecePreview(
             val startPositionY = (posY) * (padding + widthOfRect) + yOffset
             val isNotEmpty =viewState
                 .nextPiecePreview
+                .first
                 .firstOrNull { it.x == posX && it.y == posY } != null
             tile(
                 Offset(startPositionX,startPositionY),
                 widthOfRect
                 ,isNotEmpty,
-                cornerRadius = 4F
+                tile  = Tile(isNotEmpty,viewState.nextPiecePreview.second),
+                cornerRadius = 4F,
+                isInvisible = !isNotEmpty
             )
         }
     }

@@ -2,6 +2,7 @@ package com.example.testcomposetetris.domain.models.piece
 
 import com.example.testcomposetetris.domain.generateRandomNumber
 import com.example.testcomposetetris.domain.models.Position
+import com.example.testcomposetetris.domain.models.Tile
 
 class TPiece(
     override val posXLimit: Int,
@@ -58,7 +59,7 @@ class TPiece(
         location[3] = Position(referenceXPosition, 0)
     }
 
-    override fun moveLeft(tiles: Array<Array<Boolean>>) {
+    override fun moveLeft(tiles: Array<Array<Tile>>) {
         if(canMoveLeft(tiles)) {
             copyCurrentLocToPreviousLoc()
             location.forEachIndexed { index, position ->
@@ -67,19 +68,19 @@ class TPiece(
         }    }
 
     private fun canMoveLeft(
-        tiles: Array<Array<Boolean>>
+        tiles: Array<Array<Tile>>
     )
             : Boolean {
         location.forEach { position ->
             if(position.x - 1 < 0) return false
             if(position.y < 0) return@forEach
             if(location.firstOrNull { it.x == position.x - 1 && it.y == position.y } != null) return@forEach
-            if(tiles[position.y][position.x - 1]) return false
+            if(tiles[position.y][position.x - 1].isOccupied) return false
         }
         return true
     }
 
-    override fun moveRight(tiles: Array<Array<Boolean>>) {
+    override fun moveRight(tiles: Array<Array<Tile>>) {
         if(canMoveRight(tiles)) {
             copyCurrentLocToPreviousLoc()
             location.forEachIndexed { index, position ->
@@ -87,12 +88,12 @@ class TPiece(
             }
         }    }
 
-    private fun canMoveRight(tiles: Array<Array<Boolean>>): Boolean {
+    private fun canMoveRight(tiles: Array<Array<Tile>>): Boolean {
         location.forEach { position ->
             if(position.x + 1 >= posXLimit) return false
             if(position.y < 0) return@forEach
             if(location.firstOrNull { it.x == position.x + 1 && it.y == position.y } != null) return@forEach
-            if(tiles[position.y][position.x + 1]) return false
+            if(tiles[position.y][position.x + 1].isOccupied) return false
         }
         return true
     }
@@ -147,7 +148,7 @@ class TPiece(
         location[3] = Position(referencePosition.x,referencePosition.y + 1)
     }
 
-    override fun canRotate(tiles: Array<Array<Boolean>>): Boolean {
+    override fun canRotate(tiles: Array<Array<Tile>>): Boolean {
         return when(currentRotation) {
             Rotation.BOTTOM -> {
                 canRotateLeft(tiles)
@@ -165,14 +166,14 @@ class TPiece(
     }
 
     private fun canRotateLeft(
-        tiles: Array<Array<Boolean>>
+        tiles: Array<Array<Tile>>
     ): Boolean {
         val referencePos = location[1]
         return canMoveToNextTiles(referencePos,tiles)
     }
 
     private fun canRotateTop(
-        tiles: Array<Array<Boolean>>
+        tiles: Array<Array<Tile>>
     ): Boolean {
         val referencePos = location[1]
         val maxX = referencePos.x + 1
@@ -181,7 +182,7 @@ class TPiece(
     }
 
     private fun canRotateRight(
-        tiles: Array<Array<Boolean>>
+        tiles: Array<Array<Tile>>
     ): Boolean {
         val referencePos = location[1]
         val maxY = referencePos.y + 1
@@ -190,7 +191,7 @@ class TPiece(
     }
 
     private fun canRotateBottom(
-        tiles: Array<Array<Boolean>>
+        tiles: Array<Array<Tile>>
     ): Boolean {
         val referencePos = location[1]
         val minX = referencePos.x - 1

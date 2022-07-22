@@ -7,29 +7,29 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
+import com.example.testcomposetetris.domain.models.Tile
 import com.example.testcomposetetris.ui.theme.EMPTY_TILE_COLOR
-import com.example.testcomposetetris.ui.theme.TEST_RED_END
-import com.example.testcomposetetris.ui.theme.TEST_RED_START
-import com.example.testcomposetetris.ui.theme.TEST_RED_STROKE_COLOR
 
 fun DrawScope.tile(
     topLeftPosition: Offset,
     width: Float,
-    isNotEmpty: Boolean = false,
     isShadowed: Boolean = false,
-    cornerRadius: Float = 12F) {
+    tile: Tile,
+    cornerRadius: Float = 12F,
+    isInvisible: Boolean = false) {
     val color = when {
-        isNotEmpty -> Color.White
+        tile.isOccupied -> Color.White
         isShadowed -> Color.Gray
         else -> EMPTY_TILE_COLOR
     }
     val alpha = when {
-        isNotEmpty -> 1.0F
+        tile.isOccupied -> 1.0F
         isShadowed -> 0.3F
+        isInvisible -> 0F
         else -> 1F
     }
 
-    tile(topLeftPosition,width,color,alpha,isNotEmpty,isShadowed,cornerRadius)
+    tile(topLeftPosition,width,color,alpha,tile,isShadowed,cornerRadius)
 }
 
 
@@ -38,18 +38,18 @@ fun DrawScope.tile(
     width: Float,
     color: Color = Color.Black,
     alpha: Float = 1F,
-    isNotEmpty: Boolean,
+    tile: Tile,
     isShadowed: Boolean,
     cornerRadius: Float = 12F
 ) {
-    if(isNotEmpty) {
+    if(tile.isOccupied) {
         val gradient = Brush.radialGradient(
-            listOf(TEST_RED_END, TEST_RED_START),
+            listOf(tile.color.endColor, tile.color.startColor),
             Offset(
                 topLeftPosition.x + width / 2,
                 topLeftPosition.y + width / 2
             ),
-            radius = width - width * 17 / 36
+            radius = width - width * 4 / 36
         )
         drawRoundRect(
             gradient,
@@ -60,7 +60,7 @@ fun DrawScope.tile(
             Fill
         )
         drawRoundRect(
-            TEST_RED_STROKE_COLOR,
+            tile.color.strokeColor,
             topLeftPosition,
             Size(width,width),
             CornerRadius(cornerRadius,cornerRadius),

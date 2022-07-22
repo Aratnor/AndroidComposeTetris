@@ -112,13 +112,13 @@ private fun DrawScope.drawBoard(
     val marginStart = totalMarginWidth / 2
 
     viewState.tiles.forEachIndexed { positionY, row ->
-        row.forEachIndexed { positionX, isOccupied ->
+        row.forEachIndexed { positionX, tile ->
             val isShadowed = viewState
                 .pieceFinalLocation
                 .firstOrNull { it.x == positionX && it.y == positionY} != null
             val startPositionX = (positionX) * (padding + widthOfRectangle) + marginStart
             val startPositionY = (positionY) * (padding + widthOfRectangle) + marginTop
-            tile(Offset(startPositionX,startPositionY),widthOfRectangle,isOccupied,isShadowed)
+            tile(Offset(startPositionX,startPositionY),widthOfRectangle,isShadowed,tile)
         }
     }
 

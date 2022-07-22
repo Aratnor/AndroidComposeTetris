@@ -1,9 +1,10 @@
 package com.example.testcomposetetris.domain
 
 import com.example.testcomposetetris.domain.models.Position
+import com.example.testcomposetetris.domain.models.Tile
 
 class GameScoreHelper(
-    private val tiles: Array<Array<Boolean>>
+    private val tiles: Array<Array<Tile>>
 ) {
 
     fun removeCompletedLines(
@@ -11,7 +12,7 @@ class GameScoreHelper(
     ) {
         completedLines.forEach { posY ->
             for(posX in 0 until tiles[posY].size) {
-                tiles[posY][posX] = false
+                tiles[posY][posX] = tiles[posY][posX].copy(isOccupied = false)
             }
         }
     }
@@ -21,7 +22,7 @@ class GameScoreHelper(
     ) {
         completedLines.forEach { posY ->
             for(posX in 0 until tiles[posY].size) {
-                tiles[posY][posX] = true
+                tiles[posY][posX] = tiles[posY][posX].copy(isOccupied = true)
             }
         }
     }
@@ -60,7 +61,7 @@ class GameScoreHelper(
             var isLineCompleted = true
             run {
                 for (posX in 0 until tiles[position.y].size) {
-                    if (!tiles[position.y][posX]) {
+                    if (!tiles[position.y][posX].isOccupied) {
                         isLineCompleted = false
                         return@run
                     }

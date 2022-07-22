@@ -2,6 +2,8 @@ package com.example.testcomposetetris.domain
 
 import android.util.Log
 import com.example.testcomposetetris.domain.models.Position
+import com.example.testcomposetetris.domain.models.Tile
+import com.example.testcomposetetris.domain.models.TileColor
 import com.example.testcomposetetris.domain.models.piece.*
 import com.example.testcomposetetris.util.SoundType
 import com.example.testcomposetetris.util.SoundUtil
@@ -20,7 +22,7 @@ class Game {
     private val tiles by lazy {
         Array(24) {
             Array(12) {
-                false
+                Tile(false,TileColor.EMPTY)
             }
         }
     }
@@ -37,7 +39,7 @@ class Game {
 
     val updateUi: MutableStateFlow<GameState> = MutableStateFlow(GameState(
         getTilesAsList(),
-        emptyList(),
+        emptyList<Position>() to TileColor.EMPTY,
         emptyList(),
         "0",
         "1",
@@ -57,7 +59,7 @@ class Game {
     suspend fun startGame() {
         isRunning = true
         updateUi.value = updateUi.value.copy(
-            previewLocation = getNextPiecePreviewLocation(),
+            previewLocation = getNextPiecePreviewLocation() to nextPiece.pieceColor,
             pieceDestinationLocation = getPieceDestinationLocation()
         )
         while(isRunning) {
@@ -129,7 +131,7 @@ class Game {
         if(moveUpPressed) { moveUpPressed = false }
 
         updateUi.value = updateUi.value.copy(
-            previewLocation = getNextPiecePreviewLocation(),
+            previewLocation = getNextPiecePreviewLocation() to nextPiece.pieceColor,
             isGameOver = !isRunning
         )
     }
@@ -176,14 +178,14 @@ class Game {
     private fun removePreviousPieceLocation() {
         currentPiece.previousLocation.forEach {
             if(it.x < 0 || it.y < 0) return@forEach
-            tiles[it.y][it.x] = false
+            tiles[it.y][it.x] = Tile(false,TileColor.EMPTY)
         }
     }
 
     private fun updateTilesWithCurrentPieceLocation() {
         currentPiece.location.forEach {
             if(it.x < 0 || it.y < 0) return@forEach
-            tiles[it.y][it.x] = true
+            tiles[it.y][it.x] = Tile(true,currentPiece.pieceColor)
         }
     }
 
@@ -266,8 +268,8 @@ class Game {
         return timeDiff > 500
     }
 
-    fun getTilesAsList(): List<List<Boolean>> {
-        val mutableList = mutableListOf<List<Boolean>>()
+    fun getTilesAsList(): List<List<Tile>> {
+        val mutableList = mutableListOf<List<Tile>>()
         tiles.forEach { mutableList.add(it.toList()) }
         return mutableList
     }

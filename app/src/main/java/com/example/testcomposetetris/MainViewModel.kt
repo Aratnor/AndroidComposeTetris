@@ -8,6 +8,9 @@ import androidx.compose.ui.geometry.Size
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.testcomposetetris.domain.Game
+import com.example.testcomposetetris.domain.models.Position
+import com.example.testcomposetetris.domain.models.Tile
+import com.example.testcomposetetris.domain.models.TileColor
 import com.example.testcomposetetris.ext.convertToMinute
 import com.example.testcomposetetris.ext.convertToRemainingSecond
 import kotlinx.coroutines.Dispatchers
@@ -22,10 +25,10 @@ class MainViewModel: ViewModel() {
         ViewState(
             List(24) {
                    List(12) {
-                       false
+                       Tile(isOccupied = false, color = TileColor.EMPTY)
                    }
             },
-            emptyList(),
+            emptyList<Position>() to TileColor.EMPTY,
             emptyList(),
             "00:00",
             "",

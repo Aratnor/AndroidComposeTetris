@@ -2,6 +2,9 @@ package com.example.testcomposetetris.domain.models.piece
 
 import com.example.testcomposetetris.domain.generateRandomNumber
 import com.example.testcomposetetris.domain.models.Position
+import com.example.testcomposetetris.domain.models.Tile
+import com.example.testcomposetetris.domain.models.TileColor
+import com.example.testcomposetetris.util.ColorUtil.generateRandomColor
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -11,7 +14,6 @@ class IPiece(
     override val posYLimit: Int
 ): Piece() {
     private var currentRotation: Rotation = Rotation.VERTICAL
-
 
     override val previousLocation: Array<Position> = arrayOf(
             Position(0,-9),
@@ -41,7 +43,7 @@ class IPiece(
     )
 
     override fun moveLeft(
-        tiles: Array<Array<Boolean>>
+        tiles: Array<Array<Tile>>
     ) {
         if(canMoveLeft(tiles)) {
             copyCurrentLocToPreviousLoc()
@@ -52,7 +54,7 @@ class IPiece(
     }
 
     override fun moveRight(
-        tiles: Array<Array<Boolean>>
+        tiles: Array<Array<Tile>>
     ) {
         if(canMoveRight(tiles)) {
             copyCurrentLocToPreviousLoc()
@@ -63,7 +65,7 @@ class IPiece(
     }
 
     private fun canMoveLeft(
-        tiles: Array<Array<Boolean>>
+        tiles: Array<Array<Tile>>
     )
     : Boolean {
         if(location[0].x <= 0) return false
@@ -72,21 +74,21 @@ class IPiece(
                 location.forEach {
                     if(it.x < 0 || it.y < 0 ) return@forEach
                     val xPos = it.x - 1
-                    if(xPos >= 0 && tiles[it.y][xPos]) return false
+                    if(xPos >= 0 && tiles[it.y][xPos].isOccupied) return false
                 }
             }
             Rotation.HORIZONTAL -> {
                 val referenceLocation = location[0]
                 val referenceX = referenceLocation.x - 1
                 if(referenceLocation.y < 0) return false
-                if(referenceX >= 0 && tiles[referenceLocation.y][referenceX]) return false
+                if(referenceX >= 0 && tiles[referenceLocation.y][referenceX].isOccupied) return false
             }
         }
         return true
     }
 
     private fun canMoveRight(
-        tiles: Array<Array<Boolean>>
+        tiles: Array<Array<Tile>>
     )
     : Boolean {
         if(location[3].x >= posXLimit - 1) return false
@@ -95,20 +97,20 @@ class IPiece(
                 location.forEach {
                     if(it.x < 0 || it.y < 0) return@forEach
                     val xPos = it.x + 1
-                    if(xPos < posXLimit && tiles[it.y][xPos]) return false
+                    if(xPos < posXLimit && tiles[it.y][xPos].isOccupied) return false
                 }
             }
             Rotation.HORIZONTAL -> {
                 val referenceLocation = location[3]
                 val referenceX = referenceLocation.x + 1
-                if(referenceX >= 0 && tiles[referenceLocation.y][referenceX]) return false
+                if(referenceX >= 0 && tiles[referenceLocation.y][referenceX].isOccupied) return false
             }
         }
         return true
     }
 
     override fun canRotate(
-        tiles: Array<Array<Boolean>>
+        tiles: Array<Array<Tile>>
     ): Boolean {
         return when(currentRotation) {
             Rotation.HORIZONTAL -> true
@@ -125,7 +127,7 @@ class IPiece(
                     for(positionX in minX..maxX) {
                         if(positionX < 0 || positionY < 0) continue
                         if(location.firstOrNull { it.x == positionX && it.y == positionY } != null) continue
-                        if(tiles[positionY][positionX]) return false
+                        if(tiles[positionY][positionX].isOccupied) return false
                     }
                 }
                 true
