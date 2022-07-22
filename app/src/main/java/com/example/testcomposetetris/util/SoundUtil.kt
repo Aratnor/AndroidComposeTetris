@@ -42,6 +42,7 @@ object SoundUtil {
         if(!mediaPlayer.isPlaying) {
             _context?.let {
                 mediaPlayer = MediaPlayer.create(it,R.raw.tetris_main_theme)
+                mediaPlayer.isLooping = true
             }
             mediaPlayer.start()
         }

@@ -103,7 +103,9 @@ fun GameScreen(navController: NavHostController) {
                                 clickCount = 0
                             } else if (
                                 yDifference.absoluteValue < viewModel.rectangleWidth &&
-                                velocityY?.absoluteValue?.compareTo(2000).orZero() > 0 &&
+                                velocityY?.absoluteValue?.compareTo(2000).orZero() > 0 ||
+                                yDifference.absoluteValue > viewModel.rectangleWidth &&
+                                velocityY?.compareTo(1600).orZero() > 0 &&
                                 !isHorizontalDragStarted
                             ) {
                                 SoundUtil.play(SoundType.Drop)
@@ -130,10 +132,10 @@ fun GameScreen(navController: NavHostController) {
 
                             if(diff < 250) {
                                 when {
-                                    it.rawX  >= viewModel.muteButtonOffset.x &&
-                                            it.rawX <= viewModel.muteButtonOffset.x + viewModel.muteButtonSize.width + 20 &&
-                                            it.rawY >= viewModel.muteButtonOffset.y&&
-                                            it.rawY >= viewModel.muteButtonOffset.y + viewModel.muteButtonSize.height + 20 -> {
+                                    currentDragPosX  >= viewModel.muteButtonOffset.x + 20 &&
+                                            currentDragPosX <= viewModel.muteButtonOffset.x + viewModel.muteButtonSize.width + 20 &&
+                                            currentDragPosY >= viewModel.muteButtonOffset.y&&
+                                            currentDragPosY <= viewModel.muteButtonOffset.y + viewModel.muteButtonSize.height + 20 -> {
                                         viewModel.isMuted = !viewModel.isMuted
                                         if(viewModel.isMuted) {
                                             SoundUtil.stopGameTheme()

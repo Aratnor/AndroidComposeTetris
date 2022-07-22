@@ -144,6 +144,7 @@ class Game {
     private suspend fun move() {
         if(currentPiece.hitAnotherPiece(tiles)) {
             isRunning = !checkGameOver()
+            isWaiting = true && isRunning
             val completedLines = gameScoreHelper.getCompletedLines(currentPiece.location)
             calculateScore(completedLines.size)
             if(!isRunning) {
@@ -154,22 +155,18 @@ class Game {
                 )
             }
             if(completedLines.isEmpty()) {
-                isWaiting = true
                 generateNewPiece()
-                isWaiting = false
             } else {
-                isWaiting = true
                 removeCompletedLinesWithEffect(completedLines)
                 gameScoreHelper.moveLinesOneDown(completedLines)
                 updateUi.value = updateUi.value.copy(tiles = getTilesAsList())
 
                 generateNewPiece()
-                isWaiting = false
             }
         }
         currentPiece.move()
         currentPiece.calculateDestinationLoc(tiles)
-
+        isWaiting = false
 
         removePreviousPieceLocation()
         updateTilesWithCurrentPieceLocation()
