@@ -137,12 +137,32 @@ fun GameScreen(navController: NavHostController) {
                                             currentDragPosY >= viewModel.muteButtonOffset.y&&
                                             currentDragPosY <= viewModel.muteButtonOffset.y + viewModel.muteButtonSize.height + 20 -> {
                                         viewModel.isMuted = !viewModel.isMuted
-                                        if(viewModel.isMuted) {
+                                        viewModel.updateUi()
+                                    }
+                                    currentDragPosX  >= viewModel.muteMusicOffset.x + 20 &&
+                                            currentDragPosX <= viewModel.muteMusicOffset.x + viewModel.muteMusicSize.width + 20 &&
+                                            currentDragPosY >= viewModel.muteMusicOffset.y&&
+                                            currentDragPosY <= viewModel.muteMusicOffset.y + viewModel.muteMusicSize.height + 20 -> {
+                                        viewModel.isMusicMuted = !viewModel.isMusicMuted
+                                        if(viewModel.isMusicMuted) {
                                             SoundUtil.stopGameTheme()
                                         } else {
                                             SoundUtil.playGameTheme()
                                         }
-                                            }
+                                        viewModel.updateUi()
+                                    }
+                                    currentDragPosX  >= viewModel.playButtonOffset.x + 20 &&
+                                            currentDragPosX <= viewModel.playButtonOffset.x + viewModel.playButtonSize.width + 20 &&
+                                            currentDragPosY >= viewModel.playButtonOffset.y&&
+                                            currentDragPosY <= viewModel.playButtonOffset.y + viewModel.playButtonSize.height + 20 -> {
+                                        viewModel.isGamePaused = !viewModel.isGamePaused
+                                        if(viewModel.isGamePaused) {
+                                            viewModel.pauseGame()
+                                        } else {
+                                            viewModel.continueGame()
+                                        }
+                                        viewModel.updateUi()
+                                    }
                                     (currentDragPosX - initialDragPosX).absoluteValue == 0F &&
                                             (currentDragPosY - initialDragPosY).absoluteValue  == 0F -> {
                                         clickCount++

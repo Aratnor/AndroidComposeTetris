@@ -20,6 +20,7 @@ class Game {
     private var isRunning = false
     var resetTimer = false
     var isWaiting = false
+    var isGamePaused = false
     private var moveUpPressed = false
 
     var currentMoveUpIterationDelay = MOVE_UP_ITERATION_DELAY
@@ -74,7 +75,7 @@ class Game {
             previewLocation = getNextPiecePreviewLocation() to nextPiece.pieceColor,
             pieceDestinationLocation = getPieceDestinationLocation()
         )
-        while(isRunning) {
+        while(isRunning && !isGamePaused) {
             if(!isWaiting) {
                 move()
             }
@@ -240,7 +241,7 @@ class Game {
     }
 
     fun moveLeft() {
-        if(isWaiting || moveUpPressed) return
+        if(isWaiting || moveUpPressed || isGamePaused) return
         currentPiece.moveLeft(tiles)
         currentPiece.isDestinationLocationChanged = true
         removePreviousPieceLocation()
@@ -250,7 +251,7 @@ class Game {
     }
 
     fun moveRight() {
-        if(isWaiting || moveUpPressed) return
+        if(isWaiting || moveUpPressed || isGamePaused) return
         currentPiece.moveRight(tiles)
         currentPiece.isDestinationLocationChanged = true
         removePreviousPieceLocation()
@@ -260,7 +261,7 @@ class Game {
     }
 
     fun rotate() {
-        if(isWaiting || moveUpPressed) return
+        if(isWaiting || moveUpPressed || isGamePaused) return
         if(currentPiece.canRotate(tiles)) {
             currentPiece.rotate()
             removePreviousPieceLocation()
@@ -297,14 +298,14 @@ class Game {
     }
 
     suspend fun moveDown() {
-        if(isWaiting) return
+        if(isWaiting ||  isGamePaused) return
         move()
         updateUi.value = updateUi.value.copy(tiles = getTilesAsList())
         resetTimer = true
     }
 
     suspend fun moveUp() {
-        if(canMoveUp()) {
+        if(canMoveUp() && !isGamePaused) {
             moveUpPressed = true
             currentMoveUpIterationDelay = MOVE_UP_ITERATION_DELAY
             moveUpInitialLocations.clear()
@@ -335,5 +336,14 @@ class Game {
 
     fun getPieceDestinationLocation(): List<Position> {
         return currentPiece.destinationLocation.toList()
+    }
+
+    fun pause() {
+        isGamePaused = true
+    }
+
+    suspend fun continueGame() {
+        isGamePaused = false
+        startGame()
     }
 }

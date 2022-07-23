@@ -46,15 +46,22 @@ class MainViewModel: ViewModel() {
     var rectangleWidth = -1F
 
     var muteButtonOffset = Offset(0F,0F)
-    var muteButtonSize = Size(0F,0F)
+    var muteButtonSize = Size(120F,120F)
+
+    var muteMusicOffset = Offset(0F,0F)
+    var muteMusicSize = Size(120F,120F)
+
+    var playButtonOffset = Offset(0F,0F)
+    var playButtonSize = Size(120F,120F)
 
     var isMuted = false
+    var isMusicMuted = false
+    var isGamePaused = false
 
 
     private fun start() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             game.startGame()
-
         }
     }
 
@@ -98,7 +105,7 @@ class MainViewModel: ViewModel() {
         }
     }
 
-    private fun updateUi() {
+    fun updateUi() {
         val list = game.getTilesAsList()
         _viewState.value = _viewState.value.copy(
             tiles = list,
@@ -142,6 +149,17 @@ class MainViewModel: ViewModel() {
     fun moveUp() {
         viewModelScope.launch {
             game.moveUp()
+        }
+    }
+
+    fun pauseGame() {
+        game.pause()
+    }
+
+    fun continueGame() {
+        viewModelScope.launch(Dispatchers.Default) {
+            game.continueGame()
+
         }
     }
 }

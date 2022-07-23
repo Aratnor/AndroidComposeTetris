@@ -1,31 +1,24 @@
 package com.example.testcomposetetris.ui
 
-import android.graphics.Bitmap
 import android.graphics.Typeface
 import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.Fill
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.graphics.drawable.toBitmap
 import androidx.navigation.NavHostController
 import com.example.testcomposetetris.MainViewModel
 import com.example.testcomposetetris.NavDestination
 import com.example.testcomposetetris.NavDestination.navigateGameOver
 import com.example.testcomposetetris.R
 import com.example.testcomposetetris.ViewState
-import com.example.testcomposetetris.ui.theme.DARK_BLUE
-import com.example.testcomposetetris.ui.theme.OUT_RECT
+import com.example.testcomposetetris.domain.models.ButtonIcons
+import com.example.testcomposetetris.util.ResourceUtil
 import com.example.testcomposetetris.util.SoundUtil
 
 @Composable
@@ -39,19 +32,7 @@ fun Board(
 
     val scoreValueFont = ResourcesCompat.getFont(LocalContext.current, R.font.roboto_bold)
 
-    val numberFont = ResourcesCompat.getFont(LocalContext.current, R.font.number_font)
-
-    val muteSoundIcon =  ResourcesCompat.getDrawable(
-        LocalContext.current.resources,
-        R.drawable.ic_baseline_volume_off_24,
-        null
-    )?.toBitmap()
-
-    val openSoundIcon =ResourcesCompat.getDrawable(
-        LocalContext.current.resources,
-        R.drawable.ic_baseline_volume_up_24,
-        null
-    )?.toBitmap()
+    ResourceUtil.init(LocalContext.current.resources)
 
     Canvas(
         modifier = Modifier
@@ -83,9 +64,7 @@ fun Board(
                 viewModel.rectangleWidth,
                 padding,
                 scoreTitleFont,
-                scoreValueFont,
-                muteSoundIcon,
-                openSoundIcon
+                scoreValueFont
             )
         }
     }
@@ -97,9 +76,7 @@ private fun DrawScope.drawBoard(
     widthOfRectangle: Float,
     padding: Float,
     scoreTitleFont: Typeface?,
-    scoreValueFont: Typeface?,
-    muteSoundPainter: Bitmap?,
-    openSoundPainter: Bitmap?,
+    scoreValueFont: Typeface?
     ) {
 
     val maxWidth = (padding + widthOfRectangle) * viewState.tiles[0].size
@@ -122,16 +99,13 @@ private fun DrawScope.drawBoard(
         }
     }
 
-
-
-        var maxYPos = 0
-        var minXPos = 100
-        var maxXPos = 0
-
     /*if(
         viewState.moveUpState.isMoveUpActive &&
         viewState.moveUpState.moveUpMovementCount > 0) {
         viewState.moveUpState.moveUpInitialLocations.forEach {
+         var maxYPos = 0
+        var minXPos = 100
+        var maxXPos = 0
             if(it.x < minXPos) {
                 minXPos = it.x
             }
@@ -162,26 +136,64 @@ private fun DrawScope.drawBoard(
     val muteButtonYPos = marginTop + 16
     viewModel.muteButtonOffset = Offset(muteButtonXPos,muteButtonYPos)
 
-    if(viewModel.isMuted) {
-        muteSoundPainter?.let {
-            viewModel.muteButtonSize = Size(it.width.toFloat(),it.height.toFloat())
-            drawImage(
-                it.asImageBitmap(),
-                viewModel.muteButtonOffset
-            )
+    val muteMusicYPos = muteButtonYPos + viewModel.muteButtonSize.height + 80
+    viewModel.muteMusicOffset = Offset(muteButtonXPos, muteMusicYPos)
 
-        }
-    } else {
-        openSoundPainter?.let {
-            viewModel.muteButtonSize = Size(it.width.toFloat(),it.height.toFloat())
+    viewModel.playButtonOffset = Offset(
+        muteButtonXPos,
+        muteMusicYPos + viewModel.muteMusicSize.height + 80
+    )
 
-            drawImage(
-                it.asImageBitmap(),
-                viewModel.muteButtonOffset
-            )
-        }
+    val muteSoundBitmap = ResourceUtil.getBitmap(
+        ButtonIcons.MUTE_SOUND.resId
+    )
 
+    val openSoundBitmap = ResourceUtil.getBitmap(
+        ButtonIcons.UNMUTE_SOUND.resId
+    )
+
+    soundButton(
+        viewModel.muteButtonOffset,
+        viewModel.isMuted,
+        muteSoundBitmap,
+        openSoundBitmap) {
+        viewModel.muteButtonSize = it
     }
+
+    val muteMusicBitmap = ResourceUtil.getBitmap(
+        ButtonIcons.MUTE_MUSIC.resId
+    )
+
+    val openMusicBitmap = ResourceUtil.getBitmap(
+        ButtonIcons.UNMUTE_MUSIC.resId
+    )
+
+    soundButton(
+        viewModel.muteMusicOffset,
+        viewModel.isMusicMuted,
+        muteMusicBitmap,
+        openMusicBitmap) {
+        viewModel.muteMusicSize = it
+    }
+
+    val pauseGameBitmap = ResourceUtil.getBitmap(
+        ButtonIcons.PLAY.resId
+    )
+
+    val playGameBitmap = ResourceUtil.getBitmap(
+        ButtonIcons.PAUSE.resId
+    )
+
+    soundButton(
+        viewModel.playButtonOffset,
+        viewModel.isGamePaused,
+        pauseGameBitmap,
+        playGameBitmap
+    ) {
+        viewModel.playButtonSize = it
+    }
+
+
     nextPieceLayout(
         viewState,
         maxWidth + 24,
