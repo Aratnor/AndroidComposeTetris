@@ -22,9 +22,9 @@ class LPiece(
     )
     override val previewLocation: Array<Position> = arrayOf(
         Position(0,1),
-        Position(0,0),
-        Position(1,0),
-        Position(2,0)
+        Position(0,2),
+        Position(0,3),
+        Position(1,3)
     )
 
     override val destinationLocation: Array<Position> = arrayOf(

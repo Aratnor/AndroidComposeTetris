@@ -21,10 +21,10 @@ class SquarePiece(
         Position(0, -9)
     )
     override val previewLocation: Array<Position> = arrayOf(
-        Position(0,0),
-        Position(0,1),
-        Position(1, 0),
-        Position(1, 1)
+        Position(0,2),
+        Position(0,3),
+        Position(1, 2),
+        Position(1, 3)
     )
 
     override val destinationLocation: Array<Position> = arrayOf(

@@ -15,6 +15,7 @@ import com.example.testcomposetetris.ViewState
 import com.example.testcomposetetris.domain.models.Tile
 import com.example.testcomposetetris.ext.drawText
 import com.example.testcomposetetris.ui.theme.*
+import java.lang.Float.max
 
 fun DrawScope.nextPieceLayout(
     viewState: ViewState,
@@ -29,10 +30,9 @@ fun DrawScope.nextPieceLayout(
     if(!viewState.gameOver) {
         val totalAvailableHeight = size.height - boardHeight - 40
         val marginLeft = 48
-        val marginStartEnd = 24F
 
         val availableWidthForEachPart = (size.width - marginStart * 2 - marginLeft * 2) / 3
-        val yOffset = 16F
+        val yOffset = 16F + max((totalAvailableHeight - availableWidthForEachPart),0F)
         drawPreviewLayout(
             Offset(
                 marginStart,
@@ -40,7 +40,7 @@ fun DrawScope.nextPieceLayout(
             ),
             Size(
                 availableWidthForEachPart,
-                totalAvailableHeight),
+                availableWidthForEachPart),
             scoreTitleFont,
             viewState
         )
@@ -52,7 +52,7 @@ fun DrawScope.nextPieceLayout(
             ),
             Size(
                 availableWidthForEachPart,
-                totalAvailableHeight),
+                availableWidthForEachPart),
             scoreValueFont,
             scoreTitleFont,
             "Level",
@@ -66,7 +66,7 @@ fun DrawScope.nextPieceLayout(
             ),
             Size(
                 availableWidthForEachPart,
-                totalAvailableHeight),
+                availableWidthForEachPart),
             scoreValueFont,
             scoreTitleFont,
             "Score",
@@ -109,9 +109,11 @@ private fun DrawScope.drawPreviewLayout(
         titlePaint
     )
 
-    val previewPadding = 4F
+    val previewPadding = 8F
 
-    val widthOfEachRect = (size.height * 2 / 3 - previewPadding * 3) / 4
+    val marginBottom = 30
+
+    val widthOfEachRect = ((size.height ) * 2 / 3 - previewPadding * 3 - 10) / 4
 
     val totalWidthOfPreview = (widthOfEachRect ) * 4 + previewPadding * 3
 
@@ -120,7 +122,7 @@ private fun DrawScope.drawPreviewLayout(
         widthOfEachRect,
         previewPadding,
         leftTopStartOffset.x + ( size.width - totalWidthOfPreview) / 2 + 20,
-        leftTopStartOffset.y + (size.height - totalWidthOfPreview) - 10
+        leftTopStartOffset.y + (size.height - totalWidthOfPreview) - marginBottom
     )
 }
 

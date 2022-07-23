@@ -113,6 +113,7 @@ class Game {
             min = 0,
             max = 6
         )
+        return SquarePiece(tiles[0].size,tiles.size)
         return when(pieceType) {
             0 -> LPiece(tiles[0].size,tiles.size)
             1 -> ReverseLPiece(tiles[0].size,tiles.size)
