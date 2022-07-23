@@ -15,7 +15,7 @@ import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
 const val ITERATION_DELAY = 800L
-const val MOVE_UP_ITERATION_DELAY = 40L
+const val MOVE_UP_ITERATION_DELAY = 30L
 class Game {
     private var isRunning = false
     var resetTimer = false
@@ -113,7 +113,6 @@ class Game {
             min = 0,
             max = 6
         )
-        return SquarePiece(tiles[0].size,tiles.size)
         return when(pieceType) {
             0 -> LPiece(tiles[0].size,tiles.size)
             1 -> ReverseLPiece(tiles[0].size,tiles.size)
@@ -189,7 +188,7 @@ class Game {
             } else {
                 removeCompletedLinesWithEffect(completedLines)
                 gameScoreHelper.moveLinesOneDown(completedLines)
-                updateUi.value = updateUi.value.copy(tiles = getTilesAsList())
+                updateUiWithTiles()
 
                 generateNewPiece()
             }
@@ -200,6 +199,14 @@ class Game {
 
         removePreviousPieceLocation()
         updateTilesWithCurrentPieceLocation()
+    }
+
+    private fun updateUiWithTiles() {
+        updateUi.value = updateUi.value.copy(
+            tiles = getTilesAsList(),
+            pieceDestinationLocation = getPieceDestinationLocation()
+        )
+
     }
 
 
@@ -233,26 +240,27 @@ class Game {
     }
 
     fun moveLeft() {
-        if(isWaiting) return
+        if(isWaiting || moveUpPressed) return
         currentPiece.moveLeft(tiles)
         currentPiece.isDestinationLocationChanged = true
         removePreviousPieceLocation()
         updateTilesWithCurrentPieceLocation()
         currentPiece.calculateDestinationLoc(tiles)
+        updateUiWithTiles()
     }
 
     fun moveRight() {
-        if(isWaiting) return
+        if(isWaiting || moveUpPressed) return
         currentPiece.moveRight(tiles)
         currentPiece.isDestinationLocationChanged = true
-
         removePreviousPieceLocation()
         updateTilesWithCurrentPieceLocation()
         currentPiece.calculateDestinationLoc(tiles)
+        updateUiWithTiles()
     }
 
     fun rotate() {
-        if(isWaiting) return
+        if(isWaiting || moveUpPressed) return
         if(currentPiece.canRotate(tiles)) {
             currentPiece.rotate()
             removePreviousPieceLocation()

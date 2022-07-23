@@ -14,11 +14,8 @@ import com.example.testcomposetetris.domain.models.TileColor
 import com.example.testcomposetetris.domain.models.piece.LPiece
 import com.example.testcomposetetris.ext.convertToMinute
 import com.example.testcomposetetris.ext.convertToRemainingSecond
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 
 class MainViewModel: ViewModel() {
 
@@ -121,9 +118,9 @@ class MainViewModel: ViewModel() {
     fun moveLeft(repeatTime: Int) {
         viewModelScope.launch(Dispatchers.Default) {
             repeat(repeatTime) {
-                game.moveLeft()
-                updateUi()
-                delay(50)
+                withContext(Dispatchers.Default) {
+                    game.moveLeft()
+                }
             }
         }
     }
@@ -132,8 +129,6 @@ class MainViewModel: ViewModel() {
         viewModelScope.launch(Dispatchers.Default) {
             repeat(repeatTime) {
                 game.moveRight()
-                updateUi()
-                delay(50)
             }
         }
     }

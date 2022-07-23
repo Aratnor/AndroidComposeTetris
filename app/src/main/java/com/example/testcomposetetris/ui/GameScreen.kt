@@ -103,10 +103,9 @@ fun GameScreen(navController: NavHostController) {
                                 currentDragPosY = it.y
                                 clickCount = 0
                             } else if (
-                                yDifference.absoluteValue < viewModel.rectangleWidth &&
-                                velocityY?.absoluteValue?.compareTo(2000).orZero() > 0 ||
-                                yDifference.absoluteValue > viewModel.rectangleWidth &&
-                                velocityY?.compareTo(1600).orZero() > 0 &&
+                                yDifference > -viewModel.rectangleWidth &&
+                                velocityY?.compareTo(-2000).orZero() < 0 ||
+                                velocityY?.compareTo(3000).orZero() > 0 &&
                                 !isHorizontalDragStarted
                             ) {
                                 SoundUtil.play(SoundType.Drop)
