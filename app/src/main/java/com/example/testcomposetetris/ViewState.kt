@@ -10,6 +10,7 @@ data class ViewState(
     val nextPiecePreview: Pair<List<Position>,TileColor>,
     val pieceFinalLocation: List<Position>,
     val currentTime: String,
+    val moveUpState: MoveUpState,
     val score: String,
     val level: String,
     val gameOver: Boolean,

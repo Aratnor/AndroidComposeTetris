@@ -232,7 +232,7 @@ private fun DrawScope.drawNextPiecePreview(
                 Offset(startPositionX,startPositionY),
                 widthOfRect
                 ,isNotEmpty,
-                tile  = Tile(isNotEmpty,viewState.nextPiecePreview.second),
+                tile  = Tile(isNotEmpty,false,viewState.nextPiecePreview.second),
                 cornerRadius = 4F,
                 isInvisible = !isNotEmpty
             )

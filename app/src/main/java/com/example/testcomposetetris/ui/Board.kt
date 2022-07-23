@@ -122,6 +122,42 @@ private fun DrawScope.drawBoard(
         }
     }
 
+
+
+        var maxYPos = 0
+        var minXPos = 100
+        var maxXPos = 0
+
+    /*if(
+        viewState.moveUpState.isMoveUpActive &&
+        viewState.moveUpState.moveUpMovementCount > 0) {
+        viewState.moveUpState.moveUpInitialLocations.forEach {
+            if(it.x < minXPos) {
+                minXPos = it.x
+            }
+            if(it.x > maxXPos) {
+                maxXPos = it.x
+            }
+            if(it.y > maxYPos ) {
+                maxYPos = it.y
+            }
+        }
+
+
+        val leftX = (minXPos) * (padding + widthOfRectangle) + marginStart
+        val rightX = (maxXPos + 1) * (widthOfRectangle) + maxXPos * padding + marginStart
+        val endY = (maxYPos + 2) * (padding + widthOfRectangle) + marginTop
+        val startY = endY - 100
+
+        moveUpEffect(
+            initialOffset = Offset(leftX,startY +  100),
+            destinationOffset = Offset(leftX,endY),
+            Size(rightX - leftX,startY - endY),
+            viewState.moveUpState.currentPiece.pieceColor
+        )
+    }*/
+
+
     val muteButtonXPos = maxWidth + marginStart * 1.25.toFloat()
     val muteButtonYPos = marginTop + 16
     viewModel.muteButtonOffset = Offset(muteButtonXPos,muteButtonYPos)

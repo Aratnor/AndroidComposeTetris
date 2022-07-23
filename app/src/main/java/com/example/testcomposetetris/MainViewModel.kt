@@ -11,6 +11,7 @@ import com.example.testcomposetetris.domain.Game
 import com.example.testcomposetetris.domain.models.Position
 import com.example.testcomposetetris.domain.models.Tile
 import com.example.testcomposetetris.domain.models.TileColor
+import com.example.testcomposetetris.domain.models.piece.LPiece
 import com.example.testcomposetetris.ext.convertToMinute
 import com.example.testcomposetetris.ext.convertToRemainingSecond
 import kotlinx.coroutines.Dispatchers
@@ -25,12 +26,13 @@ class MainViewModel: ViewModel() {
         ViewState(
             List(24) {
                    List(12) {
-                       Tile(isOccupied = false, color = TileColor.EMPTY)
+                       Tile(isOccupied = false, hasActivePiece = false, color = TileColor.EMPTY)
                    }
             },
             emptyList<Position>() to TileColor.EMPTY,
             emptyList(),
             "00:00",
+            MoveUpState(false, emptyList(),-1,LPiece(-1,-1)),
             "",
             "Level 1",
             false,
@@ -50,6 +52,7 @@ class MainViewModel: ViewModel() {
     var muteButtonSize = Size(0F,0F)
 
     var isMuted = false
+
 
     private fun start() {
         viewModelScope.launch {
@@ -92,7 +95,8 @@ class MainViewModel: ViewModel() {
                 gameOverScore = "SCORE : ${game.getScore()}",
                 gameOverLevel = "LEVEL : ${game.getLevel()}",
                 level = it.difficultyLevel,
-                gameOver = it.isGameOver
+                gameOver = it.isGameOver,
+                moveUpState = it.moveUpState
             )
         }
     }

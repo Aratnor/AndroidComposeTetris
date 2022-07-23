@@ -43,7 +43,7 @@ fun DrawScope.tile(
     cornerRadius: Float = 12F
 ) {
     if(tile.isOccupied) {
-        if(!isShadowed) {
+        if(!isShadowed && tile.hasActivePiece) {
             drawShadowBehindTile(
                 0.18F,
                 topLeftPosition,
