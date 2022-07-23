@@ -66,6 +66,11 @@ class MainViewModel: ViewModel() {
     }
 
     private fun startTimer() {
+        val isInitialized = this::timerJob.isInitialized
+        if(isInitialized) {
+            timerJob.isActive
+            return
+        }
         timerJob = viewModelScope.launch {
             val flow = (0..Int.MAX_VALUE)
                 .asSequence()
