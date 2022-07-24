@@ -15,7 +15,7 @@ import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
 const val ITERATION_DELAY = 800L
-const val MOVE_UP_ITERATION_DELAY = 30L
+const val MOVE_UP_ITERATION_DELAY = 60L
 class Game {
     private var isRunning = false
     var resetTimer = false

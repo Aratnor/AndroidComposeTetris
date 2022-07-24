@@ -1,13 +1,13 @@
 package com.example.testcomposetetris.ui
 
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Fill
 import com.example.testcomposetetris.domain.models.TileColor
-import com.example.testcomposetetris.ui.theme.MOVE_UP_FINAL
-import com.example.testcomposetetris.ui.theme.MOVE_UP_INITIAL
 
 fun DrawScope.moveUpEffect(
     initialOffset: Offset,
@@ -16,20 +16,16 @@ fun DrawScope.moveUpEffect(
     color: TileColor
     ) {
         val linearGradient = Brush.verticalGradient(
-            listOf(
-                color.startColor.copy(alpha = 0.2F),
-                color.endColor
-            ),
-            initialOffset.y,
-            destinationOffset.y
+            0.1F to Color.Transparent,
+            0.8F to color.startColor.copy(0.5F),
+            startY = initialOffset.y - 10,
+            endY = destinationOffset.y
         )
-        drawRect(
+        drawRoundRect(
             linearGradient,
             initialOffset,
-            Size(
-                size.width,
-                size.height
-            ),
+            size,
+            CornerRadius(12F,12F),
             1F,
             Fill
         )

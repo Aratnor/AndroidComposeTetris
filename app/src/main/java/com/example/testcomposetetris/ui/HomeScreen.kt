@@ -12,7 +12,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import com.example.testcomposetetris.NavDestination
 import com.example.testcomposetetris.ext.coloredShadow
-import com.example.testcomposetetris.util.SoundType
 import com.example.testcomposetetris.util.SoundUtil
 
 @Composable

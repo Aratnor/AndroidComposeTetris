@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -99,37 +100,70 @@ private fun DrawScope.drawBoard(
         }
     }
 
-    /*if(
+
+    if(
         viewState.moveUpState.isMoveUpActive &&
         viewState.moveUpState.moveUpMovementCount > 0) {
-        viewState.moveUpState.moveUpInitialLocations.forEach {
-         var maxYPos = 0
-        var minXPos = 100
-        var maxXPos = 0
-            if(it.x < minXPos) {
-                minXPos = it.x
-            }
-            if(it.x > maxXPos) {
-                maxXPos = it.x
-            }
-            if(it.y > maxYPos ) {
-                maxYPos = it.y
+        val moveUpLocations = viewState.moveUpState.moveUpInitialLocations.toList()
+        val maxX = moveUpLocations.maxOfOrNull { it.x }
+        moveUpLocations.forEach {
+            if(it.x < 0 || it.y < 0 ) return@forEach
+            val isUpperTileIsEmpty =
+                it.y == 0 ||
+                        moveUpLocations
+                            .firstOrNull { t ->  t.y == it.y -1 && t.x == it.x } == null
+
+            if(isUpperTileIsEmpty) {
+                var hasTileOnLeft = false
+                var hasTileOnLeftTop = false
+                var hasTileOnRight = false
+                var hasTileOnRightTop = false
+                moveUpLocations.forEach { nextTile ->
+                    if(nextTile.x == it.x-1) {
+                        hasTileOnLeft = true
+                    }
+                    if(nextTile.x == it.x-1 && nextTile.y == it.y-1) {
+                        hasTileOnLeftTop = true
+                    }
+                    if(nextTile.x == it.x+1) {
+                        hasTileOnRight = true
+                    }
+                    if(nextTile.x == it.x+1 && nextTile.y == it.y+1) {
+                        hasTileOnRightTop = true
+                    }
+                }
+                val initialLeftX = (it.x) * (padding + widthOfRectangle) + marginStart
+                var leftXOffset = 0F
+                val leftX = when {
+                    hasTileOnLeft && hasTileOnLeftTop -> {
+                        leftXOffset += padding
+                        initialLeftX - padding
+                    }
+                    else -> {
+                        leftXOffset = 0F
+                        initialLeftX
+                    }
+                }
+                val rightX = when (it.x) {
+                    maxX -> leftX + widthOfRectangle + leftXOffset
+                    else -> leftX + widthOfRectangle + padding + leftXOffset
+                }
+                val endY = (it.y) * (padding + widthOfRectangle) + marginTop
+                val height = 200F
+                val startY = endY - height
+
+                moveUpEffect(
+                    initialOffset = Offset(leftX,startY),
+                    destinationOffset = Offset(leftX,endY),
+                    Size(rightX - leftX,height),
+                    viewState.moveUpState.currentPiece.pieceColor
+                )
             }
         }
+    }
 
 
-        val leftX = (minXPos) * (padding + widthOfRectangle) + marginStart
-        val rightX = (maxXPos + 1) * (widthOfRectangle) + maxXPos * padding + marginStart
-        val endY = (maxYPos + 2) * (padding + widthOfRectangle) + marginTop
-        val startY = endY - 100
 
-        moveUpEffect(
-            initialOffset = Offset(leftX,startY +  100),
-            destinationOffset = Offset(leftX,endY),
-            Size(rightX - leftX,startY - endY),
-            viewState.moveUpState.currentPiece.pieceColor
-        )
-    }*/
 
 
     val muteButtonXPos = maxWidth + marginStart * 1.25.toFloat()
