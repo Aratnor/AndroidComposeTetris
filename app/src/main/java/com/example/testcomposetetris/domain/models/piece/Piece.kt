@@ -22,9 +22,9 @@ abstract class Piece {
 
      var pieceColor: TileColor = ColorUtil.generateRandomColor()
 
-    fun moveDown(posYLimit: Int) {
+    fun moveDown(posYLimit: Int,noStopOnLimit: Boolean = false) {
         location.forEachIndexed { index, position ->
-            if(position.y < posYLimit - 1) {
+            if(position.y < posYLimit - 1 && !noStopOnLimit) {
                 location[index] = position.copy(y = position.y.inc())
             }
         }

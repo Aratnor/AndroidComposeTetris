@@ -31,7 +31,7 @@ fun GameScreen(navController: NavHostController) {
     SoundUtil.init(LocalContext.current,viewModel)
 
 
-    SoundUtil.playGameTheme()
+    SoundUtil.playGameTheme(true)
 
     LaunchedEffect(key1 = 2) {
         viewModel.collect()
