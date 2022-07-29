@@ -127,6 +127,11 @@ class Game {
     private suspend fun removeCompletedLinesWithEffect(
     completedLines: List<Int>
     ) {
+        updateUi.value = updateUi.value.copy(
+            moveUpState = updateUi.value.moveUpState.copy(
+                moveUpMovementCount = 0
+            )
+        )
         SoundUtil.play(SoundType.Clean)
         repeat(4) {
             gameScoreHelper.removeCompletedLines(completedLines)
@@ -223,9 +228,15 @@ class Game {
     }
 
     private fun removeActivePieceFromTiles() {
-        currentPiece.location.forEach {
+        currentPiece.previousLocation.forEach {
             if(it.x < 0 || it.y < 0) return@forEach
-            tiles[it.y][it.x] =  tiles[it.y][it.x].copy(hasActivePiece = false)
+            if(
+                currentPiece
+                    .location
+                    .firstOrNull { currentPos ->
+                        it.x == currentPos.x && it.y == currentPos.y
+                    } != null) return@forEach
+            tiles[it.y][it.x] =  tiles[it.y][it.x].copy(hasActivePiece = false, isOccupied = false)
         }
     }
 

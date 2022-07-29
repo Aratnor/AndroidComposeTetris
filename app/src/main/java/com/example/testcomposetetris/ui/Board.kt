@@ -21,6 +21,7 @@ import com.example.testcomposetetris.ViewState
 import com.example.testcomposetetris.domain.models.ButtonIcons
 import com.example.testcomposetetris.util.ResourceUtil
 import com.example.testcomposetetris.util.SoundUtil
+import java.lang.NullPointerException
 
 @Composable
 fun Board(
@@ -105,7 +106,11 @@ private fun DrawScope.drawBoard(
         viewState.moveUpState.isMoveUpActive &&
         viewState.moveUpState.moveUpMovementCount > 0) {
         val moveUpLocations = viewState.moveUpState.moveUpInitialLocations.toList()
-        val maxX = moveUpLocations.maxOfOrNull { it.x }
+        val maxX = try {
+            moveUpLocations.maxOfOrNull { it.x }
+        } catch (exception: NullPointerException) {
+            null
+        }
         moveUpLocations.forEach {
             if(it.x < 0 || it.y < 0 ) return@forEach
             val isUpperTileIsEmpty =

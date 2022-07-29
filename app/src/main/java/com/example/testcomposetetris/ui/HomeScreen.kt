@@ -41,7 +41,8 @@ fun HomeScreen(
             .background(BACKGROUND)
             .drawBehind {
                 homeBackgroundAnimation(viewModel.viewState.value)
-            },
+            }
+        ,
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {

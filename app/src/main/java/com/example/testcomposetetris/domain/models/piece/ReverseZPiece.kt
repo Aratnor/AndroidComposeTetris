@@ -118,9 +118,16 @@ class ReverseZPiece(
 
     private fun rotateLeft() {
         val referencePos = location[1]
-        location[0] = Position(referencePos.x + 1,referencePos.y)
-        location[2] = Position(referencePos.x,referencePos.y +  1)
-        location[3] = Position(referencePos.x - 1 ,referencePos.y + 1)
+
+        val xOffset = if(referencePos.x - 1 < 0) {
+            1
+        } else {
+            0
+        }
+        location[0] = Position(xOffset + referencePos.x + 1,referencePos.y)
+        location[1] = Position(xOffset + referencePos.x, referencePos.y)
+        location[2] = Position(xOffset + referencePos.x,referencePos.y +  1)
+        location[3] = Position(xOffset + referencePos.x - 1 ,referencePos.y + 1)
     }
 
     private fun rotateTop() {
@@ -144,16 +151,14 @@ class ReverseZPiece(
     private fun canRotateTop(
         tiles: Array<Array<Tile>>
     ): Boolean {
-        val referencePosition = location[2]
+        val referencePosition = location[1]
         return canMoveToNextTiles(referencePosition,tiles)
     }
 
     private fun canRotateLeft(
         tiles: Array<Array<Tile>>
     ): Boolean {
-        val referencePosition = location[2]
-        val minX = referencePosition.x - 1
-        if(minX < 0) return false
+        val referencePosition = location[1]
         return canMoveToNextTiles(referencePosition,tiles)
     }
 
