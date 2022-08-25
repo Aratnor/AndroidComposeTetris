@@ -33,8 +33,6 @@ fun HomeScreen(
 ) {
     SoundUtil.stopGameTheme()
     val viewModel = viewModel<HomeViewModel>()
-
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -74,4 +72,19 @@ fun HomeScreen(
             )
         }
     }
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.TopCenter
+    ) {
+        Text(
+            modifier = Modifier
+                .padding(top = 48.dp)
+                ,
+            text = "Falling Block X",
+            fontSize = TextUnit(24F, TextUnitType.Sp),
+            style = MaterialTheme.typography.body2,
+            color = Color.White
+        )
+    }
+
 }
