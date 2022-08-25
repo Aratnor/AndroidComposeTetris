@@ -24,6 +24,7 @@ fun GameOverScreen(
     score: String,
     level: String
 ) {
+    SoundUtil.stopGameTheme()
 
     Column(
         modifier = Modifier.fillMaxSize(),

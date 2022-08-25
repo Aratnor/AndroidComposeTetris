@@ -8,13 +8,14 @@ import androidx.compose.ui.geometry.Size
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.testcomposetetris.domain.Game
+import com.example.testcomposetetris.domain.models.Position
+import com.example.testcomposetetris.domain.models.Tile
+import com.example.testcomposetetris.domain.models.TileColor
+import com.example.testcomposetetris.domain.models.piece.LPiece
 import com.example.testcomposetetris.ext.convertToMinute
 import com.example.testcomposetetris.ext.convertToRemainingSecond
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 
 class MainViewModel: ViewModel() {
 
@@ -22,12 +23,13 @@ class MainViewModel: ViewModel() {
         ViewState(
             List(24) {
                    List(12) {
-                       false
+                       Tile(isOccupied = false, hasActivePiece = false, color = TileColor.EMPTY)
                    }
             },
-            emptyList(),
+            emptyList<Position>() to TileColor.EMPTY,
             emptyList(),
             "00:00",
+            MoveUpState(false, emptyList(),-1,LPiece(-1,-1)),
             "",
             "Level 1",
             false,
@@ -44,18 +46,31 @@ class MainViewModel: ViewModel() {
     var rectangleWidth = -1F
 
     var muteButtonOffset = Offset(0F,0F)
-    var muteButtonSize = Size(0F,0F)
+    var muteButtonSize = Size(120F,120F)
+
+    var muteMusicOffset = Offset(0F,0F)
+    var muteMusicSize = Size(120F,120F)
+
+    var playButtonOffset = Offset(0F,0F)
+    var playButtonSize = Size(120F,120F)
 
     var isMuted = false
+    var isMusicMuted = false
+    var isGamePaused = false
+
 
     private fun start() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             game.startGame()
-
         }
     }
 
     private fun startTimer() {
+        val isInitialized = this::timerJob.isInitialized
+        if(isInitialized) {
+            timerJob.isActive
+            return
+        }
         timerJob = viewModelScope.launch {
             val flow = (0..Int.MAX_VALUE)
                 .asSequence()
@@ -89,12 +104,13 @@ class MainViewModel: ViewModel() {
                 gameOverScore = "SCORE : ${game.getScore()}",
                 gameOverLevel = "LEVEL : ${game.getLevel()}",
                 level = it.difficultyLevel,
-                gameOver = it.isGameOver
+                gameOver = it.isGameOver,
+                moveUpState = it.moveUpState
             )
         }
     }
 
-    private fun updateUi() {
+    fun updateUi() {
         val list = game.getTilesAsList()
         _viewState.value = _viewState.value.copy(
             tiles = list,
@@ -114,9 +130,9 @@ class MainViewModel: ViewModel() {
     fun moveLeft(repeatTime: Int) {
         viewModelScope.launch(Dispatchers.Default) {
             repeat(repeatTime) {
-                game.moveLeft()
-                updateUi()
-                delay(50)
+                withContext(Dispatchers.Default) {
+                    game.moveLeft()
+                }
             }
         }
     }
@@ -125,8 +141,6 @@ class MainViewModel: ViewModel() {
         viewModelScope.launch(Dispatchers.Default) {
             repeat(repeatTime) {
                 game.moveRight()
-                updateUi()
-                delay(50)
             }
         }
     }
@@ -140,6 +154,17 @@ class MainViewModel: ViewModel() {
     fun moveUp() {
         viewModelScope.launch {
             game.moveUp()
+        }
+    }
+
+    fun pauseGame() {
+        game.pause()
+    }
+
+    fun continueGame() {
+        viewModelScope.launch(Dispatchers.Default) {
+            game.continueGame()
+
         }
     }
 }

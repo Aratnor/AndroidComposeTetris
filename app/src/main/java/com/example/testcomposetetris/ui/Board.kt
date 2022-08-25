@@ -1,32 +1,27 @@
 package com.example.testcomposetetris.ui
 
-import android.graphics.Bitmap
 import android.graphics.Typeface
 import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.Fill
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.graphics.drawable.toBitmap
 import androidx.navigation.NavHostController
 import com.example.testcomposetetris.MainViewModel
 import com.example.testcomposetetris.NavDestination
 import com.example.testcomposetetris.NavDestination.navigateGameOver
 import com.example.testcomposetetris.R
 import com.example.testcomposetetris.ViewState
-import com.example.testcomposetetris.ui.theme.DARK_BLUE
-import com.example.testcomposetetris.ui.theme.OUT_RECT
+import com.example.testcomposetetris.domain.models.ButtonIcons
+import com.example.testcomposetetris.util.ResourceUtil
 import com.example.testcomposetetris.util.SoundUtil
+import java.lang.NullPointerException
 
 @Composable
 fun Board(
@@ -35,23 +30,11 @@ fun Board(
 ) {
     val viewState = viewModel.viewState.value
 
-    val timerFont =  ResourcesCompat.getFont(LocalContext.current, R.font.ds_digit)
+    val scoreTitleFont =  ResourcesCompat.getFont(LocalContext.current, R.font.roboto_regular)
 
-    val gameFont = ResourcesCompat.getFont(LocalContext.current, R.font.game_font_2)
+    val scoreValueFont = ResourcesCompat.getFont(LocalContext.current, R.font.roboto_bold)
 
-    val numberFont = ResourcesCompat.getFont(LocalContext.current, R.font.number_font)
-
-    val muteSoundIcon =  ResourcesCompat.getDrawable(
-        LocalContext.current.resources,
-        R.drawable.ic_baseline_volume_off_24,
-        null
-    )?.toBitmap()
-
-    val openSoundIcon =ResourcesCompat.getDrawable(
-        LocalContext.current.resources,
-        R.drawable.ic_baseline_volume_up_24,
-        null
-    )?.toBitmap()
+    ResourceUtil.init(LocalContext.current.resources)
 
     Canvas(
         modifier = Modifier
@@ -82,11 +65,8 @@ fun Board(
                 viewState,
                 viewModel.rectangleWidth,
                 padding,
-                gameFont,
-                timerFont,
-                numberFont,
-                muteSoundIcon,
-                openSoundIcon
+                scoreTitleFont,
+                scoreValueFont
             )
         }
     }
@@ -97,85 +77,168 @@ private fun DrawScope.drawBoard(
     viewState: ViewState,
     widthOfRectangle: Float,
     padding: Float,
-    gameFont: Typeface?,
-    typeface: Typeface?,
-    numberFont: Typeface?,
-    muteSoundPainter: Bitmap?,
-    openSoundPainter: Bitmap?,
+    scoreTitleFont: Typeface?,
+    scoreValueFont: Typeface?
     ) {
 
-    val maxWidth = (padding + widthOfRectangle) * viewState.tiles[0].size + 30F
+    val maxWidth = (padding + widthOfRectangle) * viewState.tiles[0].size
     val maxHeight = (padding + widthOfRectangle) * viewState.tiles.size + 18
 
     val totalMarginHeight = size.height - maxHeight
-    val totaMarginWidth = size.width - maxWidth
+    val totalMarginWidth = size.width - maxWidth
 
     val marginTop = totalMarginHeight - 8
-    val marginStart = totaMarginWidth / 2
-
-    drawShadowBehindTile(
-        topLeftPosition = Offset(marginStart - 12,marginTop - 12),
-        width = maxWidth,
-        height = maxHeight,
-        topShadowMultiplier = 0.015F,
-        leftShadowMultiplier = 0.04F,
-        rightShadowMultiplier = 0.04F,
-        bottomShadowMultiplier = 0.04F,
-        shadowRadius = 10F,
-        alpha = 0.1F
-    )
-
-    drawRoundRect(
-        OUT_RECT,
-        Offset(marginStart - 12,marginTop - 12),
-        Size(maxWidth + 24,maxHeight + 24),
-        CornerRadius(25F,25F),
-        Stroke(24F),
-        1F
-    )
-
-    drawRect(
-        DARK_BLUE,
-        Offset(marginStart,marginTop),
-        Size(maxWidth,maxHeight),
-        1F,
-        Fill
-    )
+    val marginStart = totalMarginWidth / 2
 
     viewState.tiles.forEachIndexed { positionY, row ->
-        row.forEachIndexed { positionX, isOccupied ->
+        row.forEachIndexed { positionX, tile ->
             val isShadowed = viewState
                 .pieceFinalLocation
                 .firstOrNull { it.x == positionX && it.y == positionY} != null
             val startPositionX = (positionX) * (padding + widthOfRectangle) + marginStart
             val startPositionY = (positionY) * (padding + widthOfRectangle) + marginTop
-            tile(Offset(startPositionX,startPositionY),widthOfRectangle,isOccupied,isShadowed)
+            tile(Offset(startPositionX,startPositionY),widthOfRectangle,isShadowed,tile)
         }
     }
+
+
+    if(
+        viewState.moveUpState.isMoveUpActive &&
+        viewState.moveUpState.moveUpMovementCount > 0) {
+        val moveUpLocations = viewState.moveUpState.moveUpInitialLocations.toList()
+        val maxX = try {
+            moveUpLocations.maxOfOrNull { it.x }
+        } catch (exception: NullPointerException) {
+            null
+        }
+        moveUpLocations.forEach {
+            if(it.x < 0 || it.y < 0 ) return@forEach
+            val isUpperTileIsEmpty =
+                it.y == 0 ||
+                        moveUpLocations
+                            .firstOrNull { t ->  t.y == it.y -1 && t.x == it.x } == null
+
+            if(isUpperTileIsEmpty) {
+                var hasTileOnLeft = false
+                var hasTileOnLeftTop = false
+                var hasTileOnRight = false
+                var hasTileOnRightTop = false
+                moveUpLocations.forEach { nextTile ->
+                    if(nextTile.x == it.x-1) {
+                        hasTileOnLeft = true
+                    }
+                    if(nextTile.x == it.x-1 && nextTile.y == it.y-1) {
+                        hasTileOnLeftTop = true
+                    }
+                    if(nextTile.x == it.x+1) {
+                        hasTileOnRight = true
+                    }
+                    if(nextTile.x == it.x+1 && nextTile.y == it.y+1) {
+                        hasTileOnRightTop = true
+                    }
+                }
+                val initialLeftX = (it.x) * (padding + widthOfRectangle) + marginStart
+                var leftXOffset = 0F
+                val leftX = when {
+                    hasTileOnLeft && hasTileOnLeftTop -> {
+                        leftXOffset += padding
+                        initialLeftX - padding
+                    }
+                    else -> {
+                        leftXOffset = 0F
+                        initialLeftX
+                    }
+                }
+                val rightX = when (it.x) {
+                    maxX -> leftX + widthOfRectangle + leftXOffset
+                    else -> leftX + widthOfRectangle + padding + leftXOffset
+                }
+                val endY = (it.y) * (padding + widthOfRectangle) + marginTop
+                val height = 200F
+                val startY = endY - height
+
+                moveUpEffect(
+                    initialOffset = Offset(leftX,startY),
+                    destinationOffset = Offset(leftX,endY),
+                    Size(rightX - leftX,height),
+                    viewState.moveUpState.currentPiece.pieceColor
+                )
+            }
+        }
+    }
+
+
+
+
 
     val muteButtonXPos = maxWidth + marginStart * 1.25.toFloat()
     val muteButtonYPos = marginTop + 16
     viewModel.muteButtonOffset = Offset(muteButtonXPos,muteButtonYPos)
 
-    if(viewModel.isMuted) {
-        muteSoundPainter?.let {
-            viewModel.muteButtonSize = Size(it.width.toFloat(),it.height.toFloat())
-            drawImage(
-                it.asImageBitmap(),
-                viewModel.muteButtonOffset
-            )
+    val muteMusicYPos = muteButtonYPos + viewModel.muteButtonSize.height + 80
+    viewModel.muteMusicOffset = Offset(muteButtonXPos, muteMusicYPos)
 
-        }
-    } else {
-        openSoundPainter?.let {
-            viewModel.muteButtonSize = Size(it.width.toFloat(),it.height.toFloat())
+    viewModel.playButtonOffset = Offset(
+        muteButtonXPos,
+        muteMusicYPos + viewModel.muteMusicSize.height + 80
+    )
 
-            drawImage(
-                it.asImageBitmap(),
-                viewModel.muteButtonOffset
-            )
-        }
+    val muteSoundBitmap = ResourceUtil.getBitmap(
+        ButtonIcons.MUTE_SOUND.resId
+    )
 
+    val openSoundBitmap = ResourceUtil.getBitmap(
+        ButtonIcons.UNMUTE_SOUND.resId
+    )
+
+    soundButton(
+        viewModel.muteButtonOffset,
+        viewModel.isMuted,
+        muteSoundBitmap,
+        openSoundBitmap) {
+        viewModel.muteButtonSize = it
     }
-    nextPieceLayout(viewState,maxWidth + 24,maxHeight  + 24,gameFont,typeface,numberFont)
+
+    val muteMusicBitmap = ResourceUtil.getBitmap(
+        ButtonIcons.MUTE_MUSIC.resId
+    )
+
+    val openMusicBitmap = ResourceUtil.getBitmap(
+        ButtonIcons.UNMUTE_MUSIC.resId
+    )
+
+    soundButton(
+        viewModel.muteMusicOffset,
+        viewModel.isMusicMuted,
+        muteMusicBitmap,
+        openMusicBitmap) {
+        viewModel.muteMusicSize = it
+    }
+
+    val pauseGameBitmap = ResourceUtil.getBitmap(
+        ButtonIcons.PLAY.resId
+    )
+
+    val playGameBitmap = ResourceUtil.getBitmap(
+        ButtonIcons.PAUSE.resId
+    )
+
+    soundButton(
+        viewModel.playButtonOffset,
+        viewModel.isGamePaused,
+        pauseGameBitmap,
+        playGameBitmap
+    ) {
+        viewModel.playButtonSize = it
+    }
+
+
+    nextPieceLayout(
+        viewState,
+        maxWidth + 24,
+        maxHeight  + 24,
+        marginStart,
+        scoreTitleFont,
+        scoreValueFont
+    )
 }

@@ -5,132 +5,213 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.Typeface
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
-import com.example.testcomposetetris.R
+import androidx.compose.ui.graphics.drawscope.Fill
+import androidx.compose.ui.graphics.toArgb
 import com.example.testcomposetetris.ViewState
+import com.example.testcomposetetris.domain.models.Tile
 import com.example.testcomposetetris.ext.drawText
-import com.example.testcomposetetris.ui.theme.fonts
+import com.example.testcomposetetris.ui.theme.*
+import java.lang.Float.max
 
 fun DrawScope.nextPieceLayout(
     viewState: ViewState,
     boardWidth: Float,
     boardHeight: Float,
-    gameFont: Typeface?,
-    font: Typeface?,
-    numberFont: Typeface?
+    marginStart: Float,
+    scoreTitleFont: Typeface?,
+    scoreValueFont: Typeface?
 ) {
 
 
     if(!viewState.gameOver) {
         val totalAvailableHeight = size.height - boardHeight - 40
-        val widthOfEachRect = totalAvailableHeight / 4
-        val previewPadding = 4F
-        val xOffset = 16F
-        val yOffset = 16F
-            drawNextPiecePreview(
-                viewState,
-                widthOfEachRect,
-                previewPadding,
-                xOffset,
+        val marginLeft = 48
+
+        val availableWidthForEachPart = (size.width - marginStart * 2 - marginLeft * 2) / 3
+        val yOffset = 16F + max((totalAvailableHeight - availableWidthForEachPart),0F)
+        drawPreviewLayout(
+            Offset(
+                marginStart,
                 yOffset
-            )
+            ),
+            Size(
+                availableWidthForEachPart,
+                availableWidthForEachPart),
+            scoreTitleFont,
+            viewState
+        )
+
+        drawLevelLayout(
+            Offset(
+                marginStart + availableWidthForEachPart + marginLeft,
+                yOffset
+            ),
+            Size(
+                availableWidthForEachPart,
+                availableWidthForEachPart),
+            scoreValueFont,
+            scoreTitleFont,
+            "Level",
+            viewState.level
+        )
+
+        drawLevelLayout(
+            Offset(
+                marginStart + (availableWidthForEachPart + marginLeft) * 2,
+                yOffset
+            ),
+            Size(
+                availableWidthForEachPart,
+                availableWidthForEachPart),
+            scoreValueFont,
+            scoreTitleFont,
+            "Score",
+            viewState.score
+        )
+    }
+}
+
+private fun DrawScope.drawPreviewLayout(
+    leftTopStartOffset: Offset,
+    size: Size,
+    titleFont: Typeface?,
+    viewState: ViewState,
+) {
+    drawRoundRect(
+        SCORE_BACKGROUND_COLOR,
+        leftTopStartOffset,
+        size,
+        CornerRadius(16F,16F),
+        Fill,
+        1F
+    )
+
+    val titlePaint = Paint().apply {
+        textSize = size.width / 8F
+        color = SCORE_TITLE_TEXT_COLOR.toArgb()
+        typeface = titleFont
+        textAlign = Paint.Align.CENTER
+        isAntiAlias = true
+    }
+    val title = "Next"
+    val titleTextBound = Rect()
+    titlePaint.getTextBounds(title,0,title.length,titleTextBound)
 
 
-        val startX = (widthOfEachRect + previewPadding) * 4 + xOffset + 12
-        val centerY = totalAvailableHeight / 2
+    drawText(
+        title,
+        leftTopStartOffset.x + titleTextBound.width() / 2 + size.width / 12,
+        leftTopStartOffset.y + titleTextBound.height() / 2 + size.height / 8,
+        titlePaint
+    )
 
-        val paint = Paint().apply {
-            textSize = 64F
-            color = Color.BLACK
-            typeface = gameFont
-            textAlign = Paint.Align.CENTER
+    val previewPadding = 8F
+
+    val marginBottom = 30
+
+    val widthOfEachRect = ((size.height ) * 2 / 3 - previewPadding * 3 - 10) / 4
+
+    val totalWidthOfPreview = (widthOfEachRect ) * 4 + previewPadding * 3
+
+    drawNextPiecePreview(
+        viewState,
+        widthOfEachRect,
+        previewPadding,
+        leftTopStartOffset.x + ( size.width - totalWidthOfPreview) / 2 + 20,
+        leftTopStartOffset.y + (size.height - totalWidthOfPreview) - marginBottom
+    )
+}
+
+private fun DrawScope.drawLevelLayout(
+    leftTopStartOffset: Offset,
+    size: Size,
+    valueFont: Typeface?,
+    titleFont: Typeface?,
+    title: String,
+    value: String
+) {
+    drawRoundRect(
+        SCORE_BACKGROUND_COLOR,
+        leftTopStartOffset,
+        size,
+        CornerRadius(16F,16F),
+        Fill,
+        1F
+    )
+
+
+    val valuePaint = Paint().apply {
+        textSize = size.width / 1.6F
+        color = SCORE_VALUE_TEXT_COLOR.toArgb()
+        typeface = valueFont
+        textAlign = Paint.Align.CENTER
+    }
+
+    val titlePaint = Paint().apply {
+        textSize = size.width / 8F
+        color = SCORE_TITLE_TEXT_COLOR.toArgb()
+        typeface = titleFont
+        textAlign = Paint.Align.CENTER
+        isAntiAlias = true
+    }
+
+    val valueStrokePaint = Paint().apply {
+        textSize = size.width / 1.6F
+        typeface = valueFont
+        color = Color.WHITE
+        style = Paint.Style.STROKE
+        strokeWidth = 4F
+        textAlign = Paint.Align.CENTER
+        isAntiAlias = true
+    }
+
+
+    val titleTextBound = Rect()
+    titlePaint.getTextBounds(title,0,title.length,titleTextBound)
+
+    drawText(
+        title,
+        leftTopStartOffset.x + titleTextBound.width() / 2 + size.width / 12,
+        leftTopStartOffset.y + titleTextBound.height() / 2 + size.height / 8,
+        titlePaint
+    )
+
+    val centerX = leftTopStartOffset.x + size.width / 2
+    val centerY = leftTopStartOffset.y + size.height / 2
+
+
+    val initialTextSize = (size.width / 1.6).toInt()
+    var finalRect = Rect()
+    kotlin.run {
+        for(textSize in initialTextSize downTo 8) {
+            valuePaint.textSize = textSize.toFloat()
+            valueStrokePaint.textSize = textSize.toFloat()
+            val valueTextBound = Rect()
+            valuePaint.getTextBounds(value,0,value.length,valueTextBound)
+            if(valueTextBound.height()  < size.height - 50 && valueTextBound.width() < size.width - 50) {
+                finalRect = valueTextBound
+                return@run
+            }
         }
-        val eachTextWidth = (size.width - startX) / 3
+    }
 
-        val scoreText = "Score"
-
-        drawText(
-            scoreText,
-            startX + 94,
-            centerY - 12,
-            paint
-            )
-
-        val scoreTextBound = Rect()
-        paint.getTextBounds(scoreText,0,scoreText.length,scoreTextBound)
-
-        drawText(
-            viewState.score,
-            startX + scoreTextBound.width() / 2 + 38,
-            centerY + scoreTextBound.height() + 8,
-            Paint().apply {
-                textSize = 64F
-                color = Color.BLACK
-                typeface = numberFont
-                textAlign = Paint.Align.CENTER
-            }
-        )
-
-        val levelText = "Level"
-
-        drawText(
-            levelText,
-            startX + 64   + eachTextWidth *  1,
-            centerY - 12,
-            paint
-        )
-
-        val levelTextBound = Rect()
-        paint.getTextBounds(levelText,0,levelText.length,levelTextBound)
-
-        drawText(
-            viewState.level,
-            startX + 64  + eachTextWidth *  1,
-            centerY + levelTextBound.height(),
-            Paint().apply {
-                textSize = 64F
-                color = Color.BLACK
-                typeface = numberFont
-                textAlign = Paint.Align.CENTER
-            }
-        )
-
-        val timerText = "Timer : "
-
-
-        drawText(
-            "Timer : ",
-            startX + 64  + eachTextWidth *  2,
-            centerY - 12,
-            Paint().apply {
-                textSize = 64F
-                color = Color.BLACK
-                typeface = font
-                textAlign = Paint.Align.CENTER
-            }
-        )
-
-
-        val timerTextBound = Rect()
-        paint.getTextBounds(timerText,0,timerText.length,timerTextBound)
-
-        drawText(
-            viewState.currentTime,
-            startX + 48  + eachTextWidth *  2,
-            centerY + timerTextBound.height() + 12,
-            Paint().apply {
-                textSize = 72F
-                style = Paint.Style.FILL
-                color = Color.BLACK
-                typeface = font
-                textAlign = Paint.Align.CENTER
-            }
-        )
-        }
+    val startPosY = centerY + finalRect.height() / 2 + 12
+    drawText(
+        value,
+        centerX,
+        startPosY,
+        valuePaint
+    )
+    drawText(
+        value,
+        centerX,
+        startPosY,
+        valueStrokePaint
+    )
 }
 
 private fun DrawScope.drawNextPiecePreview(
@@ -147,12 +228,15 @@ private fun DrawScope.drawNextPiecePreview(
             val startPositionY = (posY) * (padding + widthOfRect) + yOffset
             val isNotEmpty =viewState
                 .nextPiecePreview
+                .first
                 .firstOrNull { it.x == posX && it.y == posY } != null
             tile(
                 Offset(startPositionX,startPositionY),
                 widthOfRect
                 ,isNotEmpty,
-                cornerRadius = 4F
+                tile  = Tile(isNotEmpty,false,viewState.nextPiecePreview.second),
+                cornerRadius = 4F,
+                isInvisible = !isNotEmpty
             )
         }
     }

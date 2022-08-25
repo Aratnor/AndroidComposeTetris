@@ -38,19 +38,21 @@ object SoundUtil {
         sp.release()
     }
 
-    fun playGameTheme() {
-        if(!mediaPlayer.isPlaying) {
+    fun playGameTheme(reset: Boolean = false) {
+        if(::mediaPlayer.isInitialized) {
+            if(mediaPlayer.isPlaying) return
             _context?.let {
-                mediaPlayer = MediaPlayer.create(it,R.raw.tetris_main_theme)
+                if(reset) {
+                    mediaPlayer = MediaPlayer.create(it,R.raw.tetris_main_theme)
+                }
                 mediaPlayer.isLooping = true
             }
             mediaPlayer.start()
         }
     }
-
     fun stopGameTheme() {
         if(this::mediaPlayer.isInitialized) {
-            mediaPlayer.stop()
+            mediaPlayer.pause()
         }
     }
 

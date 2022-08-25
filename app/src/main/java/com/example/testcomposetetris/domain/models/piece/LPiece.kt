@@ -2,6 +2,7 @@ package com.example.testcomposetetris.domain.models.piece
 
 import com.example.testcomposetetris.domain.generateRandomNumber
 import com.example.testcomposetetris.domain.models.Position
+import com.example.testcomposetetris.domain.models.Tile
 
 class LPiece(
     override val posXLimit: Int,
@@ -21,9 +22,9 @@ class LPiece(
     )
     override val previewLocation: Array<Position> = arrayOf(
         Position(0,1),
-        Position(0,0),
-        Position(1,0),
-        Position(2,0)
+        Position(0,2),
+        Position(0,3),
+        Position(1,3)
     )
 
     override val destinationLocation: Array<Position> = arrayOf(
@@ -62,19 +63,19 @@ class LPiece(
     }
 
     private fun canMoveLeft(
-        tiles: Array<Array<Boolean>>
+        tiles: Array<Array<Tile>>
     )
             : Boolean {
       location.forEach { position ->
           if(position.x - 1 < 0) return false
           if(position.y < 0) return@forEach
           if(location.firstOrNull { it.x == position.x - 1 && it.y == position.y } != null) return@forEach
-          if(tiles[position.y][position.x - 1]) return false
+          if(tiles[position.y][position.x - 1].isOccupied) return false
       }
         return true
     }
 
-    override fun moveLeft(tiles: Array<Array<Boolean>>) {
+    override fun moveLeft(tiles: Array<Array<Tile>>) {
         if(canMoveLeft(tiles)) {
             copyCurrentLocToPreviousLoc()
             location.forEachIndexed { index, position ->
@@ -83,17 +84,17 @@ class LPiece(
         }
     }
 
-    private fun canMoveRight(tiles: Array<Array<Boolean>>): Boolean {
+    private fun canMoveRight(tiles: Array<Array<Tile>>): Boolean {
         location.forEach { position ->
             if(position.x + 1 >= posXLimit) return false
             if(position.y < 0) return@forEach
             if(location.firstOrNull { it.x == position.x + 1 && it.y == position.y } != null) return@forEach
-            if(tiles[position.y][position.x + 1]) return false
+            if(tiles[position.y][position.x + 1].isOccupied) return false
         }
         return true
     }
 
-    override fun moveRight(tiles: Array<Array<Boolean>>) {
+    override fun moveRight(tiles: Array<Array<Tile>>) {
         if(canMoveRight(tiles)) {
             copyCurrentLocToPreviousLoc()
             location.forEachIndexed { index, position ->
@@ -152,7 +153,7 @@ class LPiece(
         location[3] = Position(referencePosition.x + 1,referencePosition.y)
     }
 
-    override fun canRotate(tiles: Array<Array<Boolean>>): Boolean {
+    override fun canRotate(tiles: Array<Array<Tile>>): Boolean {
         return when(currentRotation) {
             Rotation.LEFT -> {
                 canRotateTop(tiles)
@@ -169,14 +170,14 @@ class LPiece(
         }
     }
 
-    private fun canRotateLeft(tiles: Array<Array<Boolean>>): Boolean {
+    private fun canRotateLeft(tiles: Array<Array<Tile>>): Boolean {
         val referencePosition = location[2]
         val minX = referencePosition.x - 1
         if(minX < 0) return false
         return canMoveToNextTiles(referencePosition,tiles)
     }
 
-    private fun canRotateBottom(tiles: Array<Array<Boolean>>): Boolean {
+    private fun canRotateBottom(tiles: Array<Array<Tile>>): Boolean {
         val referencePosition = location[2]
         val maxX = referencePosition.x + 1
         val maxY = referencePosition.y + 1
@@ -184,7 +185,7 @@ class LPiece(
         return canMoveToNextTiles(referencePosition,tiles)
     }
 
-    private fun canRotateRight(tiles: Array<Array<Boolean>>): Boolean {
+    private fun canRotateRight(tiles: Array<Array<Tile>>): Boolean {
         val referencePosition = location[2]
         val maxX = referencePosition.x + 1
         val minY = referencePosition.y - 1
@@ -192,7 +193,7 @@ class LPiece(
         return canMoveToNextTiles(referencePosition,tiles)
     }
 
-    private fun canRotateTop(tiles: Array<Array<Boolean>>): Boolean {
+    private fun canRotateTop(tiles: Array<Array<Tile>>): Boolean {
         val referencePosition = location[2]
         val possibleMinX = referencePosition.x -1
         val possibleMinY = referencePosition.y - 1

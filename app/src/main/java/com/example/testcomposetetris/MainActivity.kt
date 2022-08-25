@@ -3,14 +3,12 @@ package com.example.testcomposetetris
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.example.testcomposetetris.ui.GameOverScreen
 import com.example.testcomposetetris.ui.GameScreen
 import com.example.testcomposetetris.ui.HomeScreen
@@ -18,6 +16,7 @@ import com.example.testcomposetetris.ui.theme.TestComposeTetrisTheme
 import com.example.testcomposetetris.util.SoundUtil
 
 class MainActivity : ComponentActivity() {
+    private val viewModel: MainViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -26,6 +25,18 @@ class MainActivity : ComponentActivity() {
                 SetNavHost(navController = rememberNavController())
             }
         }
+    }
+
+    override fun onStart() {
+        if(!viewModel.isMusicMuted) {
+            SoundUtil.playGameTheme()
+        }
+        super.onStart()
+    }
+
+    override fun onPause() {
+        SoundUtil.stopGameTheme()
+        super.onPause()
     }
 }
 

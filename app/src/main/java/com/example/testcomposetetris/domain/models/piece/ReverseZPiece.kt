@@ -2,6 +2,7 @@ package com.example.testcomposetetris.domain.models.piece
 
 import com.example.testcomposetetris.domain.generateRandomNumber
 import com.example.testcomposetetris.domain.models.Position
+import com.example.testcomposetetris.domain.models.Tile
 
 class ReverseZPiece(
     override val posXLimit: Int,
@@ -23,10 +24,10 @@ class ReverseZPiece(
 
     override val previewLocation: Array<Position> =
         arrayOf(
-            Position(0,1),
+            Position(0,2),
+            Position(1, 2),
             Position(1, 1),
-            Position(1, 0),
-            Position(2, 0)
+            Position(2, 1)
         )
 
     override val destinationLocation: Array<Position> = arrayOf(
@@ -60,7 +61,7 @@ class ReverseZPiece(
         location[3] = Position(referenceXPosition - 1,0)
     }
 
-    override fun moveLeft(tiles: Array<Array<Boolean>>) {
+    override fun moveLeft(tiles: Array<Array<Tile>>) {
         if(canMoveLeft(tiles)) {
             copyCurrentLocToPreviousLoc()
             location.forEachIndexed { index, position ->
@@ -70,19 +71,19 @@ class ReverseZPiece(
     }
 
     private fun canMoveLeft(
-        tiles: Array<Array<Boolean>>
+        tiles: Array<Array<Tile>>
     )
             : Boolean {
         location.forEach { position ->
             if(position.x - 1 < 0) return false
             if(position.y < 0) return@forEach
             if(location.firstOrNull { it.x == position.x - 1 && it.y == position.y } != null) return@forEach
-            if(tiles[position.y][position.x - 1]) return false
+            if(tiles[position.y][position.x - 1].isOccupied) return false
         }
         return true
     }
 
-    override fun moveRight(tiles: Array<Array<Boolean>>) {
+    override fun moveRight(tiles: Array<Array<Tile>>) {
         if(canMoveRight(tiles)) {
             copyCurrentLocToPreviousLoc()
             location.forEachIndexed { index, position ->
@@ -91,12 +92,12 @@ class ReverseZPiece(
         }
     }
 
-    private fun canMoveRight(tiles: Array<Array<Boolean>>): Boolean {
+    private fun canMoveRight(tiles: Array<Array<Tile>>): Boolean {
         location.forEach { position ->
             if(position.x + 1 >= posXLimit) return false
             if(position.y < 0) return@forEach
             if(location.firstOrNull { it.x == position.x + 1 && it.y == position.y } != null) return@forEach
-            if(tiles[position.y][position.x + 1]) return false
+            if(tiles[position.y][position.x + 1].isOccupied) return false
         }
         return true
     }
@@ -117,9 +118,16 @@ class ReverseZPiece(
 
     private fun rotateLeft() {
         val referencePos = location[1]
-        location[0] = Position(referencePos.x + 1,referencePos.y)
-        location[2] = Position(referencePos.x,referencePos.y +  1)
-        location[3] = Position(referencePos.x - 1 ,referencePos.y + 1)
+
+        val xOffset = if(referencePos.x - 1 < 0) {
+            1
+        } else {
+            0
+        }
+        location[0] = Position(xOffset + referencePos.x + 1,referencePos.y)
+        location[1] = Position(xOffset + referencePos.x, referencePos.y)
+        location[2] = Position(xOffset + referencePos.x,referencePos.y +  1)
+        location[3] = Position(xOffset + referencePos.x - 1 ,referencePos.y + 1)
     }
 
     private fun rotateTop() {
@@ -129,7 +137,7 @@ class ReverseZPiece(
         location[3] = Position(referencePos.x + 1,referencePos.y + 1)
     }
 
-    override fun canRotate(tiles: Array<Array<Boolean>>): Boolean {
+    override fun canRotate(tiles: Array<Array<Tile>>): Boolean {
         return when(currentRotation) {
             Rotation.TOP -> {
                 canRotateLeft(tiles)
@@ -141,18 +149,16 @@ class ReverseZPiece(
     }
 
     private fun canRotateTop(
-        tiles: Array<Array<Boolean>>
+        tiles: Array<Array<Tile>>
     ): Boolean {
-        val referencePosition = location[2]
+        val referencePosition = location[1]
         return canMoveToNextTiles(referencePosition,tiles)
     }
 
     private fun canRotateLeft(
-        tiles: Array<Array<Boolean>>
+        tiles: Array<Array<Tile>>
     ): Boolean {
-        val referencePosition = location[2]
-        val minX = referencePosition.x - 1
-        if(minX < 0) return false
+        val referencePosition = location[1]
         return canMoveToNextTiles(referencePosition,tiles)
     }
 

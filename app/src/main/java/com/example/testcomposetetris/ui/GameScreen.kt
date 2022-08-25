@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -30,7 +31,7 @@ fun GameScreen(navController: NavHostController) {
     SoundUtil.init(LocalContext.current,viewModel)
 
 
-    SoundUtil.playGameTheme()
+    SoundUtil.playGameTheme(true)
 
     LaunchedEffect(key1 = 2) {
         viewModel.collect()
@@ -102,10 +103,9 @@ fun GameScreen(navController: NavHostController) {
                                 currentDragPosY = it.y
                                 clickCount = 0
                             } else if (
-                                yDifference.absoluteValue < viewModel.rectangleWidth &&
-                                velocityY?.absoluteValue?.compareTo(2000).orZero() > 0 ||
-                                yDifference.absoluteValue > viewModel.rectangleWidth &&
-                                velocityY?.compareTo(1600).orZero() > 0 &&
+                                yDifference > -viewModel.rectangleWidth &&
+                                velocityY?.compareTo(-2000).orZero() < 0 ||
+                                velocityY?.compareTo(3000).orZero() > 0 &&
                                 !isHorizontalDragStarted
                             ) {
                                 SoundUtil.play(SoundType.Drop)
@@ -137,12 +137,32 @@ fun GameScreen(navController: NavHostController) {
                                             currentDragPosY >= viewModel.muteButtonOffset.y&&
                                             currentDragPosY <= viewModel.muteButtonOffset.y + viewModel.muteButtonSize.height + 20 -> {
                                         viewModel.isMuted = !viewModel.isMuted
-                                        if(viewModel.isMuted) {
+                                        viewModel.updateUi()
+                                    }
+                                    currentDragPosX  >= viewModel.muteMusicOffset.x + 20 &&
+                                            currentDragPosX <= viewModel.muteMusicOffset.x + viewModel.muteMusicSize.width + 20 &&
+                                            currentDragPosY >= viewModel.muteMusicOffset.y&&
+                                            currentDragPosY <= viewModel.muteMusicOffset.y + viewModel.muteMusicSize.height + 20 -> {
+                                        viewModel.isMusicMuted = !viewModel.isMusicMuted
+                                        if(viewModel.isMusicMuted) {
                                             SoundUtil.stopGameTheme()
                                         } else {
                                             SoundUtil.playGameTheme()
                                         }
-                                            }
+                                        viewModel.updateUi()
+                                    }
+                                    currentDragPosX  >= viewModel.playButtonOffset.x + 20 &&
+                                            currentDragPosX <= viewModel.playButtonOffset.x + viewModel.playButtonSize.width + 20 &&
+                                            currentDragPosY >= viewModel.playButtonOffset.y&&
+                                            currentDragPosY <= viewModel.playButtonOffset.y + viewModel.playButtonSize.height + 20 -> {
+                                        viewModel.isGamePaused = !viewModel.isGamePaused
+                                        if(viewModel.isGamePaused) {
+                                            viewModel.pauseGame()
+                                        } else {
+                                            viewModel.continueGame()
+                                        }
+                                        viewModel.updateUi()
+                                    }
                                     (currentDragPosX - initialDragPosX).absoluteValue == 0F &&
                                             (currentDragPosY - initialDragPosY).absoluteValue  == 0F -> {
                                         clickCount++

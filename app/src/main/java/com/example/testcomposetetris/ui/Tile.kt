@@ -3,31 +3,33 @@ package com.example.testcomposetetris.ui
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.toArgb
+import com.example.testcomposetetris.domain.models.Tile
+import com.example.testcomposetetris.ui.theme.EMPTY_TILE_COLOR
 
 fun DrawScope.tile(
     topLeftPosition: Offset,
     width: Float,
-    isNotEmpty: Boolean = false,
     isShadowed: Boolean = false,
-    cornerRadius: Float = 12F) {
+    tile: Tile,
+    cornerRadius: Float = 12F,
+    isInvisible: Boolean = false) {
     val color = when {
-        isNotEmpty -> Color.White
+        tile.isOccupied -> Color.White
         isShadowed -> Color.Gray
-        else -> Color.White
+        else -> EMPTY_TILE_COLOR
     }
     val alpha = when {
-        isNotEmpty -> 1F
+        tile.isOccupied -> 1.0F
         isShadowed -> 0.3F
-        else -> 0.3F
+        isInvisible -> 0F
+        else -> 1F
     }
 
-    tile(topLeftPosition,width,color,alpha,isNotEmpty,isShadowed,cornerRadius)
+    tile(topLeftPosition,width,color,alpha,tile,isShadowed,cornerRadius)
 }
 
 
@@ -36,24 +38,43 @@ fun DrawScope.tile(
     width: Float,
     color: Color = Color.Black,
     alpha: Float = 1F,
-    isNotEmpty: Boolean,
+    tile: Tile,
     isShadowed: Boolean,
     cornerRadius: Float = 12F
 ) {
-    if(isNotEmpty) {
-        if(!isShadowed){
+    if(tile.isOccupied) {
+        if(!isShadowed && tile.hasActivePiece) {
             drawShadowBehindTile(
-                topLeftPosition = topLeftPosition,
-                width = width,
-                height = width
+                0.18F,
+                topLeftPosition,
+                width,
+                width,
+                shadowRadius = 18F,
+                color = tile.color.startColor
             )
         }
+        val gradient = Brush.radialGradient(
+            listOf(tile.color.endColor, tile.color.startColor),
+            Offset(
+                topLeftPosition.x + width / 2,
+                topLeftPosition.y + width / 2
+            ),
+            radius = width - width * 4 / 36
+        )
         drawRoundRect(
-            color,
+            gradient,
             topLeftPosition,
             Size(width,width),
             CornerRadius(cornerRadius,cornerRadius),
-            Fill,
+            alpha,
+            Fill
+        )
+        drawRoundRect(
+            tile.color.strokeColor,
+            topLeftPosition,
+            Size(width,width),
+            CornerRadius(cornerRadius,cornerRadius),
+            Stroke(4F),
             alpha
         )
     } else if(isShadowed) {
@@ -64,6 +85,15 @@ fun DrawScope.tile(
             alpha,
             Stroke(6F),
             )
+    } else {
+        drawRoundRect(
+            color,
+            topLeftPosition,
+            Size(width,width),
+            CornerRadius(4F,4F),
+            Fill,
+            alpha,
+        )
     }
 }
 

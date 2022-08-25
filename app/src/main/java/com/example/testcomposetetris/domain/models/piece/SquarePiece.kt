@@ -2,6 +2,7 @@ package com.example.testcomposetetris.domain.models.piece
 
 import com.example.testcomposetetris.domain.generateRandomNumber
 import com.example.testcomposetetris.domain.models.Position
+import com.example.testcomposetetris.domain.models.Tile
 
 class SquarePiece(
     override val posXLimit: Int,
@@ -20,10 +21,10 @@ class SquarePiece(
         Position(0, -9)
     )
     override val previewLocation: Array<Position> = arrayOf(
-        Position(0,0),
-        Position(0,1),
-        Position(1, 0),
-        Position(1, 1)
+        Position(0,2),
+        Position(0,3),
+        Position(1, 2),
+        Position(1, 3)
     )
 
     override val destinationLocation: Array<Position> = arrayOf(
@@ -46,7 +47,7 @@ class SquarePiece(
     }
 
     private fun canMoveLeft(
-        tiles: Array<Array<Boolean>>
+        tiles: Array<Array<Tile>>
     ): Boolean {
         if(location[0].x == 0) return false
         val loc0 = location[0]
@@ -54,13 +55,13 @@ class SquarePiece(
 
         val destinationX = loc0.x - 1
         if(loc0.y < 0 || loc2.y < 0) return false
-        if(tiles[loc0.y][destinationX] || tiles[loc2.y][destinationX]) return false
+        if(tiles[loc0.y][destinationX].isOccupied || tiles[loc2.y][destinationX].isOccupied) return false
 
         return true
     }
 
     private fun canMoveRight(
-        tiles: Array<Array<Boolean>>
+        tiles: Array<Array<Tile>>
     ): Boolean {
         if(location[1].x + 1 >= posXLimit) return false
         val loc1 = location[1]
@@ -68,7 +69,7 @@ class SquarePiece(
 
         val destinationX = loc1.x + 1
         if(loc1.y < 0 || loc3.y < 0) return false
-        if(tiles[loc1.y][destinationX] || tiles[loc3.y][destinationX]) return false
+        if(tiles[loc1.y][destinationX].isOccupied || tiles[loc3.y][destinationX].isOccupied) return false
 
         return true
     }
@@ -83,7 +84,7 @@ class SquarePiece(
     }
 
     override fun moveLeft(
-        tiles: Array<Array<Boolean>>
+        tiles: Array<Array<Tile>>
     ) {
         if(canMoveLeft(tiles)) {
             copyCurrentLocToPreviousLoc()
@@ -94,7 +95,7 @@ class SquarePiece(
     }
 
     override fun moveRight(
-        tiles: Array<Array<Boolean>>
+        tiles: Array<Array<Tile>>
 
     ) {
         if(canMoveRight(tiles)) {
@@ -107,5 +108,5 @@ class SquarePiece(
 
     override fun rotate() { }
 
-    override fun canRotate(tiles: Array<Array<Boolean>>): Boolean = false
+    override fun canRotate(tiles: Array<Array<Tile>>): Boolean = false
 }

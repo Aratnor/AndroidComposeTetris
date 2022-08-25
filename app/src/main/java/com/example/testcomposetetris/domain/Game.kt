@@ -1,26 +1,34 @@
 package com.example.testcomposetetris.domain
 
 import android.util.Log
+import com.example.testcomposetetris.MoveUpState
 import com.example.testcomposetetris.domain.models.Position
+import com.example.testcomposetetris.domain.models.Tile
+import com.example.testcomposetetris.domain.models.TileColor
 import com.example.testcomposetetris.domain.models.piece.*
 import com.example.testcomposetetris.util.SoundType
 import com.example.testcomposetetris.util.SoundUtil
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.math.pow
+import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 
 const val ITERATION_DELAY = 800L
-const val MOVE_UP_ITERATION_DELAY = 3L
+const val MOVE_UP_ITERATION_DELAY = 60L
 class Game {
     private var isRunning = false
     var resetTimer = false
     var isWaiting = false
+    var isGamePaused = false
     private var moveUpPressed = false
+
+    var currentMoveUpIterationDelay = MOVE_UP_ITERATION_DELAY
 
     private val tiles by lazy {
         Array(24) {
             Array(12) {
-                false
+                Tile(isOccupied = false, hasActivePiece = false, color = TileColor.EMPTY)
             }
         }
     }
@@ -35,10 +43,17 @@ class Game {
 
     private var completedLines: Int = 0
 
+    private val moveUpInitialLocations: MutableList<Position> = mutableListOf()
+
+    var moveUpMovementCount = 0
+
+    var moveUpVelocity = 1.0
+
     val updateUi: MutableStateFlow<GameState> = MutableStateFlow(GameState(
         getTilesAsList(),
+        emptyList<Position>() to TileColor.EMPTY,
         emptyList(),
-        emptyList(),
+        MoveUpState(false, emptyList(),-1,currentPiece),
         "0",
         "1",
         false
@@ -57,20 +72,35 @@ class Game {
     suspend fun startGame() {
         isRunning = true
         updateUi.value = updateUi.value.copy(
-            previewLocation = getNextPiecePreviewLocation(),
+            previewLocation = getNextPiecePreviewLocation() to nextPiece.pieceColor,
             pieceDestinationLocation = getPieceDestinationLocation()
         )
-        while(isRunning) {
+        while(isRunning && !isGamePaused) {
             if(!isWaiting) {
                 move()
             }
+            if(moveUpPressed) {
+                moveUpMovementCount++
+            }
+            moveUpInitialLocations.clear()
+            currentPiece.location.forEach { moveUpInitialLocations.add(it) }
             updateUi.value = updateUi.value.copy(
                 tiles = getTilesAsList(),
-                pieceDestinationLocation = getPieceDestinationLocation()
+                pieceDestinationLocation = getPieceDestinationLocation(),
+                moveUpState = MoveUpState(
+                    moveUpPressed,
+                    moveUpInitialLocations,
+                    moveUpMovementCount,
+                    currentPiece
+                )
             )
             when {
                 resetTimer -> resetTimer = false
-                moveUpPressed -> delay(MOVE_UP_ITERATION_DELAY)
+                moveUpPressed -> {
+                    delay(currentMoveUpIterationDelay)
+                    currentMoveUpIterationDelay = (MOVE_UP_ITERATION_DELAY / (moveUpVelocity * 2 / 3)).roundToLong()
+                    moveUpVelocity += 1.4
+                }
                 else -> delay(calculateDelayMillis())
             }
         }
@@ -78,7 +108,6 @@ class Game {
 
     private fun calculateDelayMillis()
     : Long = ITERATION_DELAY - ((level * 0.7).pow((level - 1) * 0.884.pow(level)) + (level - 1) * 30).toLong()
-
 
     private fun generatePiece(): Piece {
         val pieceType = generateRandomNumber(
@@ -98,6 +127,11 @@ class Game {
     private suspend fun removeCompletedLinesWithEffect(
     completedLines: List<Int>
     ) {
+        updateUi.value = updateUi.value.copy(
+            moveUpState = updateUi.value.moveUpState.copy(
+                moveUpMovementCount = 0
+            )
+        )
         SoundUtil.play(SoundType.Clean)
         repeat(4) {
             gameScoreHelper.removeCompletedLines(completedLines)
@@ -129,7 +163,7 @@ class Game {
         if(moveUpPressed) { moveUpPressed = false }
 
         updateUi.value = updateUi.value.copy(
-            previewLocation = getNextPiecePreviewLocation(),
+            previewLocation = getNextPiecePreviewLocation() to nextPiece.pieceColor,
             isGameOver = !isRunning
         )
     }
@@ -143,6 +177,7 @@ class Game {
 
     private suspend fun move() {
         if(currentPiece.hitAnotherPiece(tiles)) {
+            removeActivePieceFromTiles()
             isRunning = !checkGameOver()
             isWaiting = true && isRunning
             val completedLines = gameScoreHelper.getCompletedLines(currentPiece.location)
@@ -159,7 +194,7 @@ class Game {
             } else {
                 removeCompletedLinesWithEffect(completedLines)
                 gameScoreHelper.moveLinesOneDown(completedLines)
-                updateUi.value = updateUi.value.copy(tiles = getTilesAsList())
+                updateUiWithTiles()
 
                 generateNewPiece()
             }
@@ -172,42 +207,72 @@ class Game {
         updateTilesWithCurrentPieceLocation()
     }
 
+    private fun updateUiWithTiles() {
+        updateUi.value = updateUi.value.copy(
+            tiles = getTilesAsList(),
+            pieceDestinationLocation = getPieceDestinationLocation()
+        )
+
+    }
+
 
     private fun removePreviousPieceLocation() {
         currentPiece.previousLocation.forEach {
             if(it.x < 0 || it.y < 0) return@forEach
-            tiles[it.y][it.x] = false
+            tiles[it.y][it.x] = Tile(
+                isOccupied = false,
+                hasActivePiece = false,
+                color = TileColor.EMPTY
+            )
+        }
+    }
+
+    private fun removeActivePieceFromTiles() {
+        currentPiece.previousLocation.forEach {
+            if(it.x < 0 || it.y < 0) return@forEach
+            if(
+                currentPiece
+                    .location
+                    .firstOrNull { currentPos ->
+                        it.x == currentPos.x && it.y == currentPos.y
+                    } != null) return@forEach
+            tiles[it.y][it.x] =  tiles[it.y][it.x].copy(hasActivePiece = false, isOccupied = false)
         }
     }
 
     private fun updateTilesWithCurrentPieceLocation() {
         currentPiece.location.forEach {
             if(it.x < 0 || it.y < 0) return@forEach
-            tiles[it.y][it.x] = true
+            tiles[it.y][it.x] = Tile(
+                isOccupied = true,
+                hasActivePiece = true,
+                color = currentPiece.pieceColor
+            )
         }
     }
 
     fun moveLeft() {
-        if(isWaiting) return
+        if(isWaiting || moveUpPressed || isGamePaused) return
         currentPiece.moveLeft(tiles)
         currentPiece.isDestinationLocationChanged = true
         removePreviousPieceLocation()
         updateTilesWithCurrentPieceLocation()
         currentPiece.calculateDestinationLoc(tiles)
+        updateUiWithTiles()
     }
 
     fun moveRight() {
-        if(isWaiting) return
+        if(isWaiting || moveUpPressed || isGamePaused) return
         currentPiece.moveRight(tiles)
         currentPiece.isDestinationLocationChanged = true
-
         removePreviousPieceLocation()
         updateTilesWithCurrentPieceLocation()
         currentPiece.calculateDestinationLoc(tiles)
+        updateUiWithTiles()
     }
 
     fun rotate() {
-        if(isWaiting) return
+        if(isWaiting || moveUpPressed || isGamePaused) return
         if(currentPiece.canRotate(tiles)) {
             currentPiece.rotate()
             removePreviousPieceLocation()
@@ -244,15 +309,19 @@ class Game {
     }
 
     suspend fun moveDown() {
-        if(isWaiting) return
+        if(isWaiting ||  isGamePaused) return
         move()
         updateUi.value = updateUi.value.copy(tiles = getTilesAsList())
         resetTimer = true
     }
 
     suspend fun moveUp() {
-        if(canMoveUp()) {
+        if(canMoveUp() && !isGamePaused) {
             moveUpPressed = true
+            currentMoveUpIterationDelay = MOVE_UP_ITERATION_DELAY
+            moveUpInitialLocations.clear()
+            moveUpMovementCount = 0
+            moveUpVelocity = 1.0
             move()
             lastMovedUpTime = System.currentTimeMillis()
         }
@@ -266,8 +335,8 @@ class Game {
         return timeDiff > 500
     }
 
-    fun getTilesAsList(): List<List<Boolean>> {
-        val mutableList = mutableListOf<List<Boolean>>()
+    fun getTilesAsList(): List<List<Tile>> {
+        val mutableList = mutableListOf<List<Tile>>()
         tiles.forEach { mutableList.add(it.toList()) }
         return mutableList
     }
@@ -278,5 +347,14 @@ class Game {
 
     fun getPieceDestinationLocation(): List<Position> {
         return currentPiece.destinationLocation.toList()
+    }
+
+    fun pause() {
+        isGamePaused = true
+    }
+
+    suspend fun continueGame() {
+        isGamePaused = false
+        startGame()
     }
 }

@@ -14,7 +14,7 @@ class PieceFactory {
                 is ReverseZPiece -> ReverseZPiece(piece.posXLimit,piece.posYLimit)
                 is TPiece -> TPiece(piece.posXLimit,piece.posYLimit)
                 else -> throw TypeCastException("Not Supported Piece Type")
-            }
+            }.apply { pieceColor = piece.pieceColor }
 
     }
 }
