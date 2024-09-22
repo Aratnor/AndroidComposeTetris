@@ -26,7 +26,6 @@ import com.example.testcomposetetris.ui.theme.BACKGROUND
 import com.example.testcomposetetris.ui.theme.BUTTON_BACKGROUND
 import com.example.testcomposetetris.util.SoundUtil
 
-@OptIn(ExperimentalUnitApi::class)
 @Composable
 fun HomeScreen(
     navController: NavHostController
