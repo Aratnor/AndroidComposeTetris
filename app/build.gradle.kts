@@ -1,4 +1,5 @@
 import game.fabric.buildsrc.Dependencies
+import game.fabric.buildsrc.Config
 
 plugins {
     id("com.android.application")
@@ -6,14 +7,15 @@ plugins {
 }
 
 android {
-    compileSdk = 34
+    namespace = Config.applicationId
+    compileSdk = Config.compileSdkVersion
 
     defaultConfig {
-        applicationId = "game.fabric.blockflow"
-        minSdk = 23
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        applicationId = Config.applicationId
+        minSdk = Config.minSdk
+        targetSdk = Config.targetSdk
+        versionCode = Config.versionCode
+        versionName = Config.versionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -47,14 +49,6 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
-
-    packagingOptions {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
-
-    namespace = "game.fabric.blockflow"
 }
 
 dependencies {
