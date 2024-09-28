@@ -1,6 +1,6 @@
 import game.fabric.buildsrc.Config
 import game.fabric.buildsrc.Dependencies
-import game.fabric.buildsrc.ModuleNameSpaces
+import game.fabric.buildsrc.NameSpaces
 
 plugins {
     id("com.android.library")
@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = ModuleNameSpaces.GAME_LOGIC
+    namespace = NameSpaces.GAME_LOGIC
     compileSdk = Config.compileSdkVersion
 
     defaultConfig {

@@ -47,6 +47,10 @@ fun GameScreen(navController: NavHostController) {
         viewModel.collect()
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.collectGameSoundActions()
+    }
+
     LaunchedEffect(key1 = 1) {
         viewModel.startGame()
     }

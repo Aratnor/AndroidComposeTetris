@@ -1,5 +1,6 @@
 import game.fabric.buildsrc.Dependencies
 import game.fabric.buildsrc.Config
+import game.fabric.buildsrc.Modules
 
 plugins {
     id("com.android.application")
@@ -56,6 +57,8 @@ dependencies {
     implementation(Dependencies.appCompat)
     implementation(Dependencies.lifecycleKtx)
     implementation(Dependencies.lifecycleCompose)
+    implementation(project(Modules.GAME_LOGIC))
+    implementation(Dependencies.viewModelExtension)
     implementation(Dependencies.activityKtx)
     implementation(Dependencies.navigation)
     implementation(Dependencies.material)

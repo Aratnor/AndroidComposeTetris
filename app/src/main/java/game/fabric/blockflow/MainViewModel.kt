@@ -7,13 +7,17 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import game.fabric.blockflow.domain.Game
-import game.fabric.blockflow.domain.models.Position
-import game.fabric.blockflow.domain.models.Tile
-import game.fabric.blockflow.domain.models.TileColor
-import game.fabric.blockflow.domain.models.piece.LPiece
 import game.fabric.blockflow.ext.convertToMinute
 import game.fabric.blockflow.ext.convertToRemainingSecond
+import game.fabric.blockflow.gamelogic.MoveUpState
+import game.fabric.blockflow.gamelogic.domain.Game
+import game.fabric.blockflow.gamelogic.domain.SoundPlayAction
+import game.fabric.blockflow.gamelogic.domain.models.Position
+import game.fabric.blockflow.gamelogic.domain.models.Tile
+import game.fabric.blockflow.gamelogic.domain.models.TileColor
+import game.fabric.blockflow.gamelogic.domain.models.piece.LPiece
+import game.fabric.blockflow.util.SoundType
+import game.fabric.blockflow.util.SoundUtil
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
@@ -29,7 +33,7 @@ class MainViewModel: ViewModel() {
             emptyList<Position>() to TileColor.EMPTY,
             emptyList(),
             "00:00",
-            MoveUpState(false, emptyList(),-1,LPiece(-1,-1)),
+            MoveUpState(false, emptyList(), -1, LPiece(-1, -1)),
             "",
             "Level 1",
             false,
@@ -41,7 +45,7 @@ class MainViewModel: ViewModel() {
 
     private val game = Game()
 
-    lateinit var timerJob: Job
+    private lateinit var timerJob: Job
 
     var rectangleWidth = -1F
 
@@ -107,6 +111,15 @@ class MainViewModel: ViewModel() {
                 gameOver = it.isGameOver,
                 moveUpState = it.moveUpState
             )
+        }
+    }
+
+    fun collectGameSoundActions() = viewModelScope.launch {
+        game.soundActions.collectLatest {
+            when (it) {
+                SoundPlayAction.CLEAN -> SoundUtil.play(SoundType.Clean)
+                else -> { }
+            }
         }
     }
 

@@ -18,7 +18,8 @@ import game.fabric.blockflow.NavDestination
 import game.fabric.blockflow.NavDestination.navigateGameOver
 import game.fabric.blockflow.R
 import game.fabric.blockflow.ViewState
-import game.fabric.blockflow.domain.models.ButtonIcons
+import game.fabric.blockflow.gamelogic.domain.models.ButtonIcons
+import game.fabric.blockflow.gamelogic.domain.models.Position
 import game.fabric.blockflow.util.ResourceUtil
 import game.fabric.blockflow.util.SoundUtil
 import java.lang.NullPointerException
@@ -100,23 +101,18 @@ private fun DrawScope.drawBoard(
             tile(Offset(startPositionX,startPositionY),widthOfRectangle,isShadowed,tile)
         }
     }
-
-
     if(
         viewState.moveUpState.isMoveUpActive &&
         viewState.moveUpState.moveUpMovementCount > 0) {
-        val moveUpLocations = viewState.moveUpState.moveUpInitialLocations.toList()
-        val maxX = try {
-            moveUpLocations.maxOfOrNull { it.x }
-        } catch (exception: NullPointerException) {
-            null
-        }
+        val moveUpLocations: List<Position?> = viewState.moveUpState.moveUpInitialLocations.toMutableList()
+        val maxX = moveUpLocations.maxOf { it?.x ?: -1 }
         moveUpLocations.forEach {
+            if (it == null) return@forEach
             if(it.x < 0 || it.y < 0 ) return@forEach
             val isUpperTileIsEmpty =
                 it.y == 0 ||
                         moveUpLocations
-                            .firstOrNull { t ->  t.y == it.y -1 && t.x == it.x } == null
+                            .firstOrNull { t ->  t?.y == it.y -1 && t.x == it.x } == null
 
             if(isUpperTileIsEmpty) {
                 var hasTileOnLeft = false
@@ -124,16 +120,16 @@ private fun DrawScope.drawBoard(
                 var hasTileOnRight = false
                 var hasTileOnRightTop = false
                 moveUpLocations.forEach { nextTile ->
-                    if(nextTile.x == it.x-1) {
+                    if(nextTile?.x == it.x-1) {
                         hasTileOnLeft = true
                     }
-                    if(nextTile.x == it.x-1 && nextTile.y == it.y-1) {
+                    if(nextTile?.x == it.x-1 && nextTile.y == it.y-1) {
                         hasTileOnLeftTop = true
                     }
-                    if(nextTile.x == it.x+1) {
+                    if(nextTile?.x == it.x+1) {
                         hasTileOnRight = true
                     }
-                    if(nextTile.x == it.x+1 && nextTile.y == it.y+1) {
+                    if(nextTile?.x == it.x+1 && nextTile.y == it.y+1) {
                         hasTileOnRightTop = true
                     }
                 }

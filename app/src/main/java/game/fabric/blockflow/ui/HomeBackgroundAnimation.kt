@@ -3,7 +3,7 @@ package game.fabric.blockflow.ui
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import game.fabric.blockflow.domain.HomeAnimationState
+import game.fabric.blockflow.gamelogic.domain.HomeAnimationState
 
 fun DrawScope.homeBackgroundAnimation(
     animationState: HomeAnimationState

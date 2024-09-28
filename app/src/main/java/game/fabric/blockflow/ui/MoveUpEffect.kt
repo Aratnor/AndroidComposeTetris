@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Fill
-import game.fabric.blockflow.domain.models.TileColor
+import game.fabric.blockflow.gamelogic.domain.models.TileColor
 
 fun DrawScope.moveUpEffect(
     initialOffset: Offset,

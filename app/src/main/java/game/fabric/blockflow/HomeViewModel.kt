@@ -5,11 +5,18 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import game.fabric.blockflow.domain.HomeAnimationState
-import game.fabric.blockflow.domain.generateRandomNumber
-import game.fabric.blockflow.domain.models.Tile
-import game.fabric.blockflow.domain.models.TileColor
-import game.fabric.blockflow.domain.models.piece.*
+import game.fabric.blockflow.gamelogic.domain.HomeAnimationState
+import game.fabric.blockflow.gamelogic.domain.generateRandomNumber
+import game.fabric.blockflow.gamelogic.domain.models.Tile
+import game.fabric.blockflow.gamelogic.domain.models.TileColor
+import game.fabric.blockflow.gamelogic.domain.models.piece.IPiece
+import game.fabric.blockflow.gamelogic.domain.models.piece.LPiece
+import game.fabric.blockflow.gamelogic.domain.models.piece.Piece
+import game.fabric.blockflow.gamelogic.domain.models.piece.ReverseLPiece
+import game.fabric.blockflow.gamelogic.domain.models.piece.ReverseZPiece
+import game.fabric.blockflow.gamelogic.domain.models.piece.SquarePiece
+import game.fabric.blockflow.gamelogic.domain.models.piece.TPiece
+import game.fabric.blockflow.gamelogic.domain.models.piece.ZPiece
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -27,9 +34,9 @@ class HomeViewModel: ViewModel() {
     private val limY = 20
     private var currentPiece = generatePiece()
 
-    val tiles = Array(limY) {
+    private val tiles = Array(limY) {
         Array(limX) {
-            Tile(false,false, TileColor.EMPTY)
+            Tile(isOccupied = false, hasActivePiece = false, TileColor.EMPTY)
         }
     }
 
@@ -99,7 +106,7 @@ class HomeViewModel: ViewModel() {
             0 -> LPiece(limX,limY)
             1 -> ReverseLPiece(limX,limY)
             2 -> IPiece(limX,limY)
-            3 -> game.fabric.blockflow.domain.models.piece.ZPiece(limX, limY)
+            3 -> ZPiece(limX, limY)
             4 -> ReverseZPiece(limX,limY)
             5 -> TPiece(limX,limY)
             else -> SquarePiece(limX,limY)

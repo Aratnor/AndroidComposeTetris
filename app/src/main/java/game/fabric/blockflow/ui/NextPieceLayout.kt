@@ -12,8 +12,8 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.toArgb
 import game.fabric.blockflow.ViewState
-import game.fabric.blockflow.domain.models.Tile
 import game.fabric.blockflow.ext.drawText
+import game.fabric.blockflow.gamelogic.domain.models.Tile
 import game.fabric.blockflow.ui.theme.*
 import java.lang.Float.max
 

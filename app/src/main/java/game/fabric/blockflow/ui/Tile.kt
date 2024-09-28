@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
-import game.fabric.blockflow.domain.models.Tile
+import game.fabric.blockflow.gamelogic.domain.models.Tile
 import game.fabric.blockflow.ui.theme.EMPTY_TILE_COLOR
 
 fun DrawScope.tile(
