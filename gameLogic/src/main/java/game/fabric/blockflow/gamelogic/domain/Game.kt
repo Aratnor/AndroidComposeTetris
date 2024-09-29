@@ -1,6 +1,7 @@
 package game.fabric.blockflow.gamelogic.domain
 
 import android.util.Log
+import game.fabric.blockflow.gamelogic.GameConfig
 import game.fabric.blockflow.gamelogic.domain.models.Position
 import game.fabric.blockflow.gamelogic.domain.models.Tile
 import game.fabric.blockflow.gamelogic.domain.models.TileColor
@@ -23,8 +24,8 @@ class Game {
     var currentMoveUpIterationDelay = MOVE_UP_ITERATION_DELAY
 
     private val tiles by lazy {
-        Array(24) {
-            Array(12) {
+        Array(GameConfig.ROW_SIZE) {
+            Array(GameConfig.COLUMN_SIZE) {
                 Tile(isOccupied = false, hasActivePiece = false, color = TileColor.EMPTY)
             }
         }

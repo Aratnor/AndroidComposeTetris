@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import game.fabric.blockflow.ext.convertToMinute
 import game.fabric.blockflow.ext.convertToRemainingSecond
+import game.fabric.blockflow.gamelogic.GameConfig
 import game.fabric.blockflow.gamelogic.MoveUpState
 import game.fabric.blockflow.gamelogic.domain.Game
 import game.fabric.blockflow.gamelogic.domain.SoundPlayAction
@@ -27,13 +28,14 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.NoSuchElementException
 
 class MainViewModel : ViewModel() {
 
     private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(
         ViewState(
-            List(24) {
-                List(12) {
+            List(GameConfig.ROW_SIZE) {
+                List(GameConfig.COLUMN_SIZE) {
                     Tile(isOccupied = false, hasActivePiece = false, color = TileColor.EMPTY)
                 }
             },
@@ -138,8 +140,12 @@ class MainViewModel : ViewModel() {
             state.moveUpState.moveUpMovementCount > 0
         ) {
             val moveUpLocations: List<Position?> =
-                state.moveUpState.moveUpInitialLocations.toMutableList()
-            val maxX = moveUpLocations.maxOf { it?.x ?: -1 }
+                state.moveUpState.moveUpInitialLocations.toList()
+            val maxX = try {
+                moveUpLocations.maxOf { it?.x ?: -1 }
+            } catch (exception: NoSuchElementException) {
+                return@launch
+            }
             val moveUpEffectList = moveUpLocations
                 .filterNotNull()
                 .filter {

@@ -70,12 +70,14 @@ fun GameScreen(navController: NavHostController) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
+        var movementStartTime by remember {
+            mutableStateOf(0L)
+        }
 
         Row(
             modifier = Modifier
                 .fillMaxSize()
                 .pointerInteropFilter {
-
                     when (it.action) {
                         MotionEvent.ACTION_DOWN -> {
                             initialDragPosX = it.x
@@ -83,9 +85,9 @@ fun GameScreen(navController: NavHostController) {
                             currentDragPosX = it.x
                             currentDragPosY = it.y
                             clickTime = System.currentTimeMillis()
+                            movementStartTime = System.currentTimeMillis()
                             mVelocityTracker?.clear()
                             mVelocityTracker = mVelocityTracker ?: VelocityTracker.obtain()
-
                             mVelocityTracker?.addMovement(it)
 
                             return@pointerInteropFilter true
@@ -94,6 +96,11 @@ fun GameScreen(navController: NavHostController) {
                         MotionEvent.ACTION_MOVE -> {
                             val xDifference = currentDragPosX - it.x
                             val yDifference = currentDragPosY - it.y
+                            val passedTimeAsSec = (System.currentTimeMillis() - movementStartTime) / 1000.0
+                            val velocityXAsSec = xDifference / passedTimeAsSec
+                            val velocityYAsSec = yDifference / passedTimeAsSec
+                            Log.i("Passed Time", "second $$passedTimeAsSec velocityX $velocityXAsSec velocityY $velocityYAsSec")
+                            Log.i("Movement difference", "xDifference $xDifference y Difference $yDifference")
                             mVelocityTracker?.addMovement(it)
                             mVelocityTracker?.computeCurrentVelocity(1000)
                             val velocityY =
@@ -151,40 +158,6 @@ fun GameScreen(navController: NavHostController) {
 
                             if (diff < 250) {
                                 when {
-                                    currentDragPosX >= viewModel.muteButtonOffset.x + 20 &&
-                                            currentDragPosX <= viewModel.muteButtonOffset.x + viewModel.muteButtonSize.width + 20 &&
-                                            currentDragPosY >= viewModel.muteButtonOffset.y &&
-                                            currentDragPosY <= viewModel.muteButtonOffset.y + viewModel.muteButtonSize.height + 20 -> {
-                                        viewModel.isMuted = !viewModel.isMuted
-                                        viewModel.updateUi()
-                                    }
-
-                                    currentDragPosX >= viewModel.muteMusicOffset.x + 20 &&
-                                            currentDragPosX <= viewModel.muteMusicOffset.x + viewModel.muteMusicSize.width + 20 &&
-                                            currentDragPosY >= viewModel.muteMusicOffset.y &&
-                                            currentDragPosY <= viewModel.muteMusicOffset.y + viewModel.muteMusicSize.height + 20 -> {
-                                        viewModel.isMusicMuted = !viewModel.isMusicMuted
-                                        if (viewModel.isMusicMuted) {
-                                            SoundUtil.stopGameTheme()
-                                        } else {
-                                            SoundUtil.playGameTheme()
-                                        }
-                                        viewModel.updateUi()
-                                    }
-
-                                    currentDragPosX >= viewModel.playButtonOffset.x + 20 &&
-                                            currentDragPosX <= viewModel.playButtonOffset.x + viewModel.playButtonSize.width + 20 &&
-                                            currentDragPosY >= viewModel.playButtonOffset.y &&
-                                            currentDragPosY <= viewModel.playButtonOffset.y + viewModel.playButtonSize.height + 20 -> {
-                                        viewModel.isGamePaused = !viewModel.isGamePaused
-                                        if (viewModel.isGamePaused) {
-                                            viewModel.pauseGame()
-                                        } else {
-                                            viewModel.continueGame()
-                                        }
-                                        viewModel.updateUi()
-                                    }
-
                                     (currentDragPosX - initialDragPosX).absoluteValue == 0F &&
                                             (currentDragPosY - initialDragPosY).absoluteValue == 0F -> {
                                         clickCount++

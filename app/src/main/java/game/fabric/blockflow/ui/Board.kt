@@ -144,7 +144,7 @@ private fun DrawScope.drawBoard(
     val openSoundBitmap = ResourceUtil.getBitmap(
         ButtonIcons.UNMUTE_SOUND.resId
     )
-
+/**
     soundButton(
         viewModel.muteButtonOffset,
         viewModel.isMuted,
@@ -152,7 +152,7 @@ private fun DrawScope.drawBoard(
         openSoundBitmap
     ) {
         viewModel.muteButtonSize = it
-    }
+    }**/
 
     val muteMusicBitmap = ResourceUtil.getBitmap(
         ButtonIcons.MUTE_MUSIC.resId
@@ -161,7 +161,7 @@ private fun DrawScope.drawBoard(
     val openMusicBitmap = ResourceUtil.getBitmap(
         ButtonIcons.UNMUTE_MUSIC.resId
     )
-
+/**
     soundButton(
         viewModel.muteMusicOffset,
         viewModel.isMusicMuted,
@@ -170,6 +170,7 @@ private fun DrawScope.drawBoard(
     ) {
         viewModel.muteMusicSize = it
     }
+    **/
 
     val pauseGameBitmap = ResourceUtil.getBitmap(
         ButtonIcons.PLAY.resId
@@ -179,6 +180,7 @@ private fun DrawScope.drawBoard(
         ButtonIcons.PAUSE.resId
     )
 
+    /**
     soundButton(
         viewModel.playButtonOffset,
         viewModel.isGamePaused,
@@ -186,7 +188,7 @@ private fun DrawScope.drawBoard(
         playGameBitmap
     ) {
         viewModel.playButtonSize = it
-    }
+    } **/
 
 
     nextPieceLayout(
