@@ -333,7 +333,7 @@ class Game {
 
         val currentTime = System.currentTimeMillis()
         val timeDiff = currentTime - lastMovedUpTime
-        return timeDiff > 500
+        return timeDiff > 700 && moveUpPressed.not()
     }
 
     fun getTilesAsList(): List<List<Tile>> {

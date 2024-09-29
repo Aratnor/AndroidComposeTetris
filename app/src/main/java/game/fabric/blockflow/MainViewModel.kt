@@ -1,8 +1,5 @@
 package game.fabric.blockflow
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.lifecycle.ViewModel
@@ -16,19 +13,29 @@ import game.fabric.blockflow.gamelogic.domain.models.Position
 import game.fabric.blockflow.gamelogic.domain.models.Tile
 import game.fabric.blockflow.gamelogic.domain.models.TileColor
 import game.fabric.blockflow.gamelogic.domain.models.piece.LPiece
+import game.fabric.blockflow.ui.MoveUpEffectUiState
 import game.fabric.blockflow.util.SoundType
 import game.fabric.blockflow.util.SoundUtil
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class MainViewModel: ViewModel() {
+class MainViewModel : ViewModel() {
 
-    private val _viewState: MutableState<ViewState> = mutableStateOf(
+    private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(
         ViewState(
             List(24) {
-                   List(12) {
-                       Tile(isOccupied = false, hasActivePiece = false, color = TileColor.EMPTY)
-                   }
+                List(12) {
+                    Tile(isOccupied = false, hasActivePiece = false, color = TileColor.EMPTY)
+                }
             },
             emptyList<Position>() to TileColor.EMPTY,
             emptyList(),
@@ -39,9 +46,10 @@ class MainViewModel: ViewModel() {
             false,
             "",
             ""
-        ))
+        )
+    )
 
-    val viewState : State<ViewState> = _viewState
+    val viewState: StateFlow<ViewState> = _viewState
 
     private val game = Game()
 
@@ -49,14 +57,14 @@ class MainViewModel: ViewModel() {
 
     var rectangleWidth = -1F
 
-    var muteButtonOffset = Offset(0F,0F)
-    var muteButtonSize = Size(120F,120F)
+    var muteButtonOffset = Offset(0F, 0F)
+    var muteButtonSize = Size(120F, 120F)
 
-    var muteMusicOffset = Offset(0F,0F)
-    var muteMusicSize = Size(120F,120F)
+    var muteMusicOffset = Offset(0F, 0F)
+    var muteMusicSize = Size(120F, 120F)
 
-    var playButtonOffset = Offset(0F,0F)
-    var playButtonSize = Size(120F,120F)
+    var playButtonOffset = Offset(0F, 0F)
+    var playButtonSize = Size(120F, 120F)
 
     var isMuted = false
     var isMusicMuted = false
@@ -71,7 +79,7 @@ class MainViewModel: ViewModel() {
 
     private fun startTimer() {
         val isInitialized = this::timerJob.isInitialized
-        if(isInitialized) {
+        if (isInitialized) {
             timerJob.isActive
             return
         }
@@ -84,7 +92,7 @@ class MainViewModel: ViewModel() {
             flow.collectLatest { second ->
                 val minuteAsString = second.convertToMinute()
                 val secondAsString = second.convertToRemainingSecond()
-                if(game.isGameOver()) {
+                if (game.isGameOver()) {
                     timerJob.cancel()
                     return@collectLatest
                 }
@@ -114,11 +122,82 @@ class MainViewModel: ViewModel() {
         }
     }
 
+    fun removeMoveUpEffect() = viewModelScope.launch {
+        _viewState.update { it.copy(moveUpEffectUiState = emptyList()) }
+    }
+
+    fun calculateMoveUpEffect(
+        padding: Float,
+        widthOfRectangle: Float,
+        marginStart: Float,
+        marginTop: Float
+    ) = viewModelScope.launch(Dispatchers.Default) {
+        val state = viewState.value
+        if (
+            state.moveUpState.isMoveUpActive &&
+            state.moveUpState.moveUpMovementCount > 0
+        ) {
+            val moveUpLocations: List<Position?> =
+                state.moveUpState.moveUpInitialLocations.toMutableList()
+            val maxX = moveUpLocations.maxOf { it?.x ?: -1 }
+            val moveUpEffectList = moveUpLocations
+                .filterNotNull()
+                .filter {
+                    val isUpperTileIsEmpty =
+                        it.y == 0 ||
+                                moveUpLocations
+                                    .firstOrNull { t -> t?.y == it.y - 1 && t.x == it.x } == null
+
+                    it.x >= 0 && it.y >= 0 && isUpperTileIsEmpty
+                }
+                .map {
+                    var hasTileOnLeft = false
+                    var hasTileOnLeftTop = false
+                    moveUpLocations.forEach { nextTile ->
+                        if (nextTile?.x == it.x - 1) {
+                            hasTileOnLeft = true
+                        }
+                        if (nextTile?.x == it.x - 1 && nextTile.y == it.y - 1) {
+                            hasTileOnLeftTop = true
+                        }
+                    }
+                    val initialLeftX = (it.x) * (padding + widthOfRectangle) + marginStart
+                    var leftXOffset = 0F
+                    val leftX = when {
+                        hasTileOnLeft && hasTileOnLeftTop -> {
+                            leftXOffset += padding
+                            initialLeftX - padding
+                        }
+
+                        else -> {
+                            leftXOffset = 0F
+                            initialLeftX
+                        }
+                    }
+                    val rightX = when (it.x) {
+                        maxX -> leftX + widthOfRectangle + leftXOffset
+                        else -> leftX + widthOfRectangle + padding + leftXOffset
+                    }
+                    val endY = (it.y) * (padding + widthOfRectangle) + marginTop
+                    val height = 200F
+                    val startY = endY - height
+
+                    MoveUpEffectUiState(
+                        initialOffset = Offset(leftX, startY),
+                        destinationOffset = Offset(leftX, endY),
+                        Size(rightX - leftX, height),
+                        state.moveUpState.currentPiece.pieceColor
+                    )
+            }
+            _viewState.update { it.copy(moveUpEffectUiState = moveUpEffectList) }
+        }
+    }
+
     fun collectGameSoundActions() = viewModelScope.launch {
         game.soundActions.collectLatest {
             when (it) {
                 SoundPlayAction.CLEAN -> SoundUtil.play(SoundType.Clean)
-                else -> { }
+                else -> {}
             }
         }
     }
