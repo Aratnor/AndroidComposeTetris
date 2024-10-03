@@ -1,8 +1,7 @@
-package game.fabric.blockflow.ui
+package game.fabric.blockflow.ui.homescreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -10,16 +9,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import game.fabric.blockflow.HomeViewModel
+import androidx.navigation.compose.rememberNavController
 import game.fabric.blockflow.NavDestination
-import game.fabric.blockflow.ext.coloredShadow
+import game.fabric.blockflow.design.PrimaryButton
+import game.fabric.blockflow.ui.homeBackgroundAnimation
 import game.fabric.blockflow.ui.theme.BACKGROUND
-import game.fabric.blockflow.ui.theme.BUTTON_BACKGROUND
 import game.fabric.blockflow.util.SoundUtil
 
 @Composable
@@ -42,29 +42,9 @@ fun HomeScreen(
         LaunchedEffect(key1 = "x") {
             viewModel.startBackgroundAnimation()
         }
-        OutlinedButton(
-            modifier = Modifier
-                .coloredShadow(Color.Black)
-            ,
-            shape = RoundedCornerShape(12),
-            colors = ButtonDefaults.outlinedButtonColors(
-                backgroundColor = BUTTON_BACKGROUND,
-                contentColor = Color.White
-            ),
-            onClick = {
-                navController.navigate(NavDestination.GAME)
-            }
-        ) {
-            Text(
-                modifier = Modifier.padding(
-                    top = 4.dp,
-                    bottom = 4.dp,
-                    start = 24.dp,
-                    end = 24.dp
-                ),
-                text = "Start Game",
-                style = MaterialTheme.typography.body2
-            )
+        PrimaryButton(text = "Start Game") {
+            navController.navigate(NavDestination.GAME)
+
         }
     }
     Box(
@@ -81,5 +61,10 @@ fun HomeScreen(
             color = Color.White
         )
     }
+}
 
+@Preview
+@Composable
+fun PreviewHomeScreen() {
+    HomeScreen(navController = rememberNavController())
 }

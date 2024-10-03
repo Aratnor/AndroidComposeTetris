@@ -62,4 +62,7 @@ dependencies {
     implementation(Dependencies.activityKtx)
     implementation(Dependencies.navigation)
     implementation(Dependencies.material)
+    implementation(Dependencies.COMPOSE_UI)
+    implementation(Dependencies.COMPOSE_TOOL)
+    implementation(Dependencies.COMPOSE_PREVIEW)
 }

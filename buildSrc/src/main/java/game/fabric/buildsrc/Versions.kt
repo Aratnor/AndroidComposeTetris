@@ -6,5 +6,6 @@ object Versions {
     const val lifecycle = "2.8.6"
     const val activity = "1.9.2"
     const val composeNavigation = "2.8.1"
+    const val COMPOSE = "1.5.0"
     const val material = "1.7.2"
 }

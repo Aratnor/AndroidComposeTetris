@@ -9,9 +9,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import game.fabric.blockflow.ui.GameOverScreen
-import game.fabric.blockflow.ui.GameScreen
-import game.fabric.blockflow.ui.HomeScreen
+import game.fabric.blockflow.ui.gameoverscreen.GameOverScreen
+import game.fabric.blockflow.ui.gamescreen.GameScreen
+import game.fabric.blockflow.ui.homescreen.HomeScreen
 import game.fabric.blockflow.ui.theme.TestComposeTetrisTheme
 import game.fabric.blockflow.util.SoundUtil
 

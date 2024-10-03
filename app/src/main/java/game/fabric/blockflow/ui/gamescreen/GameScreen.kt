@@ -1,4 +1,4 @@
-package game.fabric.blockflow.ui
+package game.fabric.blockflow.ui.gamescreen
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -25,6 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import game.fabric.blockflow.MainViewModel
 import game.fabric.blockflow.orZero
+import game.fabric.blockflow.ui.Board
 import game.fabric.blockflow.ui.theme.BACKGROUND
 import game.fabric.blockflow.util.SoundType
 import game.fabric.blockflow.util.SoundUtil

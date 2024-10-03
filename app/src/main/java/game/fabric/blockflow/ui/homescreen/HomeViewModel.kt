@@ -1,4 +1,4 @@
-package game.fabric.blockflow
+package game.fabric.blockflow.ui.homescreen
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
