@@ -43,7 +43,7 @@ fun HomeScreen(
             viewModel.startBackgroundAnimation()
         }
         PrimaryButton(text = "Start Game") {
-            navController.navigate(NavDestination.GAME)
+            navController.navigate(NavDestination.LEADERBOARD)
 
         }
     }

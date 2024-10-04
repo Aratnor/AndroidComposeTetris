@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -37,7 +36,6 @@ import game.fabric.blockflow.ui.homescreen.HomeViewModel
 import game.fabric.blockflow.ui.theme.BACKGROUND
 import game.fabric.blockflow.ui.theme.Purple500
 import game.fabric.blockflow.ui.theme.SOFT_PINK
-import game.fabric.blockflow.ui.theme.TILE_BLUE_END
 import game.fabric.blockflow.ui.theme.TILE_PURPLE_START
 import game.fabric.blockflow.util.SoundUtil
 
@@ -100,7 +98,7 @@ fun GameOverScreen(
             buttonPadding = PaddingValues(horizontal = 24.dp)
         ) {
             SoundUtil.playGameTheme()
-            navController.navigate(NavDestination.GAME) {
+            navController.navigate(NavDestination.LEADERBOARD) {
                 popUpTo(NavDestination.HOME)
             }
         }

@@ -8,6 +8,6 @@ object Versions {
     const val composeNavigation = "2.8.1"
     const val COMPOSE = "1.5.0"
     const val material = "1.7.2"
-    const val HILT = "2.48"
+    const val HILT = "2.52"
     const val HILT_VIEWMODEL = "1.0.0"
 }
