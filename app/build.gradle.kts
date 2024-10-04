@@ -5,6 +5,8 @@ import game.fabric.buildsrc.Modules
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.kapt")
+    id("dagger.hilt.android.plugin")
 }
 
 android {
@@ -65,4 +67,7 @@ dependencies {
     implementation(Dependencies.COMPOSE_UI)
     implementation(Dependencies.COMPOSE_TOOL)
     implementation(Dependencies.COMPOSE_PREVIEW)
+    kapt(Dependencies.HILT_COMPILER)
+    implementation(Dependencies.HILT_ANDROID)
+    implementation(Dependencies.HILT_COMPOSE)
 }
