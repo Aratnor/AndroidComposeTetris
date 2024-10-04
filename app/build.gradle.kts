@@ -7,6 +7,8 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.kapt")
     id("dagger.hilt.android.plugin")
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -55,19 +57,27 @@ android {
 }
 
 dependencies {
-    implementation(Dependencies.androidCore)
-    implementation(Dependencies.appCompat)
-    implementation(Dependencies.lifecycleKtx)
-    implementation(Dependencies.lifecycleCompose)
     implementation(project(Modules.GAME_LOGIC))
-    implementation(Dependencies.viewModelExtension)
-    implementation(Dependencies.activityKtx)
-    implementation(Dependencies.navigation)
-    implementation(Dependencies.material)
+    implementation(project(Modules.DATA))
+
+    implementation(Dependencies.ANDROID_CORE)
+    implementation(Dependencies.APPCOMPAT)
+    implementation(Dependencies.LIFECYCLE_RUNTIME)
+    implementation(Dependencies.LIFECYCLE_COMPOSE)
+    implementation(Dependencies.VIEWMODEL)
+    implementation(Dependencies.ACTIVITY)
+    implementation(Dependencies.NAVIGATION_COMPOSE)
+    implementation(Dependencies.MATERIAL)
     implementation(Dependencies.COMPOSE_UI)
     implementation(Dependencies.COMPOSE_TOOL)
     implementation(Dependencies.COMPOSE_PREVIEW)
     kapt(Dependencies.HILT_COMPILER)
     implementation(Dependencies.HILT_ANDROID)
     implementation(Dependencies.HILT_COMPOSE)
+    implementation(Dependencies.GOOGLE_PLAY_GAMES)
+    implementation(Dependencies.GOOGLE_PLAY_GAMES_AUTH)
+
+    implementation(platform(Dependencies.FIREBASE))
+    implementation(Dependencies.FIREBASE_ANALYTICS)
+    implementation(Dependencies.FIREBASE_CRASHLYTICS)
 }

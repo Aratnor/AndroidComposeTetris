@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import game.fabric.blockflow.ext.coloredShadow
@@ -20,16 +21,16 @@ import game.fabric.blockflow.ui.theme.BUTTON_BACKGROUND
 @Composable
 fun PrimaryButton(
     text: String,
-    style: TextStyle = MaterialTheme.typography.body2,
+    style: TextStyle = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.SemiBold),
     fillMaxWidth: Boolean = false,
     buttonPadding: PaddingValues = PaddingValues(
         horizontal = 20.dp
     ),
     textPadding: PaddingValues = PaddingValues(
-        top = 4.dp,
-        bottom = 4.dp,
-        start = 24.dp,
-        end = 24.dp
+        top = 16.dp,
+        bottom = 16.dp,
+        start = 36.dp,
+        end = 36.dp
     ),
     onClick: () -> Unit
 ) {

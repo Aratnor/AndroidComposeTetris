@@ -1,6 +1,5 @@
 <resources>
-    <string name="app_name">TestComposeTetris</string>
+    <string name="app_name">FallingBlockPuzzle</string>
     <string name="game_over_btn_text">Start New Game</string>
     <string name="game_over_btn_leaderboard">Leaderboard</string>
-    <string name="projectName">Tetromino Blocks</string>
 </resources>

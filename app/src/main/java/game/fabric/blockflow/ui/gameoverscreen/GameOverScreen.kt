@@ -111,7 +111,7 @@ fun GameOverScreen(
         Text(
             modifier = Modifier
                 .padding(top = 48.dp),
-            text = stringResource(id = R.string.projectName),
+            text = stringResource(id = R.string.app_name),
             style = TextStyle(
                 brush = Brush.linearGradient(colors = listOf(TILE_PURPLE_START,SOFT_PINK)),
                 fontSize = 32.sp,

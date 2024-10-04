@@ -10,4 +10,7 @@ object Versions {
     const val material = "1.7.2"
     const val HILT = "2.52"
     const val HILT_VIEWMODEL = "1.0.0"
+    const val GOOGLE_PLAY_GAMES = "20.1.2"
+    const val GOOGLE_PLAY_GAMES_AUTH = "20.7.0"
+    const val FIREBASE = "33.4.0"
 }

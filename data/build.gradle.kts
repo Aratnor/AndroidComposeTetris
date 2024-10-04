@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = NameSpaces.GAME_LOGIC
+    namespace = NameSpaces.DATA
     compileSdk = Config.compileSdkVersion
 
     defaultConfig {
