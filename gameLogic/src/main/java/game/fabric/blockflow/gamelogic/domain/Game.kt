@@ -24,7 +24,7 @@ import kotlin.math.pow
 import kotlin.math.roundToLong
 
 const val ITERATION_DELAY = 800L
-const val MOVE_UP_ITERATION_DELAY = 60L
+const val MOVE_UP_ITERATION_DELAY = 15L
 
 class Game {
     private var isRunning = false
@@ -73,11 +73,12 @@ class Game {
 
     val soundActions = MutableStateFlow(SoundPlayAction.IDLE)
 
-    var verticalMoveActive: Deferred<Unit>? = null
+    private var verticalMoveJob: Deferred<Unit>? = null
+    private var mainGameLoopJob: Deferred<Unit>? = null
+    private var moveUpJob: Deferred<Unit>? = null
+
 
     private var score: Int = 0
-
-    private var lastMovedUpTime = -1L
 
     fun isGameOver(): Boolean = !isRunning
 
@@ -92,36 +93,46 @@ class Game {
             pieceDestinationLocation = getPieceDestinationLocation()
         )
         while (isRunning && !isGamePaused) {
-            if (!isWaiting) {
-                move()
-            }
-            if (moveUpPressed) {
-                moveUpMovementCount++
-            }
-            moveUpInitialLocations.clear()
-            currentPiece.location.forEach { moveUpInitialLocations.add(it) }
-            updateUi.value = updateUi.value.copy(
-                tiles = getTilesAsList(),
-                pieceDestinationLocation = getPieceDestinationLocation(),
-                moveUpState = MoveUpState(
-                    moveUpPressed,
-                    moveUpInitialLocations,
-                    moveUpMovementCount,
-                    currentPiece
-                )
-            )
-            when {
-                resetTimer -> resetTimer = false
-                moveUpPressed -> {
-                    delay(currentMoveUpIterationDelay)
-                    currentMoveUpIterationDelay =
-                        (MOVE_UP_ITERATION_DELAY / (moveUpVelocity * 2 / 3)).roundToLong()
-                    moveUpVelocity += 1.4
-                }
-
-                else -> delay(calculateDelayMillis())
+            runBlocking {
+                moveUpJob?.join()
+                verticalMoveJob?.join()
+                mainGameLoopJob = async { gameLoopExecution() }
+                mainGameLoopJob?.await()
             }
         }
+    }
+
+    private suspend fun gameLoopExecution() {
+        if (!isWaiting) {
+            move()
+        }
+        if (moveUpPressed) {
+            moveUpMovementCount++
+        }
+        moveUpInitialLocations.clear()
+        currentPiece.location.forEach { moveUpInitialLocations.add(it) }
+        updateUi.value = updateUi.value.copy(
+            tiles = getTilesAsList(),
+            pieceDestinationLocation = getPieceDestinationLocation(),
+            moveUpState = MoveUpState(
+                moveUpPressed,
+                moveUpInitialLocations,
+                moveUpMovementCount,
+                currentPiece
+            )
+        )
+        when {
+            resetTimer -> resetTimer = false
+            moveUpPressed -> {
+                delay(currentMoveUpIterationDelay)
+                currentMoveUpIterationDelay =
+                    (MOVE_UP_ITERATION_DELAY / (moveUpVelocity * 2 / 3)).roundToLong()
+                moveUpVelocity += 1.4
+            }
+
+            else -> delay(calculateDelayMillis())
+        }
+
     }
 
     private fun calculateDelayMillis()
@@ -153,19 +164,19 @@ class Game {
             )
         )
         soundActions.emit(SoundPlayAction.CLEAN)
-        repeat(4) {
+        repeat(2) {
             gameScoreHelper.removeCompletedLines(completedLines)
             updateUi.value = updateUi.value.copy(
                 tiles = getTilesAsList(),
                 pieceDestinationLocation = emptyList()
             )
-            delay(100)
+            delay(50)
             gameScoreHelper.fillCompletedLines(completedLines)
             updateUi.value = updateUi.value.copy(
                 tiles = getTilesAsList(),
                 pieceDestinationLocation = emptyList()
             )
-            delay(100)
+            delay(50)
         }
         delay(100)
         gameScoreHelper.removeCompletedLines(completedLines)
@@ -275,8 +286,8 @@ class Game {
     }
 
     suspend fun moveLeft() {
-        if (verticalMoveActive?.isActive == true) return
-        verticalMoveActive = runBlocking {
+        if (verticalMoveJob?.isActive == true) return
+        verticalMoveJob = runBlocking {
             async {
                 if (isWaiting || moveUpPressed || isGamePaused) return@async
                 currentPiece.moveLeft(tiles)
@@ -287,12 +298,12 @@ class Game {
                 updateUiWithTiles()
             }
         }
-        verticalMoveActive?.await()
+        verticalMoveJob?.await()
     }
 
     suspend fun moveRight() {
-        if (verticalMoveActive?.isActive == true) return
-        verticalMoveActive = runBlocking {
+        if (verticalMoveJob?.isActive == true) return
+        verticalMoveJob = runBlocking {
             async {
                 if (isWaiting || moveUpPressed || isGamePaused) return@async
                 currentPiece.moveRight(tiles)
@@ -303,7 +314,7 @@ class Game {
                 updateUiWithTiles()
             }
         }
-        verticalMoveActive?.await()
+        verticalMoveJob?.await()
     }
 
     fun rotate() {
@@ -350,33 +361,26 @@ class Game {
         resetTimer = true
     }
 
-    suspend fun moveUp() {
-        if (verticalMoveActive?.isActive == true) {
-            verticalMoveActive?.join()
-            onMoveUp()
-        } else {
-            onMoveUp()
+    suspend fun moveUp() = runBlocking {
+        mainGameLoopJob?.join()
+        moveUpJob = async {
+            if (verticalMoveJob?.isActive == true) {
+                verticalMoveJob?.join()
+                onMoveUp()
+            } else {
+                onMoveUp()
+            }
         }
     }
 
-    private suspend fun onMoveUp() {
-        if (canMoveUp() && !isGamePaused) {
+    private fun onMoveUp() {
+        if (!isGamePaused) {
             moveUpPressed = true
             currentMoveUpIterationDelay = MOVE_UP_ITERATION_DELAY
             moveUpInitialLocations.clear()
             moveUpMovementCount = 0
             moveUpVelocity = 1.0
-            move()
-            lastMovedUpTime = System.currentTimeMillis()
         }
-    }
-
-    private fun canMoveUp(): Boolean {
-        if (lastMovedUpTime == -1L) return true
-
-        val currentTime = System.currentTimeMillis()
-        val timeDiff = currentTime - lastMovedUpTime
-        return timeDiff > 700 && moveUpPressed.not()
     }
 
     fun getTilesAsList(): List<List<Tile>> {
